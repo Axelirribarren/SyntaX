@@ -4,6 +4,7 @@ import { listSources, fetchAwesomeList } from './api/awesomeList'
 import { addFavorite, removeFavorite, listFavorites } from './db/favorites'
 import SkillCard from './components/SkillCard.jsx'
 import TokenSetup from './components/TokenSetup.jsx'
+import KitView from './components/KitView.jsx'
 
 const TOPIC_CHIPS = [
   { label: 'MCP Servers', topic: 'mcp-server' },
@@ -13,7 +14,7 @@ const TOPIC_CHIPS = [
 ]
 
 export default function App() {
-  const [view, setView] = useState('search') // search | favorites
+  const [view, setView] = useState('kits') // kits | search | favorites
   const [query, setQuery] = useState('')
   const [results, setResults] = useState([])
   const [loading, setLoading] = useState(false)
@@ -98,6 +99,9 @@ export default function App() {
       </header>
 
       <nav className="tabs">
+        <button className={view === 'kits' ? 'active' : ''} onClick={() => setView('kits')}>
+          Kits
+        </button>
         <button className={view === 'search' ? 'active' : ''} onClick={() => setView('search')}>
           Buscar
         </button>
@@ -141,19 +145,32 @@ export default function App() {
         </>
       )}
 
-      {loading && <p className="status">Cargando…</p>}
-      {error && <p className="status error">{error}</p>}
-      {!loading && !error && shown.length === 0 && (
-        <p className="status">
-          {view === 'favorites' ? 'Todavía no guardaste nada.' : 'Elegí una categoría o buscá algo.'}
-        </p>
-      )}
+      {view === 'kits' && <KitView />}
 
-      <div className="grid">
-        {shown.map((item) => (
-          <SkillCard key={item.id} item={item} isFav={favIds.has(item.id)} onToggleFav={toggleFav} />
-        ))}
-      </div>
+      {view !== 'kits' && (
+        <>
+          {loading && <p className="status">Cargando…</p>}
+          {error && <p className="status error">{error}</p>}
+          {!loading && !error && shown.length === 0 && (
+            <p className="status">
+              {view === 'favorites'
+                ? 'Todavía no guardaste nada.'
+                : 'Elegí una categoría o buscá algo.'}
+            </p>
+          )}
+
+          <div className="grid">
+            {shown.map((item) => (
+              <SkillCard
+                key={item.id}
+                item={item}
+                isFav={favIds.has(item.id)}
+                onToggleFav={toggleFav}
+              />
+            ))}
+          </div>
+        </>
+      )}
     </div>
   )
 }

@@ -20,6 +20,9 @@ Dev server en http://localhost:5173. También hay un `.claude/launch.json` (conf
 - `src/api/github.js` — búsqueda de repos por topic/keyword; filtra por licencias OSS y lee el token de `localStorage` (`gh_token`).
 - `src/api/awesomeList.js` — parseo de listas awesome desde raw.githubusercontent.
 - `src/lib/merge.js`, `src/lib/filters.js` — unificación y filtrado de resultados de ambas fuentes.
+- `src/data/kits.js` — kits curados a mano (la parte que da valor). Cada item es `skill`, `mcp` o `plugin`, con su repo, licencia y datos de instalación. **Regla: no agregar un item sin verificar que el repo existe, que el paquete npm resuelve y que la ruta de la skill es real.**
+- `src/lib/install.js` — convierte kit + selección en `install.ps1` / `install.sh` / preview de `.mcp.json`. Los scripts son aditivos e idempotentes.
+- `src/components/KitView.jsx` — UI de kits: selección de items y salida del instalador.
 - `src/db/favorites.js` — favoritos persistidos con `idb`.
 - `src/components/TokenSetup.jsx` — el usuario pega su propio PAT de GitHub; Claude no maneja tokens.
 

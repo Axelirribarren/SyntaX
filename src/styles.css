@@ -186,6 +186,180 @@ body {
   color: var(--accent-2);
 }
 
+/* ------------------------------------------------------------------ kits */
+
+.kit-intro h2 {
+  font-size: 1.05rem;
+  margin: 0 0 0.3rem;
+}
+
+.kit-intro p {
+  color: var(--text-dim);
+  font-size: 0.9rem;
+  margin: 0 0 1rem;
+  line-height: 1.5;
+}
+
+.kit-actions {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.kit-group {
+  margin-bottom: 1.5rem;
+}
+
+.kit-group h3 {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-dim);
+  margin: 0 0 0.6rem;
+  display: flex;
+  align-items: baseline;
+  gap: 0.6rem;
+}
+
+.kit-group-hint {
+  text-transform: none;
+  letter-spacing: 0;
+  font-size: 0.78rem;
+  color: var(--surface-2);
+  font-weight: 400;
+}
+
+.kit-item {
+  display: flex;
+  gap: 0.7rem;
+  align-items: flex-start;
+  background: var(--surface);
+  border: 1px solid var(--surface-2);
+  border-left: 3px solid var(--surface-2);
+  border-radius: 10px;
+  padding: 0.8rem;
+  margin-bottom: 0.5rem;
+  cursor: pointer;
+}
+
+.kit-item.on {
+  border-left-color: var(--accent);
+}
+
+.kit-item input {
+  margin-top: 0.2rem;
+  accent-color: var(--accent);
+  flex-shrink: 0;
+}
+
+.kit-item-body {
+  min-width: 0;
+  flex: 1;
+}
+
+.kit-item-head {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.kit-item-name {
+  font-weight: 600;
+  font-family: ui-monospace, 'Cascadia Code', Consolas, monospace;
+  font-size: 0.9rem;
+}
+
+.kit-item-why {
+  color: var(--text-dim);
+  font-size: 0.85rem;
+  line-height: 1.45;
+  margin: 0.3rem 0 0.45rem;
+}
+
+.kit-item .card-meta a {
+  color: var(--text-dim);
+  text-decoration: none;
+}
+
+.kit-item .card-meta a:hover {
+  color: var(--accent);
+}
+
+.badge.rec {
+  background: transparent;
+  border: 1px solid var(--accent);
+  color: var(--accent);
+  font-size: 0.7rem;
+}
+
+.badge.warn {
+  background: transparent;
+  border: 1px solid var(--accent-2);
+  color: var(--accent-2);
+  font-size: 0.7rem;
+}
+
+.kit-output {
+  border-top: 1px solid var(--surface-2);
+  padding-top: 1.2rem;
+}
+
+.kit-output h3 {
+  margin: 0 0 0.4rem;
+}
+
+.kit-output-summary {
+  color: var(--text-dim);
+  font-size: 0.85rem;
+  margin: 0 0 0.8rem;
+}
+
+.kit-output-actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 0.7rem;
+}
+
+.kit-output-actions button {
+  padding: 0.45rem 0.9rem;
+  border-radius: 8px;
+  border: none;
+  background: var(--accent);
+  color: #0f172a;
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 0.85rem;
+}
+
+.script {
+  background: #0b1220;
+  border: 1px solid var(--surface-2);
+  border-radius: 10px;
+  padding: 0.9rem;
+  overflow-x: auto;
+  font-size: 0.78rem;
+  line-height: 1.5;
+  font-family: ui-monospace, 'Cascadia Code', Consolas, monospace;
+  color: var(--text);
+  max-height: 420px;
+  overflow-y: auto;
+  margin: 0;
+}
+
+.script.small {
+  max-height: none;
+  margin-top: 0.5rem;
+}
+
+.kit-note {
+  margin-top: 1rem;
+  font-size: 0.85rem;
+  color: var(--text-dim);
+  border-left: 3px solid var(--accent-2);
+  padding-left: 0.8rem;
+}
+
 .token-setup {
   margin-top: 0.5rem;
 }
