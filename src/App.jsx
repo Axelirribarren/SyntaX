@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
+import { AnimatePresence, motion } from 'motion/react'
 import { searchByTopic, searchByKeyword } from './api/github'
 import { listSources, fetchAwesomeList } from './api/awesomeList'
 import { addFavorite, removeFavorite, listFavorites } from './db/favorites'
@@ -13,6 +14,22 @@ const TOPIC_CHIPS = [
   { label: 'Claude Code Plugins', topic: 'claude-code-plugin' },
   { label: 'AI Agents', topic: 'ai-agent' }
 ]
+
+const VIEWS = ['idea', 'kits', 'search', 'favorites']
+
+function Tab({ id, current, onSelect, children }) {
+  const active = current === id
+  return (
+    <button className={active ? 'active' : ''} onClick={() => onSelect(id)}>
+      {children}
+      {active && (
+        // Un solo layoutId compartido entre las cuatro tabs: motion anima el
+        // salto de posición solo, sin medir nada a mano.
+        <motion.span className="tab-indicator" layoutId="tab-indicator" transition={{ duration: 0.22, ease: 'easeOut' }} />
+      )}
+    </button>
+  )
+}
 
 export default function App() {
   const [view, setView] = useState('idea') // idea | kits | search | favorites
@@ -100,82 +117,96 @@ export default function App() {
       </header>
 
       <nav className="tabs">
-        <button className={view === 'idea' ? 'active' : ''} onClick={() => setView('idea')}>
-          Tu idea
-        </button>
-        <button className={view === 'kits' ? 'active' : ''} onClick={() => setView('kits')}>
-          Kits
-        </button>
-        <button className={view === 'search' ? 'active' : ''} onClick={() => setView('search')}>
-          Buscar
-        </button>
-        <button className={view === 'favorites' ? 'active' : ''} onClick={() => setView('favorites')}>
-          Favoritos ({favorites.length})
-        </button>
+        {VIEWS.map((id) => (
+          <Tab key={id} id={id} current={view} onSelect={setView}>
+            {id === 'idea' && 'Tu idea'}
+            {id === 'kits' && 'Kits'}
+            {id === 'search' && 'Buscar'}
+            {id === 'favorites' && `Favoritos (${favorites.length})`}
+          </Tab>
+        ))}
       </nav>
 
-      {view === 'search' && (
-        <>
-          <form className="search-bar" onSubmit={runKeywordSearch}>
-            <input
-              type="text"
-              placeholder="Buscar por palabra clave (ej: pdf to markdown)"
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-            />
-            <button type="submit">Buscar</button>
-          </form>
+      {/* key={view}: cada cambio de tab desmonta la vista anterior y monta la
+          nueva, así que el cross-fade se dispara solo en cada click.
+          mode="popLayout" (no "wait"): la vista nueva se monta de inmediato,
+          sin esperar a que la vieja termine de salir. Con "wait" un exit que
+          no llega a completar (pestaña en segundo plano, tab del SO sin foco)
+          deja el click sin efecto — el botón activo cambia pero el contenido
+          no. La navegación entre tabs no puede depender de que una animación
+          termine para funcionar. */}
+      <AnimatePresence mode="popLayout">
+        <motion.div
+          key={view}
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -8 }}
+          transition={{ duration: 0.16, ease: 'easeOut' }}
+        >
+          {view === 'search' && (
+            <>
+              <form className="search-bar" onSubmit={runKeywordSearch}>
+                <input
+                  type="text"
+                  placeholder="Buscar por palabra clave (ej: pdf to markdown)"
+                  value={query}
+                  onChange={(e) => setQuery(e.target.value)}
+                />
+                <button type="submit">Buscar</button>
+              </form>
 
-          <div className="chips">
-            {TOPIC_CHIPS.map((chip) => (
-              <button
-                key={chip.topic}
-                className={`chip ${activeSource === 'github' ? '' : ''}`}
-                onClick={() => runTopicSearch(chip.topic)}
-              >
-                {chip.label}
-              </button>
-            ))}
-            {listSources().map((source) => (
-              <button
-                key={source.id}
-                className={`chip curated ${activeSource === source.id ? 'active' : ''}`}
-                onClick={() => runAwesomeList(source.id)}
-              >
-                {source.label}
-              </button>
-            ))}
-          </div>
-        </>
-      )}
-
-      {view === 'idea' && <IdeaFinder />}
-      {view === 'kits' && <KitView />}
-
-      {view !== 'kits' && view !== 'idea' && (
-        <>
-          {loading && <p className="status">Cargando…</p>}
-          {error && <p className="status error">{error}</p>}
-          {!loading && !error && shown.length === 0 && (
-            <p className="status">
-              {view === 'favorites'
-                ? 'Todavía no guardaste nada.'
-                : 'Elegí una categoría o buscá algo.'}
-            </p>
+              <div className="chips">
+                {TOPIC_CHIPS.map((chip) => (
+                  <button
+                    key={chip.topic}
+                    className={`chip ${activeSource === 'github' ? '' : ''}`}
+                    onClick={() => runTopicSearch(chip.topic)}
+                  >
+                    {chip.label}
+                  </button>
+                ))}
+                {listSources().map((source) => (
+                  <button
+                    key={source.id}
+                    className={`chip curated ${activeSource === source.id ? 'active' : ''}`}
+                    onClick={() => runAwesomeList(source.id)}
+                  >
+                    {source.label}
+                  </button>
+                ))}
+              </div>
+            </>
           )}
 
-          <div className="grid">
-            {shown.map((item) => (
-              <SkillCard
-                key={item.id}
-                item={item}
-                isFav={favIds.has(item.id)}
-                onToggleFav={toggleFav}
-              />
-            ))}
-          </div>
-        </>
-      )}
+          {view === 'idea' && <IdeaFinder />}
+          {view === 'kits' && <KitView />}
+
+          {view !== 'kits' && view !== 'idea' && (
+            <>
+              {loading && <p className="status">Cargando…</p>}
+              {error && <p className="status error">{error}</p>}
+              {!loading && !error && shown.length === 0 && (
+                <p className="status">
+                  {view === 'favorites'
+                    ? 'Todavía no guardaste nada.'
+                    : 'Elegí una categoría o buscá algo.'}
+                </p>
+              )}
+
+              <div className="grid">
+                {shown.map((item) => (
+                  <SkillCard
+                    key={item.id}
+                    item={item}
+                    isFav={favIds.has(item.id)}
+                    onToggleFav={toggleFav}
+                  />
+                ))}
+              </div>
+            </>
+          )}
+        </motion.div>
+      </AnimatePresence>
     </div>
   )
 }

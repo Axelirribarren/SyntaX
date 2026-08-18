@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { AnimatePresence, motion } from 'motion/react'
 import { generatePowerShell, generateBash, mcpPreview, pluginCommands } from '../lib/install'
 
 const OUTPUTS = [
@@ -57,11 +58,41 @@ export default function InstallerOutput({ plan }) {
       </div>
 
       <div className="kit-output-actions">
-        <button onClick={copy}>{copied ? '¡Copiado!' : 'Copiar'}</button>
+        <button onClick={copy}>
+          {/* AnimatePresence con mode="popLayout": el botón no cambia de ancho
+              de golpe cuando "Copiar" (7 letras) se reemplaza por "¡Copiado!"
+              (10 letras) — el layout se acomoda mientras el texto cruza. */}
+          <AnimatePresence mode="popLayout" initial={false}>
+            <motion.span
+              key={copied ? 'copiado' : 'copiar'}
+              initial={{ opacity: 0, y: -6 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 6 }}
+              transition={{ duration: 0.14 }}
+              style={{ display: 'inline-block' }}
+            >
+              {copied ? '¡Copiado!' : 'Copiar'}
+            </motion.span>
+          </AnimatePresence>
+        </button>
         <button onClick={download}>Descargar {active.filename}</button>
       </div>
 
-      <pre className="script">{script}</pre>
+      {/* Cross-fade al cambiar de pestaña (ps1/sh/.mcp.json): sin esto el
+          contenido del <pre> se reemplaza de golpe y es fácil no notar que
+          cambió de formato. */}
+      <AnimatePresence mode="wait" initial={false}>
+        <motion.pre
+          key={output}
+          className="script"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.12 }}
+        >
+          {script}
+        </motion.pre>
+      </AnimatePresence>
 
       {plan.plugins.length > 0 && (
         <div className="kit-note">

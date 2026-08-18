@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react'
+import { motion } from 'motion/react'
 import { KITS } from '../data/kits'
 import { buildPlan } from '../lib/install'
 import InstallerOutput from './InstallerOutput.jsx'
@@ -7,6 +8,19 @@ const TYPE_LABEL = {
   skill: { label: 'Skill', hint: 'se copia a .claude/skills/' },
   mcp: { label: 'MCP server', hint: 'se agrega a .mcp.json' },
   plugin: { label: 'Plugin', hint: 'slash command en Claude Code' }
+}
+
+// Un solo nivel de stagger: cada sección (grupo de skills/MCP/plugins, y el
+// instalador) aparece en cascada, pero los items dentro de una sección entran
+// juntos. Con kits de más de diez items (ui-ux-pro-max trae 14 skills en su
+// plugin), animar cada fila por separado se siente lento en vez de prolijo.
+const seccionVariants = {
+  hidden: {},
+  show: { transition: { staggerChildren: 0.07 } }
+}
+const bloqueVariants = {
+  hidden: { opacity: 0, y: 10 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.22, ease: 'easeOut' } }
 }
 
 function recommendedIds(kit) {
@@ -52,59 +66,68 @@ export default function KitView() {
         ))}
       </div>
 
-      <div className="kit-intro">
-        <h2>{kit.tagline}</h2>
-        <p>{kit.description}</p>
-      </div>
+      {/* key={kitId}: al cambiar de kit se remonta todo el bloque de abajo,
+          así que la cascada vuelve a correr en vez de saltar directo al
+          estado final. */}
+      <motion.div key={kitId} variants={seccionVariants} initial="hidden" animate="show">
+        <motion.div className="kit-intro" variants={bloqueVariants}>
+          <h2>{kit.tagline}</h2>
+          <p>{kit.description}</p>
+        </motion.div>
 
-      <div className="kit-actions">
-        <button className="link-btn" onClick={() => setSelection(recommendedIds(kit))}>
-          Solo los recomendados
-        </button>
-        <button className="link-btn" onClick={() => setSelection(new Set(kit.items.map((i) => i.id)))}>
-          Marcar todo
-        </button>
-        <button className="link-btn" onClick={() => setSelection(new Set())}>
-          Limpiar
-        </button>
-      </div>
+        <div className="kit-actions">
+          <button className="link-btn" onClick={() => setSelection(recommendedIds(kit))}>
+            Solo los recomendados
+          </button>
+          <button className="link-btn" onClick={() => setSelection(new Set(kit.items.map((i) => i.id)))}>
+            Marcar todo
+          </button>
+          <button className="link-btn" onClick={() => setSelection(new Set())}>
+            Limpiar
+          </button>
+        </div>
 
-      {grouped.map(({ type, items }) => (
-        <section key={type} className="kit-group">
-          <h3>
-            {TYPE_LABEL[type].label}
-            <span className="kit-group-hint">{TYPE_LABEL[type].hint}</span>
-          </h3>
-          {items.map((item) => (
-            <label key={item.id} className={`kit-item ${selection.has(item.id) ? 'on' : ''}`}>
-              <input
-                type="checkbox"
-                checked={selection.has(item.id)}
-                onChange={() => toggle(item.id)}
-              />
-              <div className="kit-item-body">
-                <div className="kit-item-head">
-                  <span className="kit-item-name">{item.name}</span>
-                  {item.recommended && <span className="badge rec">recomendado</span>}
-                  {item.needsSecret && <span className="badge warn">necesita {item.needsSecret}</span>}
+        {grouped.map(({ type, items }) => (
+          <motion.section key={type} className="kit-group" variants={bloqueVariants}>
+            <h3>
+              {TYPE_LABEL[type].label}
+              <span className="kit-group-hint">{TYPE_LABEL[type].hint}</span>
+            </h3>
+            {items.map((item) => (
+              <motion.label
+                key={item.id}
+                className={`kit-item ${selection.has(item.id) ? 'on' : ''}`}
+                whileTap={{ scale: 0.99 }}
+              >
+                <input
+                  type="checkbox"
+                  checked={selection.has(item.id)}
+                  onChange={() => toggle(item.id)}
+                />
+                <div className="kit-item-body">
+                  <div className="kit-item-head">
+                    <span className="kit-item-name">{item.name}</span>
+                    {item.recommended && <span className="badge rec">recomendado</span>}
+                    {item.needsSecret && <span className="badge warn">necesita {item.needsSecret}</span>}
+                  </div>
+                  <p className="kit-item-why">{item.why}</p>
+                  <div className="card-meta">
+                    <a href={`https://github.com/${item.repo}`} target="_blank" rel="noreferrer">
+                      {item.repo}
+                    </a>
+                    <span className="badge">{item.license}</span>
+                  </div>
                 </div>
-                <p className="kit-item-why">{item.why}</p>
-                <div className="card-meta">
-                  <a href={`https://github.com/${item.repo}`} target="_blank" rel="noreferrer">
-                    {item.repo}
-                  </a>
-                  <span className="badge">{item.license}</span>
-                </div>
-              </div>
-            </label>
-          ))}
-        </section>
-      ))}
+              </motion.label>
+            ))}
+          </motion.section>
+        ))}
 
-      <section className="kit-output">
-        <h3>Instalador</h3>
-        <InstallerOutput plan={plan} />
-      </section>
+        <motion.section className="kit-output" variants={bloqueVariants}>
+          <h3>Instalador</h3>
+          <InstallerOutput plan={plan} />
+        </motion.section>
+      </motion.div>
     </div>
   )
 }

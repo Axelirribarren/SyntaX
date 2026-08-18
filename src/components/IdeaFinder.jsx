@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react'
+import { motion } from 'motion/react'
 import { recommend } from '../lib/recommend'
 import { buildPlan } from '../lib/install'
 import { CONCEPT_LABELS } from '../data/concepts'
@@ -13,10 +14,37 @@ const EJEMPLOS = [
 
 const TYPE_TAG = { skill: 'skill', mcp: 'MCP', plugin: 'plugin' }
 
+// Stagger de dos niveles: la sección (motion.section) dispara staggerChildren
+// sobre sus hijos directos (lectura, grillas, instalador), y cada grilla a su
+// vez dispara su propio staggerChildren sobre las tarjetas. motion propaga el
+// estado "show" del padre a cualquier hijo con variants y sin animate propio,
+// así que no hace falta orquestar nada a mano.
+const seccionVariants = {
+  hidden: {},
+  show: { transition: { staggerChildren: 0.09 } }
+}
+const bloqueVariants = {
+  hidden: { opacity: 0, y: 10 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.24, ease: 'easeOut' } }
+}
+const grillaVariants = {
+  hidden: {},
+  show: { transition: { staggerChildren: 0.045 } }
+}
+const tarjetaVariants = {
+  hidden: { opacity: 0, y: 10 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.22, ease: 'easeOut' } }
+}
+
 function Tarjeta({ resultado, elegido, onToggle }) {
   const { item, matched, relevance } = resultado
   return (
-    <label className={`idea-card ${elegido ? 'on' : ''}`}>
+    <motion.label
+      className={`idea-card ${elegido ? 'on' : ''}`}
+      variants={tarjetaVariants}
+      whileHover={{ y: -2 }}
+      whileTap={{ scale: 0.985 }}
+    >
       <div className="idea-card-top">
         <input type="checkbox" checked={elegido} onChange={() => onToggle(item.id)} />
         <span className="idea-card-name">{item.name}</span>
@@ -25,7 +53,13 @@ function Tarjeta({ resultado, elegido, onToggle }) {
 
       {relevance != null && (
         <div className="idea-bar" title={`Relevancia ${relevance}%`}>
-          <span style={{ width: `${relevance}%` }} />
+          {/* Ancho animado: la barra se llena al aparecer en vez de nacer
+              con su valor final — muestra el puntaje calculándose. */}
+          <motion.span
+            initial={{ width: '0%' }}
+            animate={{ width: `${relevance}%` }}
+            transition={{ duration: 0.5, ease: 'easeOut', delay: 0.05 }}
+          />
         </div>
       )}
 
@@ -46,7 +80,7 @@ function Tarjeta({ resultado, elegido, onToggle }) {
         </a>
         <span className="badge">{item.license}</span>
       </div>
-    </label>
+    </motion.label>
   )
 }
 
@@ -114,7 +148,9 @@ export default function IdeaFinder() {
             if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) buscar(idea)
           }}
         />
-        <button type="submit">Recomendame skills</button>
+        <motion.button type="submit" whileTap={{ scale: 0.97 }}>
+          Recomendame skills
+        </motion.button>
       </form>
 
       {!analisis && (
@@ -129,8 +165,11 @@ export default function IdeaFinder() {
       )}
 
       {analisis && (
-        <>
-          <div className="idea-lectura">
+        // key={consulta}: cada búsqueda nueva remonta la sección entera, así
+        // el stagger vuelve a correr desde cero en vez de quedar "gastado"
+        // después de la primera vez.
+        <motion.section key={consulta} variants={seccionVariants} initial="hidden" animate="show">
+          <motion.div className="idea-lectura" variants={bloqueVariants}>
             {analisis.fallback ? (
               <p>
                 No reconocí nada específico en lo que escribiste, así que te muestro el núcleo
@@ -149,9 +188,9 @@ export default function IdeaFinder() {
                 .
               </p>
             )}
-          </div>
+          </motion.div>
 
-          <div className="idea-grid">
+          <motion.div className="idea-grid" variants={grillaVariants}>
             {fuertes.map((r) => (
               <Tarjeta
                 key={r.item.id}
@@ -160,17 +199,17 @@ export default function IdeaFinder() {
                 onToggle={toggle}
               />
             ))}
-          </div>
+          </motion.div>
 
           {sugeridos.length > 0 && (
-            <>
+            <motion.div variants={bloqueVariants}>
               <h3 className="idea-subtitulo">
                 También podría servirte
                 <span className="kit-group-hint">
                   coincidencias laterales — no vienen tildadas
                 </span>
               </h3>
-              <div className="idea-grid">
+              <motion.div className="idea-grid" variants={grillaVariants} initial="hidden" animate="show">
                 {sugeridos.map((r) => (
                   <Tarjeta
                     key={r.item.id}
@@ -179,15 +218,15 @@ export default function IdeaFinder() {
                     onToggle={toggle}
                   />
                 ))}
-              </div>
-            </>
+              </motion.div>
+            </motion.div>
           )}
 
-          <section className="kit-output">
+          <motion.section className="kit-output" variants={bloqueVariants}>
             <h3>Instalador</h3>
             <InstallerOutput plan={plan} />
-          </section>
-        </>
+          </motion.section>
+        </motion.section>
       )}
     </div>
   )

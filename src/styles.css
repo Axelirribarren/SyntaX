@@ -42,6 +42,7 @@ body {
 }
 
 .tabs button {
+  position: relative;
   background: none;
   border: none;
   color: var(--text-dim);
@@ -49,11 +50,24 @@ body {
   cursor: pointer;
   font-size: 0.95rem;
   border-bottom: 2px solid transparent;
+  transition: color 0.15s ease;
 }
 
 .tabs button.active {
   color: var(--text);
-  border-bottom-color: var(--accent);
+}
+
+/* Reemplaza el borde estático de abajo: un solo elemento con layoutId
+   compartido por las cuatro tabs, así que motion anima el salto de una
+   posición a otra en vez de que la línea aparezca/desaparezca a los saltos. */
+.tab-indicator {
+  position: absolute;
+  left: 0.4rem;
+  right: 0.4rem;
+  bottom: -1px;
+  height: 2px;
+  background: var(--accent);
+  border-radius: 2px;
 }
 
 .search-bar {
@@ -291,6 +305,7 @@ body {
   flex-direction: column;
   gap: 0.45rem;
   cursor: pointer;
+  transition: border-top-color 0.15s ease;
 }
 
 .idea-card.on {
@@ -323,6 +338,8 @@ body {
   overflow: hidden;
 }
 
+/* El ancho lo anima motion (ver Tarjeta en IdeaFinder.jsx) para que la barra
+   se llene al aparecer la tarjeta en vez de nacer ya con su ancho final. */
 .idea-bar span {
   display: block;
   height: 100%;
@@ -412,6 +429,7 @@ body {
   padding: 0.8rem;
   margin-bottom: 0.5rem;
   cursor: pointer;
+  transition: border-left-color 0.15s ease;
 }
 
 .kit-item.on {
