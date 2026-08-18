@@ -4,6 +4,16 @@
 // genera es un script que el usuario lee y ejecuta él mismo desde la raíz de su
 // proyecto. Todo lo generado es idempotente y aditivo — un .mcp.json existente
 // se enriquece, nunca se pisa.
+//
+// LICENCIAS — leer antes de tocar la copia de skills.
+// SyntaX no redistribuye nada: el script clona desde el repo original y la copia
+// ocurre en la máquina del usuario. Pero ese usuario después suele commitear
+// .claude/skills/ en su propio repo, y ahí sí redistribuye. Las skills de
+// anthropics/skills son Apache 2.0, cuya sección 4(a) exige entregar una copia
+// de la licencia junto con el trabajo. Cada carpeta trae su LICENSE.txt, así que
+// la copia recursiva lo arrastra sola y el usuario queda cubierto.
+// Si alguna vez se cambia la copia por algo más selectivo (copiar solo SKILL.md,
+// filtrar archivos "innecesarios"), hay que seguir llevando LICENSE.txt sí o sí.
 
 const SKILLS_DIR = '.claude/skills'
 
@@ -32,14 +42,32 @@ export function buildPlan(kit, selectedIds) {
   }
 }
 
+// Los MCP servers vienen en dos formas y hay que soportar las dos:
+//   - stdio: se lanza un proceso local ({ command, args })
+//   - http:  se apunta a una URL remota ({ url, headers })
+// Un catálogo que solo emite la primera deja afuera toda una familia de
+// servers alojados (21st, por ejemplo) y produce un .mcp.json inútil.
+// Los secretos nunca se escriben: van como placeholder para que el usuario
+// los complete a mano y no termine commiteando una clave.
+function serverConfig(server) {
+  const marcador = (obj) => Object.fromEntries(Object.keys(obj).map((k) => [k, `TU_${k}`]))
+
+  if (server.url) {
+    const cfg = { url: server.url }
+    if (server.headers) cfg.headers = marcador(server.headers)
+    return cfg
+  }
+
+  const cfg = { command: server.command, args: server.args }
+  if (server.env) cfg.env = marcador(server.env)
+  return cfg
+}
+
 // .mcp.json resultante, para que el usuario vea qué le va a quedar.
 export function mcpPreview(plan) {
   const mcpServers = {}
   for (const item of plan.servers) {
-    const { key, command, args, env } = item.server
-    mcpServers[key] = env
-      ? { command, args, env: Object.fromEntries(Object.keys(env).map((k) => [k, `TU_${k}`])) }
-      : { command, args }
+    mcpServers[item.server.key] = serverConfig(item.server)
   }
   return JSON.stringify({ mcpServers }, null, 2)
 }
@@ -61,14 +89,29 @@ function header(plan, comment) {
     `${comment} Corré esto desde la RAÍZ de tu proyecto. Es aditivo e idempotente:`,
     `${comment} agrega servers a .mcp.json sin borrar los que ya tengas, y reemplaza`,
     `${comment} solo las carpetas de skills que estén en este kit.`,
-    `${comment} Leelo antes de ejecutarlo.`
+    `${comment} Leelo antes de ejecutarlo.`,
+    `${comment}`,
+    `${comment} Cada skill se copia con su LICENSE.txt: conservalo si después`,
+    `${comment} versionás .claude/skills/ en un repo público.`
   ]
 }
 
 // ---------------------------------------------------------------- PowerShell
 
-function psList(values) {
-  return `@(${values.map((v) => `'${v.replace(/'/g, "''")}'`).join(', ')})`
+function psCadena(v) {
+  return `'${String(v).replace(/'/g, "''")}'`
+}
+
+// Serializa un objeto JS a literal de PowerShell. Las claves van SIEMPRE
+// entrecomilladas: un header como x-api-key sin comillas es un error de
+// sintaxis en PowerShell (interpreta los guiones como restas).
+function psLiteral(valor) {
+  if (Array.isArray(valor)) return `@(${valor.map(psLiteral).join(', ')})`
+  if (valor && typeof valor === 'object') {
+    const pares = Object.entries(valor).map(([k, v]) => `${psCadena(k)} = ${psLiteral(v)}`)
+    return `[pscustomobject]@{ ${pares.join('; ')} }`
+  }
+  return psCadena(valor)
 }
 
 export function generatePowerShell(plan) {
@@ -98,14 +141,9 @@ export function generatePowerShell(plan) {
       '}'
     )
     for (const item of plan.servers) {
-      const { key, command, args, env } = item.server
-      const parts = [`command = '${command}'`, `args = ${psList(args)}`]
-      if (env) {
-        const envParts = Object.keys(env).map((k) => `${k} = 'TU_${k}'`)
-        parts.push(`env = [pscustomobject]@{ ${envParts.join('; ')} }`)
-      }
+      const { key } = item.server
       L.push(
-        `$mcp.mcpServers | Add-Member -NotePropertyName '${key}' -NotePropertyValue ([pscustomobject]@{ ${parts.join('; ')} }) -Force`,
+        `$mcp.mcpServers | Add-Member -NotePropertyName ${psCadena(key)} -NotePropertyValue (${psLiteral(serverConfig(item.server))}) -Force`,
         `Write-Host "  + MCP ${key}" -ForegroundColor Green`
       )
     }
@@ -136,6 +174,8 @@ export function generatePowerShell(plan) {
       )
       for (const s of skills) {
         const srcPath = s.path.replace(/\//g, '\\')
+        // -Recurse copia la carpeta entera, LICENSE.txt incluido. No lo cambies
+        // por una copia selectiva sin llevar la licencia: ver nota de arriba.
         L.push(
           `  $dest = Join-Path $skillsRoot '${s.target}'`,
           '  if (Test-Path $dest) { Remove-Item -Recurse -Force $dest }',
@@ -195,10 +235,7 @@ export function generateBash(plan) {
   if (plan.servers.length) {
     const additions = {}
     for (const item of plan.servers) {
-      const { key, command, args, env } = item.server
-      additions[key] = env
-        ? { command, args, env: Object.fromEntries(Object.keys(env).map((k) => [k, `TU_${k}`])) }
-        : { command, args }
+      additions[item.server.key] = serverConfig(item.server)
     }
     L.push(
       '',
@@ -237,6 +274,8 @@ export function generateBash(plan) {
         `git clone --depth 1 --quiet https://github.com/${repo}.git "$TMP/${dirName}"`
       )
       for (const s of skills) {
+        // cp -R arrastra el LICENSE.txt de cada skill. Ver la nota de licencias
+        // arriba antes de reemplazarlo por una copia selectiva.
         L.push(
           `rm -rf "$SKILLS_ROOT/${s.target}"`,
           `cp -R "$TMP/${dirName}/${s.path}" "$SKILLS_ROOT/${s.target}"`,

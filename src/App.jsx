@@ -5,6 +5,7 @@ import { addFavorite, removeFavorite, listFavorites } from './db/favorites'
 import SkillCard from './components/SkillCard.jsx'
 import TokenSetup from './components/TokenSetup.jsx'
 import KitView from './components/KitView.jsx'
+import IdeaFinder from './components/IdeaFinder.jsx'
 
 const TOPIC_CHIPS = [
   { label: 'MCP Servers', topic: 'mcp-server' },
@@ -14,7 +15,7 @@ const TOPIC_CHIPS = [
 ]
 
 export default function App() {
-  const [view, setView] = useState('kits') // kits | search | favorites
+  const [view, setView] = useState('idea') // idea | kits | search | favorites
   const [query, setQuery] = useState('')
   const [results, setResults] = useState([])
   const [loading, setLoading] = useState(false)
@@ -99,6 +100,9 @@ export default function App() {
       </header>
 
       <nav className="tabs">
+        <button className={view === 'idea' ? 'active' : ''} onClick={() => setView('idea')}>
+          Tu idea
+        </button>
         <button className={view === 'kits' ? 'active' : ''} onClick={() => setView('kits')}>
           Kits
         </button>
@@ -145,9 +149,10 @@ export default function App() {
         </>
       )}
 
+      {view === 'idea' && <IdeaFinder />}
       {view === 'kits' && <KitView />}
 
-      {view !== 'kits' && (
+      {view !== 'kits' && view !== 'idea' && (
         <>
           {loading && <p className="status">Cargando…</p>}
           {error && <p className="status error">{error}</p>}

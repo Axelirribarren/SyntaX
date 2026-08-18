@@ -18,14 +18,25 @@ export const KITS = [
       'temas coherentes, y un navegador de verdad para que Claude vea lo que rompió en vez de adivinar.',
     items: [
       {
+        id: 'ui-ux-pro-max',
+        type: 'skill',
+        name: 'ui-ux-pro-max',
+        why: 'Base de datos de diseño consultable desde el editor: 79 estilos, 192 paletas con su razonamiento, 74 pares tipográficos, 119 guías de UX, 25 tipos de gráfico y 22 stacks. Trae sus propios scripts de búsqueda, así que no inventa: consulta.',
+        repo: 'nextlevelbuilder/ui-ux-pro-max-skill',
+        path: '.claude/skills/ui-ux-pro-max',
+        target: 'ui-ux-pro-max',
+        license: 'MIT',
+        recommended: true
+      },
+      {
         id: 'frontend-design',
         type: 'skill',
         name: 'frontend-design',
-        why: 'Criterio de diseño: tipografía, jerarquía, dirección estética. Evita que todo salga con el mismo aire genérico.',
+        why: 'Criterio de diseño: tipografía, jerarquía, dirección estética. Evita que todo salga con el mismo aire genérico. Se lleva bien con ui-ux-pro-max: este pone el criterio, aquel los datos.',
         repo: 'anthropics/skills',
         path: 'skills/frontend-design',
         target: 'frontend-design',
-        license: 'Anthropic (ver LICENSE.txt del repo)',
+        license: 'Apache-2.0',
         recommended: true
       },
       {
@@ -36,7 +47,7 @@ export const KITS = [
         repo: 'anthropics/skills',
         path: 'skills/theme-factory',
         target: 'theme-factory',
-        license: 'Anthropic (ver LICENSE.txt del repo)',
+        license: 'Apache-2.0',
         recommended: true
       },
       {
@@ -47,7 +58,7 @@ export const KITS = [
         repo: 'anthropics/skills',
         path: 'skills/webapp-testing',
         target: 'webapp-testing',
-        license: 'Anthropic (ver LICENSE.txt del repo)',
+        license: 'Apache-2.0',
         recommended: true
       },
       {
@@ -71,6 +82,28 @@ export const KITS = [
         recommended: true
       },
       {
+        id: 'design-audit',
+        type: 'skill',
+        name: 'design-audit',
+        why: 'Audita tu UI contra 24 leyes de UX con citas a la fuente primaria y devuelve un puntaje por dimensión. Alternativa liviana (cero dependencias) si ui-ux-pro-max te resulta demasiado: se pisan bastante, no instales los dos.',
+        repo: 'Aboudjem/ui-ux-suite',
+        path: 'skills/design-audit',
+        target: 'design-audit',
+        license: 'MIT',
+        recommended: false
+      },
+      {
+        id: 'a11y-audit',
+        type: 'skill',
+        name: 'a11y-audit',
+        why: 'Accesibilidad enfocada: criterios WCAG y contraste APCA. ui-ux-pro-max ya cubre accesibilidad como prioridad 1; sumá este solo si querés una auditoría dedicada.',
+        repo: 'Aboudjem/ui-ux-suite',
+        path: 'skills/a11y-audit',
+        target: 'a11y-audit',
+        license: 'MIT',
+        recommended: false
+      },
+      {
         id: 'canvas-design',
         type: 'skill',
         name: 'canvas-design',
@@ -78,7 +111,7 @@ export const KITS = [
         repo: 'anthropics/skills',
         path: 'skills/canvas-design',
         target: 'canvas-design',
-        license: 'Anthropic (ver LICENSE.txt del repo)',
+        license: 'Apache-2.0',
         recommended: false
       },
       {
@@ -89,7 +122,7 @@ export const KITS = [
         repo: 'anthropics/skills',
         path: 'skills/web-artifacts-builder',
         target: 'web-artifacts-builder',
-        license: 'Anthropic (ver LICENSE.txt del repo)',
+        license: 'Apache-2.0',
         recommended: false
       },
       {
@@ -126,7 +159,19 @@ export const KITS = [
         repo: 'anthropics/skills',
         path: 'skills/brand-guidelines',
         target: 'brand-guidelines',
-        license: 'Anthropic (ver LICENSE.txt del repo)',
+        license: 'Apache-2.0',
+        recommended: false
+      },
+      {
+        id: 'ui-ux-pro-max-plugin',
+        type: 'plugin',
+        name: 'ui-ux-pro-max (pack completo)',
+        why: 'Instala ui-ux-pro-max como plugin, con sus otras 6 skills (banner-design, brand, design-system, design, slides, ui-styling) y actualizaciones automáticas. Alternativa a copiar la skill suelta: no uses las dos.',
+        repo: 'nextlevelbuilder/ui-ux-pro-max-skill',
+        marketplace: 'nextlevelbuilder/ui-ux-pro-max-skill',
+        marketplaceName: 'ui-ux-pro-max-skill',
+        plugin: 'ui-ux-pro-max',
+        license: 'MIT',
         recommended: false
       },
       {
@@ -138,7 +183,7 @@ export const KITS = [
         marketplace: 'anthropics/skills',
         marketplaceName: 'anthropic-agent-skills',
         plugin: 'example-skills',
-        license: 'Anthropic (ver LICENSE.txt del repo)',
+        license: 'Apache-2.0',
         recommended: false
       }
     ]
@@ -179,7 +224,7 @@ export const KITS = [
         repo: 'anthropics/skills',
         path: 'skills/webapp-testing',
         target: 'webapp-testing',
-        license: 'Anthropic (ver LICENSE.txt del repo)',
+        license: 'Apache-2.0',
         recommended: true
       },
       {
@@ -190,7 +235,7 @@ export const KITS = [
         repo: 'anthropics/skills',
         path: 'skills/frontend-design',
         target: 'frontend-design',
-        license: 'Anthropic (ver LICENSE.txt del repo)',
+        license: 'Apache-2.0',
         recommended: true
       },
       {
@@ -201,7 +246,7 @@ export const KITS = [
         repo: 'anthropics/skills',
         path: 'skills/skill-creator',
         target: 'skill-creator',
-        license: 'Anthropic (ver LICENSE.txt del repo)',
+        license: 'Apache-2.0',
         recommended: false
       },
       {
@@ -212,7 +257,7 @@ export const KITS = [
         repo: 'anthropics/skills',
         path: 'skills/mcp-builder',
         target: 'mcp-builder',
-        license: 'Anthropic (ver LICENSE.txt del repo)',
+        license: 'Apache-2.0',
         recommended: false
       }
     ]

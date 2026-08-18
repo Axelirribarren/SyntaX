@@ -186,6 +186,178 @@ body {
   color: var(--accent-2);
 }
 
+/* ------------------------------------------------------- tu idea (dashboard) */
+
+.idea-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.idea-form label {
+  font-size: 0.9rem;
+  color: var(--text-dim);
+}
+
+.idea-form textarea {
+  width: 100%;
+  padding: 0.7rem 0.8rem;
+  border-radius: 10px;
+  border: 1px solid var(--surface-2);
+  background: var(--surface);
+  color: var(--text);
+  font: inherit;
+  font-size: 0.95rem;
+  resize: vertical;
+}
+
+.idea-form textarea:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+.idea-form button {
+  align-self: flex-start;
+  padding: 0.55rem 1.1rem;
+  border-radius: 8px;
+  border: none;
+  background: var(--accent);
+  color: #0f172a;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.idea-ejemplos {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+  font-size: 0.85rem;
+  color: var(--text-dim);
+  margin-bottom: 1rem;
+}
+
+.idea-ejemplos .chip {
+  text-align: left;
+  max-width: 100%;
+}
+
+.idea-lectura {
+  background: var(--surface);
+  border-left: 3px solid var(--accent);
+  border-radius: 0 8px 8px 0;
+  padding: 0.7rem 0.9rem;
+  margin-bottom: 1.2rem;
+}
+
+.idea-lectura p {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--text-dim);
+  line-height: 1.5;
+}
+
+.idea-lectura strong {
+  color: var(--text);
+}
+
+.idea-subtitulo {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-dim);
+  margin: 0 0 0.6rem;
+  display: flex;
+  align-items: baseline;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+
+.idea-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 0.8rem;
+  margin-bottom: 2rem;
+}
+
+.idea-card {
+  background: var(--surface);
+  border: 1px solid var(--surface-2);
+  border-top: 3px solid var(--surface-2);
+  border-radius: 10px;
+  padding: 0.85rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  cursor: pointer;
+}
+
+.idea-card.on {
+  border-top-color: var(--accent);
+}
+
+.idea-card-top {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.idea-card-top input {
+  accent-color: var(--accent);
+  flex-shrink: 0;
+}
+
+.idea-card-name {
+  font-weight: 600;
+  font-family: ui-monospace, 'Cascadia Code', Consolas, monospace;
+  font-size: 0.9rem;
+  flex: 1;
+  word-break: break-word;
+}
+
+.idea-bar {
+  height: 3px;
+  background: var(--surface-2);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.idea-bar span {
+  display: block;
+  height: 100%;
+  background: var(--accent);
+}
+
+.idea-card .kit-item-why {
+  margin: 0;
+  flex: 1;
+}
+
+.idea-card .card-meta a {
+  color: var(--text-dim);
+  text-decoration: none;
+}
+
+.idea-card .card-meta a:hover {
+  color: var(--accent);
+}
+
+.badge.type {
+  background: var(--bg);
+  color: var(--text-dim);
+  text-transform: uppercase;
+  font-size: 0.68rem;
+  letter-spacing: 0.04em;
+}
+
+.badge.match {
+  background: transparent;
+  border: 1px solid var(--accent);
+  color: var(--accent);
+  font-size: 0.7rem;
+}
+
 /* ------------------------------------------------------------------ kits */
 
 .kit-intro h2 {
