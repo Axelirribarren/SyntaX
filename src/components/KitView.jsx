@@ -7,7 +7,8 @@ import InstallerOutput from './InstallerOutput.jsx'
 const TYPE_LABEL = {
   skill: { label: 'Skill', hint: 'se copia a .claude/skills/' },
   mcp: { label: 'MCP server', hint: 'se agrega a .mcp.json' },
-  plugin: { label: 'Plugin', hint: 'slash command en Claude Code' }
+  plugin: { label: 'Plugin', hint: 'slash command en Claude Code' },
+  package: { label: 'Dependencia', hint: 'se agrega con el package manager del proyecto' }
 }
 
 // Un solo nivel de stagger: cada sección (grupo de skills/MCP/plugins, y el
@@ -48,7 +49,7 @@ export default function KitView() {
 
   const plan = useMemo(() => buildPlan(kit, selection), [kit, selection])
 
-  const grouped = ['skill', 'mcp', 'plugin']
+  const grouped = ['package', 'skill', 'mcp', 'plugin']
     .map((type) => ({ type, items: kit.items.filter((i) => i.type === type) }))
     .filter((g) => g.items.length > 0)
 

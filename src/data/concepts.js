@@ -46,6 +46,19 @@ export const VOCABULARY = {
     'animacion', 'animaciones', 'animada', 'animado', 'transicion',
     'transiciones', 'motion', 'hover', 'scroll'
   ],
+  tres_d: [
+    '3d', 'three', 'threejs', 'three.js', 'webgl', 'shader', 'shaders',
+    'escena', 'scene', 'modelo 3d', 'modelos 3d', 'inmersiva', 'inmersivo',
+    'react three fiber', 'r3f'
+  ],
+  gif_video: [
+    'gif', 'gifs', 'video', 'videos', 'loop', 'cinemagraph', 'animado',
+    'animada', 'preview animada', 'exportar gif'
+  ],
+  rendimiento: [
+    'rendimiento', 'performance', 'optimizar', 'optimizacion', 'fps',
+    'pesado', 'pesada', 'carga', 'memoria', 'bundle'
+  ],
   figma: ['figma', 'mockup', 'maqueta', 'prototipo', 'wireframe'],
   grafico: [
     'poster', 'banner', 'imagen', 'imagenes', 'ilustracion', 'arte',
@@ -73,6 +86,9 @@ export const CONCEPT_LABELS = {
   responsive: 'mobile / responsive',
   accesibilidad: 'accesibilidad',
   animacion: 'animaciones',
+  tres_d: '3D / WebGL',
+  gif_video: 'GIF y video',
+  rendimiento: 'rendimiento',
   figma: 'Figma',
   grafico: 'piezas gráficas',
   docs: 'documentación al día',
@@ -85,11 +101,14 @@ export const CONCEPT_LABELS = {
 // Los ids son los de src/data/kits.js.
 export const ITEM_CONCEPTS = {
   'ui-ux-pro-max': { diseno: 3, tema: 3, accesibilidad: 3, componentes: 2, landing: 2, animacion: 2, responsive: 1, stack: 1, grafico: 1 },
+  'react-three-stack': { tres_d: 3, animacion: 2, stack: 2, rendimiento: 1, landing: 1 },
+  'motion-package': { animacion: 3, landing: 1, stack: 2, diseno: 1 },
+  'gifenc-package': { gif_video: 3, animacion: 1, grafico: 1 },
   'ui-ux-pro-max-plugin': {}, // alternativa de instalación, no se recomienda por búsqueda
   'frontend-design': { diseno: 3, landing: 2, tema: 1, componentes: 1, stack: 1 },
   'theme-factory': { tema: 3, diseno: 2, landing: 1, accesibilidad: 1 },
-  'webapp-testing': { verificar: 3, responsive: 2, stack: 1, accesibilidad: 1 },
-  'chrome-devtools-mcp': { verificar: 3, responsive: 2, diseno: 1, animacion: 1, stack: 1 },
+  'webapp-testing': { verificar: 3, responsive: 2, stack: 1, accesibilidad: 1, tres_d: 1 },
+  'chrome-devtools-mcp': { verificar: 3, responsive: 2, rendimiento: 3, diseno: 1, animacion: 1, tres_d: 2, stack: 1 },
   'context7-mcp': { docs: 3, stack: 2, componentes: 1 },
   // Estos dos se pisan con ui-ux-pro-max, que cubre el mismo terreno con más
   // datos. Todo en peso 1 a propósito: siguen apareciendo como alternativa,

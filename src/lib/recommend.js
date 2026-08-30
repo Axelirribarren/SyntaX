@@ -6,8 +6,8 @@
 // Si algún día el catálogo crece a cientos de items, esto sigue sirviendo como
 // primer filtro.
 
-import { KITS } from '../data/kits'
-import { VOCABULARY, ITEM_CONCEPTS, FALLBACK_IDS } from '../data/concepts'
+import { KITS } from '../data/kits.js'
+import { VOCABULARY, ITEM_CONCEPTS, FALLBACK_IDS } from '../data/concepts.js'
 
 // Saca acentos y mayúsculas para que "diseño" y "diseno" sean lo mismo.
 const COMBINING_MARKS = /[̀-ͯ]/g

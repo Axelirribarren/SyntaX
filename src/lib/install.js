@@ -23,6 +23,7 @@ export function buildPlan(kit, selectedIds) {
   const skills = chosen.filter((i) => i.type === 'skill')
   const servers = chosen.filter((i) => i.type === 'mcp')
   const plugins = chosen.filter((i) => i.type === 'plugin')
+  const packages = chosen.filter((i) => i.type === 'package')
 
   // Un clone por repo, no uno por skill.
   const repos = [...new Set(skills.map((s) => s.repo))].map((repo) => ({
@@ -37,8 +38,35 @@ export function buildPlan(kit, selectedIds) {
     repos,
     servers,
     plugins,
+    packages,
+    npmPackages: [...new Set(packages.flatMap((item) => item.packages || []))],
+    frameworks: [...new Set(packages.flatMap((item) => item.frameworks || []))],
     secrets: servers.filter((s) => s.needsSecret).map((s) => s.needsSecret),
     isEmpty: chosen.length === 0
+  }
+}
+
+// Contrato portable entre la PWA y la CLI. Mantenerlo con datos simples:
+// el plan se puede revisar, versionar y aplicar desde cualquier carpeta.
+export function portablePlan(plan) {
+  return {
+    schemaVersion: 1,
+    generatedBy: 'SyntaX',
+    generatedAt: new Date().toISOString(),
+    name: plan.kitName,
+    requirements: { frameworks: plan.frameworks },
+    operations: {
+      packages: plan.npmPackages,
+      skills: plan.skills.map(({ name, repo, path, target, license }) => ({
+        name, repo, path, target, license
+      })),
+      mcpServers: Object.fromEntries(
+        plan.servers.map((item) => [item.server.key, serverConfig(item.server)])
+      ),
+      plugins: plan.plugins.map(({ name, marketplace, marketplaceName, plugin }) => ({
+        name, marketplace, marketplaceName, plugin
+      }))
+    }
   }
 }
 
@@ -153,6 +181,20 @@ export function generatePowerShell(plan) {
     )
   }
 
+  if (plan.npmPackages.length) {
+    const paquetes = plan.npmPackages.map(psCadena).join(', ')
+    L.push(
+      '',
+      '# ---------- Dependencias del proyecto ----------',
+      `$packages = @(${paquetes})`,
+      "if (Test-Path (Join-Path $root 'pnpm-lock.yaml')) { pnpm add @packages }",
+      "elseif (Test-Path (Join-Path $root 'yarn.lock')) { yarn add @packages }",
+      "elseif (Test-Path (Join-Path $root 'bun.lockb')) { bun add @packages }",
+      'else { npm install @packages }',
+      'Write-Host "  + dependencias del proyecto" -ForegroundColor Green'
+    )
+  }
+
   if (plan.repos.length) {
     L.push(
       '',
@@ -255,6 +297,21 @@ export function generateBash(plan) {
       'node "$MERGE_JS" "$ROOT/.mcp.json"',
       'rm -f "$MERGE_JS"',
       'echo "  .mcp.json escrito"'
+    )
+  }
+
+  if (plan.npmPackages.length) {
+    const paquetes = plan.npmPackages.map(shQuote).join(' ')
+    L.push(
+      '',
+      '# ---------- Dependencias del proyecto ----------',
+      `PACKAGES=(${paquetes})`,
+      'if [ -f "$ROOT/pnpm-lock.yaml" ]; then pnpm add "${PACKAGES[@]}"',
+      'elif [ -f "$ROOT/yarn.lock" ]; then yarn add "${PACKAGES[@]}"',
+      'elif [ -f "$ROOT/bun.lockb" ]; then bun add "${PACKAGES[@]}"',
+      'else npm install "${PACKAGES[@]}"',
+      'fi',
+      'echo "  + dependencias del proyecto"'
     )
   }
 

@@ -7,8 +7,94 @@
 //   skill  -> se copia una carpeta del repo a .claude/skills/<target>
 //   mcp    -> se agrega una entrada a .mcp.json de la raíz del proyecto
 //   plugin -> no es shell: son slash commands para pegar en Claude Code
+//   package -> se instala una dependencia npm en el proyecto elegido
 
 export const KITS = [
+  {
+    id: 'visual-3d',
+    name: 'Visual / 3D / Motion',
+    tagline: 'Experiencias inmersivas sin perder accesibilidad ni rendimiento',
+    description:
+      'Para landings con escenas 3D, scroll narrativo, microinteracciones y assets animados. ' +
+      'El núcleo está pensado para React; SyntaX marca las dependencias del stack y deja las herramientas opcionales sin seleccionar.',
+    items: [
+      {
+        id: 'react-three-stack',
+        type: 'package',
+        name: 'React Three Fiber + Drei',
+        why: 'Integra Three.js con componentes React y suma helpers para cámaras, controles, loaders, entornos y texto 3D.',
+        repo: 'pmndrs/react-three-fiber',
+        packages: ['three', '@react-three/fiber', '@react-three/drei'],
+        frameworks: ['react'],
+        license: 'MIT',
+        recommended: true
+      },
+      {
+        id: 'motion-package',
+        type: 'package',
+        name: 'Motion',
+        why: 'Microinteracciones, transiciones de layout y animaciones ligadas al scroll con una API natural para React.',
+        repo: 'motiondivision/motion',
+        packages: ['motion'],
+        frameworks: ['react'],
+        license: 'MIT',
+        recommended: true
+      },
+      {
+        id: 'frontend-design',
+        type: 'skill',
+        name: 'frontend-design',
+        why: 'Da dirección visual y jerarquía. Evita que el 3D sea un efecto aislado sin una interfaz coherente alrededor.',
+        repo: 'anthropics/skills',
+        path: 'skills/frontend-design',
+        target: 'frontend-design',
+        license: 'Apache-2.0',
+        recommended: true
+      },
+      {
+        id: 'webapp-testing',
+        type: 'skill',
+        name: 'webapp-testing',
+        why: 'Prueba la experiencia real, captura pantallas y detecta errores de interacción o layout.',
+        repo: 'anthropics/skills',
+        path: 'skills/webapp-testing',
+        target: 'webapp-testing',
+        license: 'Apache-2.0',
+        recommended: true
+      },
+      {
+        id: 'chrome-devtools-mcp',
+        type: 'mcp',
+        name: 'Chrome DevTools MCP',
+        why: 'Permite inspeccionar WebGL, consola, red, memoria y rendimiento en un navegador real.',
+        repo: 'ChromeDevTools/chrome-devtools-mcp',
+        license: 'Apache-2.0',
+        server: { key: 'chrome-devtools', command: 'npx', args: ['-y', 'chrome-devtools-mcp@latest'] },
+        recommended: true
+      },
+      {
+        id: 'canvas-design',
+        type: 'skill',
+        name: 'canvas-design',
+        why: 'Genera piezas gráficas y assets estáticos para acompañar la experiencia visual.',
+        repo: 'anthropics/skills',
+        path: 'skills/canvas-design',
+        target: 'canvas-design',
+        license: 'Apache-2.0',
+        recommended: false
+      },
+      {
+        id: 'gifenc-package',
+        type: 'package',
+        name: 'gifenc',
+        why: 'Codificador GIF pequeño y rápido para generar previews animadas desde JavaScript. Solo hace falta si el producto realmente exporta GIF.',
+        repo: 'mattdesl/gifenc',
+        packages: ['gifenc'],
+        license: 'MIT',
+        recommended: false
+      }
+    ]
+  },
   {
     id: 'web-design',
     name: 'Landing / UI linda',

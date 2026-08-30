@@ -1,11 +1,17 @@
 import { useState } from 'react'
 import { AnimatePresence, motion } from 'motion/react'
-import { generatePowerShell, generateBash, mcpPreview, pluginCommands } from '../lib/install'
+import { generatePowerShell, generateBash, mcpPreview, pluginCommands, portablePlan } from '../lib/install'
 
 const OUTPUTS = [
   { id: 'ps1', label: 'install.ps1', filename: 'install-kit.ps1', build: generatePowerShell },
   { id: 'sh', label: 'install.sh', filename: 'install-kit.sh', build: generateBash },
-  { id: 'mcp', label: '.mcp.json', filename: 'mcp.json', build: mcpPreview }
+  { id: 'mcp', label: '.mcp.json', filename: 'mcp.json', build: mcpPreview },
+  {
+    id: 'plan',
+    label: 'SyntaX plan',
+    filename: 'syntax-plan.json',
+    build: (plan) => JSON.stringify(portablePlan(plan), null, 2) + '\n'
+  }
 ]
 
 export default function InstallerOutput({ plan }) {
@@ -42,7 +48,7 @@ export default function InstallerOutput({ plan }) {
     <>
       <p className="kit-output-summary">
         {plan.skills.length} skill(s) · {plan.servers.length} MCP server(s) ·{' '}
-        {plan.plugins.length} plugin(s). Corrélo desde la raíz de tu proyecto.
+        {plan.packages.length} paquete(s) · {plan.plugins.length} plugin(s). Corrélo desde la raíz de tu proyecto.
       </p>
 
       <div className="chips">

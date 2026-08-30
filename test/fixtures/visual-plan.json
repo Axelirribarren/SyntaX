@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "generatedBy": "SyntaX",
+  "generatedAt": "2026-08-30T00:00:00.000Z",
+  "name": "Prueba visual / 3D",
+  "requirements": {
+    "frameworks": ["react"]
+  },
+  "operations": {
+    "packages": ["three", "@react-three/fiber"],
+    "skills": [],
+    "mcpServers": {
+      "chrome-devtools": {
+        "command": "npx",
+        "args": ["-y", "chrome-devtools-mcp@latest"]
+      }
+    },
+    "plugins": []
+  }
+}

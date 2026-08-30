@@ -9,10 +9,12 @@ const EJEMPLOS = [
   'Una landing linda para un restaurante, que se vea bien en el celular',
   'Mi app se ve genérica, quiero colores y tipografía con identidad propia',
   'Tengo el diseño en Figma y lo quiero pasar a React',
-  'Necesito revisar por qué se rompe el layout y sacar capturas'
+  'Necesito revisar por qué se rompe el layout y sacar capturas',
+  'Quiero una landing inmersiva con Three.js, scroll animado y buen rendimiento',
+  'Necesito crear previews GIF animadas para mostrar el producto'
 ]
 
-const TYPE_TAG = { skill: 'skill', mcp: 'MCP', plugin: 'plugin' }
+const TYPE_TAG = { skill: 'skill', mcp: 'MCP', plugin: 'plugin', package: 'paquete' }
 
 // Stagger de dos niveles: la sección (motion.section) dispara staggerChildren
 // sobre sus hijos directos (lectura, grillas, instalador), y cada grilla a su
