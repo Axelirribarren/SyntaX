@@ -8,14 +8,26 @@
 // LICENCIAS — leer antes de tocar la copia de skills.
 // SyntaX no redistribuye nada: el script clona desde el repo original y la copia
 // ocurre en la máquina del usuario. Pero ese usuario después suele commitear
-// .claude/skills/ en su propio repo, y ahí sí redistribuye. Las skills de
+// .agents/skills/ o .claude/skills/ en su propio repo, y ahí sí redistribuye. Las skills de
 // anthropics/skills son Apache 2.0, cuya sección 4(a) exige entregar una copia
 // de la licencia junto con el trabajo. Cada carpeta trae su LICENSE.txt, así que
 // la copia recursiva lo arrastra sola y el usuario queda cubierto.
 // Si alguna vez se cambia la copia por algo más selectivo (copiar solo SKILL.md,
 // filtrar archivos "innecesarios"), hay que seguir llevando LICENSE.txt sí o sí.
 
-const SKILLS_DIR = '.claude/skills'
+export const SKILL_TARGETS = {
+  codex: { label: 'Codex', directory: '.agents/skills' },
+  claude: { label: 'Claude Code', directory: '.claude/skills' }
+}
+
+export function skillTargetIds(plan) {
+  const values = plan.skillTargets || ['codex']
+  return [...new Set(values)].filter((target) => SKILL_TARGETS[target])
+}
+
+function skillDirectories(plan) {
+  return skillTargetIds(plan).map((target) => SKILL_TARGETS[target].directory)
+}
 
 export function buildPlan(kit, selectedIds) {
   const chosen = kit.items.filter((item) => selectedIds.has(item.id))
@@ -50,11 +62,12 @@ export function buildPlan(kit, selectedIds) {
 // el plan se puede revisar, versionar y aplicar desde cualquier carpeta.
 export function portablePlan(plan) {
   return {
-    schemaVersion: 1,
+    schemaVersion: 2,
     generatedBy: 'SyntaX',
     generatedAt: new Date().toISOString(),
     name: plan.kitName,
     requirements: { frameworks: plan.frameworks },
+    installation: { skillTargets: skillTargetIds(plan) },
     operations: {
       packages: plan.npmPackages,
       skills: plan.skills.map(({ name, repo, path, target, license }) => ({
@@ -110,17 +123,19 @@ export function pluginCommands(plan) {
 }
 
 function header(plan, comment) {
+  const directories = skillDirectories(plan).join(', ')
   return [
     `${comment} Instalador de kit generado por SyntaX — "${plan.kitName}"`,
     `${comment} Generado: ${new Date().toISOString()}`,
     `${comment}`,
     `${comment} Corré esto desde la RAÍZ de tu proyecto. Es aditivo e idempotente:`,
     `${comment} agrega servers a .mcp.json sin borrar los que ya tengas, y reemplaza`,
-    `${comment} solo las carpetas de skills que estén en este kit.`,
+    `${comment} solo las carpetas de skills que estén en este kit. Antes crea un`,
+    `${comment} backup con el sufijo .syntax-backup-<fecha>.`,
     `${comment} Leelo antes de ejecutarlo.`,
     `${comment}`,
     `${comment} Cada skill se copia con su LICENSE.txt: conservalo si después`,
-    `${comment} versionás .claude/skills/ en un repo público.`
+    `${comment} versionás ${directories || 'las skills'} en un repo público.`
   ]
 }
 
@@ -148,6 +163,7 @@ export function generatePowerShell(plan) {
     '',
     "$ErrorActionPreference = 'Stop'",
     '$root = (Get-Location).Path',
+    "$backupStamp = Get-Date -Format 'yyyyMMddTHHmmss'",
     'Write-Host ""',
     'Write-Host "Instalando kit en: $root" -ForegroundColor Cyan',
     'Write-Host ""'
@@ -159,8 +175,9 @@ export function generatePowerShell(plan) {
       '# ---------- MCP servers -> .mcp.json ----------',
       "$mcpPath = Join-Path $root '.mcp.json'",
       'if (Test-Path $mcpPath) {',
+      '  Copy-Item -Force $mcpPath "$mcpPath.syntax-backup-$backupStamp"',
       '  $mcp = Get-Content $mcpPath -Raw | ConvertFrom-Json',
-      '  Write-Host "  .mcp.json ya existe: se agregan servers, no se borra nada" -ForegroundColor DarkGray',
+      '  Write-Host "  backup de .mcp.json creado; se agregan servers" -ForegroundColor DarkGray',
       '} else {',
       '  $mcp = [pscustomobject]@{}',
       '}',
@@ -196,14 +213,13 @@ export function generatePowerShell(plan) {
   }
 
   if (plan.repos.length) {
+    const directories = skillDirectories(plan)
     L.push(
       '',
-      '# ---------- Skills -> .claude/skills/ ----------',
+      `# ---------- Skills -> ${directories.join(', ')} ----------`,
       'if (-not (Get-Command git -ErrorAction SilentlyContinue)) {',
       '  throw "Hace falta git para copiar las skills. Instalalo o copiá las carpetas a mano."',
       '}',
-      `$skillsRoot = Join-Path $root '${SKILLS_DIR.replace('/', '\\')}'`,
-      'New-Item -ItemType Directory -Force -Path $skillsRoot | Out-Null',
       "$tmp = Join-Path $env:TEMP ('syntax-kit-' + [guid]::NewGuid().ToString('N').Substring(0,8))",
       'New-Item -ItemType Directory -Force -Path $tmp | Out-Null',
       'try {'
@@ -218,12 +234,21 @@ export function generatePowerShell(plan) {
         const srcPath = s.path.replace(/\//g, '\\')
         // -Recurse copia la carpeta entera, LICENSE.txt incluido. No lo cambies
         // por una copia selectiva sin llevar la licencia: ver nota de arriba.
-        L.push(
-          `  $dest = Join-Path $skillsRoot '${s.target}'`,
-          '  if (Test-Path $dest) { Remove-Item -Recurse -Force $dest }',
-          `  Copy-Item -Recurse -Force (Join-Path $clone '${srcPath}') $dest`,
-          `  Write-Host "  + skill ${s.target}" -ForegroundColor Green`
-        )
+        for (const directory of directories) {
+          L.push(
+            `  $skillsRoot = Join-Path $root '${directory.replace('/', '\\')}'`,
+            '  New-Item -ItemType Directory -Force -Path $skillsRoot | Out-Null',
+            `  $dest = Join-Path $skillsRoot '${s.target}'`,
+            '  if (Test-Path $dest) {',
+            '    $backup = "$dest.syntax-backup-$backupStamp"',
+            '    Copy-Item -Recurse -Force $dest $backup',
+            '    try { Remove-Item -Recurse -Force $dest -ErrorAction Stop }',
+            '    catch { Write-Host "  Windows mantiene la skill abierta; se actualiza archivo por archivo" -ForegroundColor Yellow }',
+            '  }',
+            `  Copy-Item -Recurse -Force (Join-Path $clone '${srcPath}') $dest`,
+            `  Write-Host "  + skill ${s.target} -> ${directory}" -ForegroundColor Green`
+          )
+        }
       }
     }
     L.push(
@@ -253,7 +278,7 @@ export function generatePowerShell(plan) {
     }
   }
 
-  L.push('Write-Host "Reiniciá Claude Code para que tome los cambios." -ForegroundColor DarkGray')
+  L.push(`Write-Host "Reiniciá ${skillTargetIds(plan).map((id) => SKILL_TARGETS[id].label).join(' o ')} para que tome los cambios." -ForegroundColor DarkGray`)
   return L.join('\n') + '\n'
 }
 
@@ -269,6 +294,7 @@ export function generateBash(plan) {
     '',
     'set -euo pipefail',
     'ROOT="$(pwd)"',
+    'BACKUP_STAMP="$(date -u +%Y%m%dT%H%M%SZ)"',
     'echo',
     'echo "Instalando kit en: $ROOT"',
     'echo'
@@ -289,12 +315,13 @@ export function generateBash(plan) {
       'const target = process.argv[2];',
       `const additions = ${JSON.stringify(additions, null, 2)};`,
       'let current = {};',
+      "if (fs.existsSync(target)) fs.copyFileSync(target, target + '.syntax-backup-' + process.env.SYNTAX_BACKUP_STAMP);",
       "try { current = JSON.parse(fs.readFileSync(target, 'utf8')); } catch (e) {}",
       'current.mcpServers = Object.assign({}, current.mcpServers, additions);',
       "fs.writeFileSync(target, JSON.stringify(current, null, 2) + '\\n');",
       "for (const k of Object.keys(additions)) console.log('  + MCP ' + k);",
       'ENDOFMERGE',
-      'node "$MERGE_JS" "$ROOT/.mcp.json"',
+      'SYNTAX_BACKUP_STAMP="$BACKUP_STAMP" node "$MERGE_JS" "$ROOT/.mcp.json"',
       'rm -f "$MERGE_JS"',
       'echo "  .mcp.json escrito"'
     )
@@ -316,12 +343,11 @@ export function generateBash(plan) {
   }
 
   if (plan.repos.length) {
+    const directories = skillDirectories(plan)
     L.push(
       '',
-      '# ---------- Skills -> .claude/skills/ ----------',
+      `# ---------- Skills -> ${directories.join(', ')} ----------`,
       'command -v git >/dev/null || { echo "Hace falta git para copiar las skills."; exit 1; }',
-      `SKILLS_ROOT="$ROOT/${SKILLS_DIR}"`,
-      'mkdir -p "$SKILLS_ROOT"',
       'TMP="$(mktemp -d)"',
       'trap \'rm -rf "$TMP"\' EXIT'
     )
@@ -333,11 +359,15 @@ export function generateBash(plan) {
       for (const s of skills) {
         // cp -R arrastra el LICENSE.txt de cada skill. Ver la nota de licencias
         // arriba antes de reemplazarlo por una copia selectiva.
-        L.push(
-          `rm -rf "$SKILLS_ROOT/${s.target}"`,
-          `cp -R "$TMP/${dirName}/${s.path}" "$SKILLS_ROOT/${s.target}"`,
-          `echo "  + skill ${s.target}"`
-        )
+        for (const directory of directories) {
+          L.push(
+            `SKILLS_ROOT="$ROOT/${directory}"`,
+            'mkdir -p "$SKILLS_ROOT"',
+            `if [ -e "$SKILLS_ROOT/${s.target}" ]; then mv "$SKILLS_ROOT/${s.target}" "$SKILLS_ROOT/${s.target}.syntax-backup-$BACKUP_STAMP"; fi`,
+            `cp -R "$TMP/${dirName}/${s.path}" "$SKILLS_ROOT/${s.target}"`,
+            `echo "  + skill ${s.target} -> ${directory}"`
+          )
+        }
       }
     }
   }
@@ -355,6 +385,6 @@ export function generateBash(plan) {
     for (const cmd of pluginCommands(plan)) L.push(`echo ${shQuote('  ' + cmd)}`)
   }
 
-  L.push('echo "Reiniciá Claude Code para que tome los cambios."')
+  L.push(`echo "Reiniciá ${skillTargetIds(plan).map((id) => SKILL_TARGETS[id].label).join(' o ')} para que tome los cambios."`)
   return L.join('\n') + '\n'
 }

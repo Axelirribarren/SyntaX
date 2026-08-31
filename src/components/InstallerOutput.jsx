@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { AnimatePresence, motion } from 'motion/react'
-import { generatePowerShell, generateBash, mcpPreview, pluginCommands, portablePlan } from '../lib/install'
+import { generatePowerShell, generateBash, mcpPreview, pluginCommands, portablePlan, SKILL_TARGETS } from '../lib/install'
 
 const OUTPUTS = [
   { id: 'ps1', label: 'install.ps1', filename: 'install-kit.ps1', build: generatePowerShell },
@@ -17,9 +17,13 @@ const OUTPUTS = [
 export default function InstallerOutput({ plan }) {
   const [output, setOutput] = useState('ps1')
   const [copied, setCopied] = useState(false)
+  const [targetMode, setTargetMode] = useState('codex')
+
+  const skillTargets = targetMode === 'both' ? ['codex', 'claude'] : [targetMode]
+  const effectivePlan = { ...plan, skillTargets }
 
   const active = OUTPUTS.find((o) => o.id === output)
-  const script = plan.isEmpty ? '' : active.build(plan)
+  const script = plan.isEmpty ? '' : active.build(effectivePlan)
 
   async function copy() {
     await navigator.clipboard.writeText(script)
@@ -50,6 +54,30 @@ export default function InstallerOutput({ plan }) {
         {plan.skills.length} skill(s) · {plan.servers.length} MCP server(s) ·{' '}
         {plan.packages.length} paquete(s) · {plan.plugins.length} plugin(s). Corrélo desde la raíz de tu proyecto.
       </p>
+
+      {plan.skills.length > 0 && (
+        <div className="target-picker">
+          <div>
+            <strong>¿Dónde querés instalar las skills?</strong>
+            <span>Codex usa `.agents/skills`; Claude Code usa `.claude/skills`.</span>
+          </div>
+          <div className="chips">
+            {[
+              { id: 'codex', label: SKILL_TARGETS.codex.label },
+              { id: 'claude', label: SKILL_TARGETS.claude.label },
+              { id: 'both', label: 'Ambos' }
+            ].map((target) => (
+              <button
+                key={target.id}
+                className={`chip ${targetMode === target.id ? 'active' : ''}`}
+                onClick={() => setTargetMode(target.id)}
+              >
+                {target.label}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
 
       <div className="chips">
         {OUTPUTS.map((o) => (

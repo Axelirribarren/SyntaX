@@ -11,9 +11,9 @@ export default defineConfig({
       manifest: {
         name: 'SyntaX Skills Finder',
         short_name: 'SyntaX',
-        description: 'Buscador de skills, MCP servers y extensiones gratuitas y open-source',
-        theme_color: '#0f172a',
-        background_color: '#0f172a',
+        description: 'Convertí una idea en skills, MCP servers y dependencias listas para aplicar.',
+        theme_color: '#07080d',
+        background_color: '#07080d',
         display: 'standalone',
         start_url: '/',
         icons: [

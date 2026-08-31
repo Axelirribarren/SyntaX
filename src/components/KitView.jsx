@@ -55,6 +55,11 @@ export default function KitView() {
 
   return (
     <div className="kits">
+      <header className="tool-heading">
+        <p>CAPABILITY KITS</p>
+        <h2>Mejorá una experiencia desde una base confiable.</h2>
+        <span>Elegí un punto de partida, revisá cada capacidad y exportá sólo lo que necesitás.</span>
+      </header>
       <div className="chips">
         {KITS.map((k) => (
           <button

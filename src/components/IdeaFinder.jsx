@@ -1,5 +1,5 @@
-import { useMemo, useState } from 'react'
-import { motion } from 'motion/react'
+import { useMemo, useRef, useState } from 'react'
+import { motion, useReducedMotion, useScroll, useTransform } from 'motion/react'
 import { recommend } from '../lib/recommend'
 import { buildPlan } from '../lib/install'
 import { CONCEPT_LABELS } from '../data/concepts'
@@ -12,6 +12,33 @@ const EJEMPLOS = [
   'Necesito revisar por qué se rompe el layout y sacar capturas',
   'Quiero una landing inmersiva con Three.js, scroll animado y buen rendimiento',
   'Necesito crear previews GIF animadas para mostrar el producto'
+]
+
+const SHOWCASES = [
+  {
+    kicker: 'Visual / 3D',
+    title: 'Una landing que se siente viva',
+    copy: 'Escenas WebGL, scroll narrativo y movimiento con intención.',
+    prompt: 'Quiero una landing inmersiva con Three.js, scroll animado y buen rendimiento',
+    tone: 'violet',
+    symbol: '◇'
+  },
+  {
+    kicker: 'Producto / UI',
+    title: 'Un sistema visual coherente',
+    copy: 'Dirección de arte, glassmorphism, responsive y accesibilidad.',
+    prompt: 'Quiero rediseñar mi producto con glassmorphism, buena tipografía, responsive y accesibilidad',
+    tone: 'cyan',
+    symbol: '⌁'
+  },
+  {
+    kicker: 'Calidad / Runtime',
+    title: 'Una experiencia que también funciona',
+    copy: 'Rendimiento, accesibilidad y pruebas reales antes de entregar.',
+    prompt: 'Quiero mejorar el rendimiento, la accesibilidad y probar la experiencia en un navegador real',
+    tone: 'lime',
+    symbol: '✓'
+  }
 ]
 
 const TYPE_TAG = { skill: 'skill', mcp: 'MCP', plugin: 'plugin', package: 'paquete' }
@@ -86,10 +113,21 @@ function Tarjeta({ resultado, elegido, onToggle }) {
   )
 }
 
-export default function IdeaFinder() {
+export default function IdeaFinder({ onNavigate }) {
+  const heroRef = useRef(null)
+  const reducedMotion = useReducedMotion()
   const [idea, setIdea] = useState('')
   const [consulta, setConsulta] = useState('')
   const [seleccion, setSeleccion] = useState(new Set())
+
+  const { scrollYProgress: heroProgress } = useScroll({
+    target: heroRef,
+    offset: ['start start', 'end start']
+  })
+  const heroVideoOpacity = useTransform(heroProgress, [0, 0.56, 0.9], [1, 1, 0.18])
+  const heroVideoScale = useTransform(heroProgress, [0, 1], [1, 1.045])
+  const heroCopyOpacity = useTransform(heroProgress, [0, 0.48, 0.78], [1, 1, 0])
+  const heroCopyY = useTransform(heroProgress, [0, 0.8], [0, -18])
 
   const analisis = useMemo(() => (consulta ? recommend(consulta) : null), [consulta])
 
@@ -132,38 +170,121 @@ export default function IdeaFinder() {
 
   return (
     <div className="idea">
-      <form
-        className="idea-form"
-        onSubmit={(e) => {
-          e.preventDefault()
-          buscar(idea)
-        }}
-      >
-        <label htmlFor="idea-input">¿Qué querés construir?</label>
-        <textarea
-          id="idea-input"
-          rows={3}
-          value={idea}
-          placeholder="Ej: quiero una landing linda para un restaurante, con buena tipografía y que se vea bien en el celular"
-          onChange={(e) => setIdea(e.target.value)}
-          onKeyDown={(e) => {
-            if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) buscar(idea)
+      <section className="idea-hero" ref={heroRef}>
+        <motion.video
+          className="idea-hero-video"
+          autoPlay
+          loop
+          muted
+          playsInline
+          preload="auto"
+          aria-hidden="true"
+          tabIndex={-1}
+          style={{
+            opacity: reducedMotion ? 1 : heroVideoOpacity,
+            scale: reducedMotion ? 1 : heroVideoScale
           }}
-        />
-        <motion.button type="submit" whileTap={{ scale: 0.97 }}>
-          Recomendame skills
-        </motion.button>
-      </form>
+        >
+          <source src="/Minimal_monochrome_animation.mp4" type="video/mp4" />
+        </motion.video>
 
-      {!analisis && (
-        <div className="idea-ejemplos">
-          <span>O probá con:</span>
-          {EJEMPLOS.map((ej) => (
-            <button key={ej} className="chip" onClick={() => buscar(ej)}>
-              {ej}
-            </button>
+        <header className="idea-hero-nav">
+          <button className="hero-brand" type="button" onClick={() => onNavigate?.('idea')} aria-label="Ir al inicio de SyntaX">
+            <span>S<b>×</b></span>
+            <strong>SyntaX</strong>
+          </button>
+          <nav aria-label="Navegación principal">
+            <button className="active" type="button">Ideas</button>
+            <button type="button" onClick={() => onNavigate?.('kits')}>Kits</button>
+            <button type="button" onClick={() => onNavigate?.('search')}>Buscar</button>
+          </nav>
+          <div className="hero-nav-actions">
+            <button className="hero-extra-link" type="button" onClick={() => onNavigate?.('profile')}><small>EXTRA</small> GitHub Profile</button>
+            <button className="hero-nav-cta" type="button" onClick={() => onNavigate?.('kits')}>Explorar kits <span>↗</span></button>
+          </div>
+        </header>
+
+        <motion.div
+          className="idea-hero-copy"
+          style={{ opacity: reducedMotion ? 1 : heroCopyOpacity, y: reducedMotion ? 0 : heroCopyY }}
+        >
+          <p className="hero-kicker">CAPABILITY STUDIO</p>
+          <h2>Imaginá el resultado.<br /><em>SyntaX arma el camino.</em></h2>
+          <p className="hero-lede">Describí una experiencia, una herramienta o una identidad. Convertimos la intención en skills, MCPs y dependencias listas para revisar.</p>
+        </motion.div>
+
+        <div className="hero-scroll-cue" aria-hidden="true"><span /> Deslizá para construir</div>
+      </section>
+
+      <section className="intent-bridge">
+        <div className="intent-bridge-heading">
+          <p>INTENT / INPUT</p>
+          <h3>Convertí la visión en un plan ejecutable.</h3>
+          <span>Escribí el resultado. SyntaX encuentra las capacidades.</span>
+        </div>
+        <form
+          className="idea-form idea-composer"
+          onSubmit={(e) => {
+            e.preventDefault()
+            buscar(idea)
+          }}
+        >
+          <label htmlFor="idea-input">¿Qué querés hacer realidad?</label>
+          <textarea
+            id="idea-input"
+            rows={3}
+            value={idea}
+            placeholder="Una experiencia 3D elegante, un perfil GitHub inolvidable, una UI con personalidad…"
+            onChange={(e) => setIdea(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) buscar(idea)
+            }}
+          />
+          <div className="composer-footer">
+            <span>⌘/Ctrl + Enter</span>
+            <motion.button type="submit" whileTap={{ scale: 0.97 }}>
+              Explorar posibilidades <b>↗</b>
+            </motion.button>
+          </div>
+        </form>
+
+        <div className="hero-trust">
+          <span><b /> Todo local</span>
+          <span><b /> Preview reversible</span>
+          <span><b /> Consciente de tu stack</span>
+        </div>
+
+        <div className="hero-prompts" aria-label="Ideas para probar">
+          <span>Ideas para empezar</span>
+          {EJEMPLOS.slice(0, 3).map((ej) => (
+            <button key={ej} type="button" onClick={() => buscar(ej)}>{ej}<b>↗</b></button>
           ))}
         </div>
+      </section>
+
+      {!analisis && (
+        <>
+          <section className="showcase-section">
+            <div className="section-heading"><p className="hero-kicker">CAPABILITY LAYERS</p><h3>No hace falta saber qué herramienta pedir.</h3><span>Elegí una dirección. SyntaX traduce la idea al stack.</span></div>
+            <div className="showcase-grid">
+              {SHOWCASES.map((item) => (
+                <motion.button
+                  className={`showcase-card ${item.tone}`}
+                  key={item.title}
+                  onClick={() => buscar(item.prompt)}
+                  whileHover={{ y: -5 }}
+                  whileTap={{ scale: 0.985 }}
+                >
+                  <span className="showcase-symbol" aria-hidden="true">{item.symbol}</span>
+                  <span className="showcase-kicker">{item.kicker}</span>
+                  <strong>{item.title}</strong>
+                  <p>{item.copy}</p>
+                  <span className="showcase-link">Abrir dirección <b>↗</b></span>
+                </motion.button>
+              ))}
+            </div>
+          </section>
+        </>
       )}
 
       {analisis && (

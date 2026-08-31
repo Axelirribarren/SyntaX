@@ -6,3 +6,9 @@ dist-ssr
 
 # Salida generada por scripts/discover.mjs
 scripts/candidatos.json
+
+# Backups que deja la CLI. doctor los reporta como huerfanos.
+*.syntax-backup-*
+
+# Estado local de SyntaX (lock aplicado, ultimo reporte)
+.syntax/

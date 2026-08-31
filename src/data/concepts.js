@@ -52,8 +52,8 @@ export const VOCABULARY = {
     'react three fiber', 'r3f'
   ],
   gif_video: [
-    'gif', 'gifs', 'video', 'videos', 'loop', 'cinemagraph', 'animado',
-    'animada', 'preview animada', 'exportar gif'
+    'gif', 'gifs', 'video', 'videos', 'loop', 'cinemagraph', 'preview animada',
+    'exportar gif'
   ],
   rendimiento: [
     'rendimiento', 'performance', 'optimizar', 'optimizacion', 'fps',

@@ -1,0 +1,136 @@
+import test from 'node:test'
+import assert from 'node:assert/strict'
+import { mkdtempSync, mkdirSync, readdirSync, writeFileSync } from 'node:fs'
+import { tmpdir } from 'node:os'
+import { join } from 'node:path'
+
+import { runDoctor } from '../src/doctor/index.js'
+import { renderReport } from '../src/doctor/report.js'
+
+// Un proyecto de prueba con los problemas que doctor tiene que encontrar:
+// drift entre runtimes, dos providers de navegador, un backup huérfano, una
+// carpeta de skill sin SKILL.md y un server sin credencial.
+function fixture() {
+  const root = mkdtempSync(join(tmpdir(), 'syntax-doctor-'))
+
+  writeSkill(join(root, '.claude/skills/frontend-design'), 'Dirección visual y jerarquía.')
+  writeSkill(join(root, '.claude/skills/webapp-testing'), 'Prueba la experiencia real.')
+  writeSkill(join(root, '.claude/skills/ui-ux-pro-max'), 'Base de datos de diseño.')
+  writeSkill(join(root, '.agents/skills/frontend-design'), 'Dirección visual y jerarquía.')
+
+  mkdirSync(join(root, '.claude/skills/rota'), { recursive: true })
+  mkdirSync(join(root, '.claude/skills/vieja.syntax-backup-2026-01-01'), { recursive: true })
+
+  writeFileSync(
+    join(root, '.mcp.json'),
+    JSON.stringify({
+      mcpServers: {
+        'chrome-devtools': { command: 'npx', args: ['-y', 'chrome-devtools-mcp@latest'] },
+        playwright: { command: 'npx', args: ['-y', '@playwright/mcp@latest'] },
+        figma: { command: 'npx', args: ['-y', 'figma-mcp'], env: { FIGMA_API_KEY: '' } }
+      }
+    })
+  )
+
+  writeFileSync(join(root, 'CLAUDE.md'), '# Reglas\n\nGit es del usuario.\n')
+  writeFileSync(join(root, 'AGENTS.md'), '# Reglas\n\nGit es del usuario.\n')
+
+  return root
+}
+
+function writeSkill(dir, description) {
+  mkdirSync(dir, { recursive: true })
+  writeFileSync(join(dir, 'SKILL.md'), `---\nname: ${dir.split(/[\\/]/).pop()}\ndescription: ${description}\n---\n\nCuerpo.\n`)
+}
+
+function findingsOf(report, checkId) {
+  return report.checks.find((check) => check.id === checkId)?.findings || []
+}
+
+test('detecta las skills que están en un runtime y no en el otro', () => {
+  const report = runDoctor(fixture())
+  const findings = findingsOf(report, 'drift')
+  const skills = findings.find((finding) => finding.message.includes('skills'))
+
+  assert.ok(skills, 'esperaba un hallazgo de drift de skills')
+  assert.deepEqual(skills.items, ['ui-ux-pro-max', 'webapp-testing'])
+})
+
+test('no reporta como drift lo que el runtime no sabe expresar', () => {
+  // Codex no declara soporte de hooks ni permisos: su ausencia es una
+  // limitación declarada, no un drift. Confundir las dos cosas llenaría el
+  // reporte de ruido inaccionable.
+  const report = runDoctor(fixture())
+  const mensajes = findingsOf(report, 'drift').map((finding) => finding.message)
+
+  assert.ok(!mensajes.some((mensaje) => mensaje.includes('hook')))
+  assert.ok(!mensajes.some((mensaje) => mensaje.includes('permiso')))
+})
+
+test('detecta dos providers de la misma capability', () => {
+  const report = runDoctor(fixture())
+  const findings = findingsOf(report, 'providers')
+  const navegador = findings.find((finding) => finding.message.includes('navegador'))
+
+  assert.ok(navegador)
+  assert.equal(navegador.severity, 'alta')
+  assert.equal(navegador.items.length, 2)
+})
+
+test('marca la confianza cuando el solapamiento es parcial', () => {
+  const report = runDoctor(fixture())
+  const diseño = findingsOf(report, 'providers').find((finding) =>
+    finding.message.includes('Criterio visual')
+  )
+
+  assert.ok(diseño)
+  assert.equal(diseño.confidence, 'media')
+  assert.equal(diseño.severity, 'media')
+})
+
+test('encuentra backups huérfanos, carpetas rotas y credenciales faltantes', () => {
+  const report = runDoctor(fixture())
+  const findings = findingsOf(report, 'orphans')
+
+  assert.ok(findings.find((finding) => finding.message.includes('backups huérfanos')))
+  assert.ok(findings.find((finding) => finding.message.includes('sin SKILL.md')))
+
+  const credenciales = findings.find((finding) => finding.message.includes('sin credenciales'))
+  assert.ok(credenciales)
+  assert.ok(credenciales.items[0].includes('FIGMA_API_KEY'))
+})
+
+test('el costo declara explícitamente lo que no midió', () => {
+  const report = runDoctor(fixture())
+
+  assert.ok(report.cost.total > 0)
+  assert.equal(report.cost.unmeasured.length, 1)
+  assert.match(report.cost.unmeasured[0].reason, /doctor --deep/)
+})
+
+test('el reporte de pérdida sale del supports declarado, no de código por par', () => {
+  const report = runDoctor(fixture())
+  const codex = report.loss.find((entry) => entry.target === 'codex')
+
+  assert.ok(codex)
+  assert.ok(codex.caveats.some((caveat) => caveat.scope === 'user'))
+})
+
+test('doctor no escribe nada', () => {
+  const root = fixture()
+  const antes = snapshotTree(root)
+  runDoctor(root)
+  assert.deepEqual(snapshotTree(root), antes)
+})
+
+test('un proyecto sin ningún runtime no rompe el reporte', () => {
+  const root = mkdtempSync(join(tmpdir(), 'syntax-vacio-'))
+  const report = runDoctor(root)
+
+  assert.equal(report.environment.length, 0)
+  assert.match(renderReport(report), /No se detectó ningún runtime/)
+})
+
+function snapshotTree(root) {
+  return readdirSync(root, { recursive: true }).map(String).sort()
+}

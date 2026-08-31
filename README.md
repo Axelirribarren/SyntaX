@@ -2,6 +2,8 @@
 
 SyntaX convierte una idea en un plan de capacidades instalable: skills, MCP servers, plugins y dependencias del proyecto. La interfaz es una PWA en React 18 + Vite 5 y la aplicación local del plan se hace con una CLI auditable.
 
+La portada funciona como un capability studio: muestra direcciones concretas para experiencias 3D, sistemas visuales y perfiles de GitHub, y convierte una descripción libre en un plan revisable. La escena inicial usa React Three Fiber, Drei y Three.js; Motion orquesta las transiciones y respeta `prefers-reduced-motion`.
+
 ## Desarrollo
 
 ```bash
@@ -15,7 +17,7 @@ npm run build
 
 1. Describí lo que querés construir o elegí un kit.
 2. Revisá y ajustá las recomendaciones.
-3. En el instalador, descargá `SyntaX plan` como `syntax-plan.json`.
+3. Elegí si las skills deben instalarse para Codex, Claude Code o ambos, y descargá `SyntaX plan` como `syntax-plan.json`.
 4. Inspeccioná el efecto sobre un proyecto sin modificarlo:
 
 ```bash
@@ -28,7 +30,7 @@ npm run syntax -- preview ./syntax-plan.json /ruta/al/proyecto
 npm run syntax -- apply ./syntax-plan.json /ruta/al/proyecto
 ```
 
-La CLI detecta React y el package manager, detiene planes incompatibles, combina `.mcp.json`, instala dependencias y copia skills desde sus repositorios verificados. Antes de reemplazar un `.mcp.json` o una skill existente crea una copia con el sufijo `.syntax-backup-<fecha>`. Los plugins quedan como comandos pendientes porque deben instalarse desde Claude Code.
+La CLI detecta React y el package manager, detiene planes incompatibles, combina `.mcp.json`, instala dependencias y copia skills desde sus repositorios verificados. Los planes nuevos usan `.agents/skills` para Codex y `.claude/skills` para Claude Code; también pueden escribir en ambos destinos. Los planes v1 existentes conservan su comportamiento de Claude Code. Antes de reemplazar un `.mcp.json` o una skill existente crea una copia con el sufijo `.syntax-backup-<fecha>`; los instaladores PowerShell y Bash descargables aplican la misma regla. Los plugins específicos de Claude Code quedan como comandos pendientes.
 
 ## Primer dominio: visual / 3D
 
