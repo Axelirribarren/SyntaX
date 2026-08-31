@@ -25,6 +25,23 @@ export default {
 
         for (const kind of kinds) {
           const mine = active(a.objects[kind])
+
+          // Las reglas se identifican por nombre de archivo, y ese nombre es
+          // propio de cada runtime: CLAUDE.md y AGENTS.md son la misma regla
+          // vestida distinto. Compararlas por id reporta un drift que no
+          // existe. Lo que sí importa es la ausencia: un runtime sin archivo de
+          // reglas arranca sin ningún contexto del proyecto.
+          if (kind === 'rule') {
+            if (mine.length && !active(b.objects[kind]).length) {
+              findings.push({
+                severity: 'alta',
+                message: `${b.label} no tiene archivo de reglas`,
+                detail: `${a.label} sí lo tiene: quien use ${b.label} arranca sin el contexto del proyecto.`
+              })
+            }
+            continue
+          }
+
           const theirs = new Set(active(b.objects[kind]).map((object) => object.id))
           const missing = mine.filter((object) => !theirs.has(object.id))
           if (!missing.length) continue

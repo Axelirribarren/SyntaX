@@ -1,48 +1,134 @@
+<p align="center"><img src="docs/assets/syntax.png" alt="SyntaX" width="640"></p>
+
 # SyntaX
 
-SyntaX convierte una idea en un plan de capacidades instalable: skills, MCP servers, plugins y dependencias del proyecto. La interfaz es una PWA en React 18 + Vite 5 y la aplicación local del plan se hace con una CLI auditable.
+**El compilador de entornos de agente: un manifest, todos los runtimes, con costo y pérdida
+medidos antes de aplicar.**
 
-La portada funciona como un capability studio: muestra direcciones concretas para experiencias 3D, sistemas visuales y perfiles de GitHub, y convierte una descripción libre en un plan revisable. La escena inicial usa React Three Fiber, Drei y Three.js; Motion orquesta las transiciones y respeta `prefers-reduced-motion`.
+Un entorno de agente —skills, MCP servers, reglas, agentes, hooks, permisos— se declara una vez y
+se compila a cada runtime. Antes de escribir nada, SyntaX responde tres preguntas que hoy no
+responde ninguna herramienta:
+
+- **¿Cuánto me cuesta este entorno?** Cada MCP inyecta los schemas de sus tools en cada arranque.
+  Nadie muestra ese número, y es la causa directa de que sumar herramientas empeore al agente.
+- **¿Qué se pierde si lo llevo a otro runtime?** Los runtimes no son equivalentes. Lo que un
+  target no sabe expresar se reporta, no se disimula.
+- **¿El entorno que corro es el que acordamos?** Sin pins ni verificación, dos personas del mismo
+  equipo con el mismo repo corren cosas distintas y nadie se entera.
+
+Sin dependencias de runtime. Es Node puro.
+
+## Empezar
+
+No hace falta adoptar nada. `doctor` es solo lectura y corre sobre cualquier proyecto que ya tenga
+su `.claude/`, su `.mcp.json` o su `AGENTS.md` armados a mano:
+
+```bash
+node src/cli.js doctor /ruta/a/tu/proyecto
+```
+
+Salida real de este mismo repo:
+
+```
+  Claude Code    9 skills · 3 MCP servers · 1 archivo de reglas
+  Codex          3 skills · 1 archivo de reglas
+                 · MCP de Codex no auditado: vive en la config de usuario, fuera del repo.
+
+  Costo de arranque       ≈3.482 tokens
+    reglas                      ≈2.711   CLAUDE.md, AGENTS.md
+    descripciones de skills       ≈771   12 skills en total
+    NO MEDIDO                schemas de 3 MCP servers — requiere doctor --deep
+
+  Drift entre runtimes
+    x 6 skills de Claude Code que no están en Codex
+    x 3 MCP servers de Claude Code que no están en Codex
+
+  Providers duplicados
+    x Control e inspección de navegador: 2 providers instalados
+    ! Criterio visual y dirección de diseño: 2 providers (confianza media)
+
+  Pérdida al compilar
+    Codex: La config de MCP de Codex es de usuario, no de proyecto: no viaja con el repo.
+```
+
+Ese último renglón es el tipo de hallazgo que justifica la herramienta: un equipo que comparte
+`AGENTS.md` cree que comparte entorno, y no comparte los MCP.
+
+`--json` devuelve el reporte completo para consumo programático.
+
+## Estado
+
+| Comando | Qué hace | |
+|---|---|---|
+| `doctor` | Audita el entorno. Solo lectura. | ✅ |
+| `doctor --deep` | Levanta cada MCP y mide sus schemas de verdad | ⬜ |
+| `import` | Genera `syntax.yaml` desde lo que ya hay en disco | ⬜ |
+| `build --target <rt>` | Compila el manifest a un runtime, con reporte de pérdida | ⬜ |
+| `lock` | Fija SHAs y versiones en `syntax.lock` | ⬜ |
+| `verify --strict` | Falla si el entorno derivó del manifest. Para CI. | ⬜ |
+| `rollback` | Revierte la última aplicación | ⬜ |
+
+Runtimes con adapter: **Claude Code** y **Codex**, ambos en modo lectura. Los demás se detectan y
+se reportan como presentes sin soporte.
+
+`syntax.yaml` está escrito a mano y todavía no lo consume nadie: es el artefacto norte y el caso
+real contra el que se valida el schema. Sus `pin` están vacíos porque `lock` no existe, así que
+**nuestro propio manifest no es reproducible** y `validateManifest` lo dice. Preferimos que se vea
+antes que disimularlo.
+
+## Cómo funciona
+
+El manifest es **capability-first**. `capabilities` declara qué se necesita (control de
+navegador); `components` declara cómo se cumple (`chrome-devtools-mcp`, con fallback a
+`playwright-mcp`). Un target elige el provider que soporta en vez de fallar: la no-equivalencia
+entre runtimes es el mecanismo del diseño, no un caso de error.
+
+Cada adapter declara como **datos** qué objetos sabe expresar:
+
+```js
+supports: {
+  skill:      { dir: '.claude/skills' },
+  mcp:        { file: '.mcp.json', key: 'mcpServers' },
+  rule:       { file: 'CLAUDE.md', mode: 'merge-markdown' },
+  hook:       { file: '.claude/settings.json', key: 'hooks' },
+  permission: { file: '.claude/settings.json', key: 'permissions' }
+}
+```
+
+De ahí sale el reporte de pérdida solo, sin una línea de código por par de runtimes — que es lo
+que hace que migrar entre N runtimes no cueste N².
+
+Los ocho objetos universales: `Skill` · `MCP` · `Agent` · `Rule` · `Command` · `Hook` ·
+`Permission` · `Env/Secret`. Los cuatro últimos son los que rompen la portabilidad, y por eso
+están.
+
+## Sumar un runtime
+
+Es la extensión más frecuente y es barata a propósito. Un archivo en `src/targets/` que exporte
+`id`, `label`, `detect(root)`, `supports` y `read(root)`, más una línea en `src/targets/index.js`.
+Nada más: el reporte de pérdida y el check de drift se derivan del `supports` declarado.
+
+Detalle completo en [`docs/agent-brief.md`](docs/agent-brief.md).
 
 ## Desarrollo
 
 ```bash
-npm install
-npm run dev
-npm test
-npm run build
+npm test          # node --test, sin dependencias
+npm run doctor    # auditar este mismo repo (el dogfood)
+npm run docs      # regenerar CLAUDE.md y AGENTS.md desde el brief
 ```
 
-## Flujo de integración
+La documentación de agentes tiene **una sola fuente**: [`docs/agent-brief.md`](docs/agent-brief.md).
+`CLAUDE.md` y `AGENTS.md` se generan desde ahí, cada uno con su sección propia, y un test falla si
+divergen. Es el primer target adapter en miniatura, y por qué cualquier IDE que abra este repo
+entiende lo mismo.
 
-1. Describí lo que querés construir o elegí un kit.
-2. Revisá y ajustá las recomendaciones.
-3. Elegí si las skills deben instalarse para Codex, Claude Code o ambos, y descargá `SyntaX plan` como `syntax-plan.json`.
-4. Inspeccioná el efecto sobre un proyecto sin modificarlo:
+- [`docs/direction.md`](docs/direction.md) — por qué SyntaX dejó de ser un buscador de skills
+- [`docs/licensing.md`](docs/licensing.md) — licencias de skills y qué no romper al copiarlas
 
-```bash
-npm run syntax -- preview ./syntax-plan.json /ruta/al/proyecto
-```
+`src/legacy/` guarda el recomendador y el instalador del producto anterior. No se extiende: está
+ahí porque `build` va a portar parte de esa lógica.
 
-5. Cuando el plan sea correcto, aplicalo:
+## Licencia
 
-```bash
-npm run syntax -- apply ./syntax-plan.json /ruta/al/proyecto
-```
-
-La CLI detecta React y el package manager, detiene planes incompatibles, combina `.mcp.json`, instala dependencias y copia skills desde sus repositorios verificados. Los planes nuevos usan `.agents/skills` para Codex y `.claude/skills` para Claude Code; también pueden escribir en ambos destinos. Los planes v1 existentes conservan su comportamiento de Claude Code. Antes de reemplazar un `.mcp.json` o una skill existente crea una copia con el sufijo `.syntax-backup-<fecha>`; los instaladores PowerShell y Bash descargables aplican la misma regla. Los plugins específicos de Claude Code quedan como comandos pendientes.
-
-## Primer dominio: visual / 3D
-
-El recomendador reconoce diseño, animaciones, Three.js/WebGL, GIF/video y rendimiento. El kit inicial combina React Three Fiber, Drei, Motion, criterio de frontend y verificación real con navegador. El mismo modelo de capacidades está pensado para sumar después seguridad, diagnóstico, optimización de contexto/tokens y otros dominios.
-
-## Estructura principal
-
-- `src/data/kits.js`: catálogo curado y metadatos de instalación/compatibilidad.
-- `src/data/concepts.js`: vocabulario y pesos del recomendador local.
-- `src/lib/recommend.js`: detección de capacidades y ranking.
-- `src/lib/install.js`: plan portable y scripts PowerShell/Bash.
-- `scripts/syntax.mjs`: preview, inspección y aplicación local del plan.
-- `scripts/discover.mjs`: descubrimiento asistido de nuevos candidatos.
-
-SyntaX no manda tokens ni rutas de proyectos a un servidor. El token opcional de GitHub se guarda en el navegador y la integración del proyecto se ejecuta localmente.
+MIT.

@@ -1,6 +1,6 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
-import { mkdtempSync, mkdirSync, readdirSync, writeFileSync } from 'node:fs'
+import { mkdtempSync, mkdirSync, readdirSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 
@@ -134,3 +134,22 @@ test('un proyecto sin ningún runtime no rompe el reporte', () => {
 function snapshotTree(root) {
   return readdirSync(root, { recursive: true }).map(String).sort()
 }
+
+test('no reporta CLAUDE.md y AGENTS.md como drift: son la misma regla por runtime', () => {
+  const report = runDoctor(fixture())
+  const mensajes = findingsOf(report, 'drift').map((finding) => finding.message)
+
+  assert.ok(!mensajes.some((mensaje) => mensaje.includes('archivo de reglas de')))
+})
+
+test('sí reporta un runtime que se quedó sin archivo de reglas', () => {
+  const root = fixture()
+  rmSync(join(root, 'AGENTS.md'))
+  const report = runDoctor(root)
+
+  const hallazgo = findingsOf(report, 'drift').find((finding) =>
+    finding.message.includes('no tiene archivo de reglas')
+  )
+  assert.ok(hallazgo)
+  assert.equal(hallazgo.severity, 'alta')
+})
