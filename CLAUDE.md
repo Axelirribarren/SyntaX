@@ -37,16 +37,20 @@ entre runtimes es el mecanismo del diseño, no un bug a tapar.
 
 ## Estado real
 
-Implementado: `doctor` con cuatro checks estáticos, el contrato de adapters, y los adapters de
-Claude Code y Codex en modo lectura.
+Implementado: `doctor` con cinco checks, el contrato de adapters, los adapters de Claude Code y
+Codex en modo lectura, y `doctor --deep`, que levanta cada MCP server por stdio y mide los tokens
+de sus schemas de verdad.
 
-No implementado todavía: `import`, `build`, `lock`, `verify`, `rollback`, el conteo de schemas de
-MCP reales (`doctor --deep`) y el visor web de reportes. `src/manifest/schema.js` define la forma
-del manifest pero **no hay parser**: `syntax.yaml` está escrito a mano y todavía no lo consume
-nadie.
+No implementado todavía: `import`, `build`, `lock`, `verify`, `rollback` y el visor web de
+reportes. `src/manifest/schema.js` define la forma del manifest pero **no hay parser**:
+`syntax.yaml` está escrito a mano y todavía no lo consume nadie.
 
 Al describir el proyecto, no presentes como funcionando lo que está en la lista de no
 implementado.
+
+Lo que quedó abierto —incluidas las decisiones que todavía no se tomaron y las que van a doler
+más adelante— está en `docs/backlog.md`. **Leelo antes de proponer trabajo nuevo**: es probable
+que ya esté anotado ahí, con el motivo por el que se dejó pendiente.
 
 ## Reglas duras
 
@@ -63,8 +67,10 @@ implementado.
   sección 4(a) exige entregar copia de la licencia junto al trabajo. La copia recursiva arrastra
   el `LICENSE.txt` sola. Si alguna vez se copia selectivamente, hay que seguir llevándolo. Ver
   `docs/licensing.md`.
-- **`doctor` no escribe nunca.** Es solo lectura, sin lanzar procesos ni tocar la red. Esa
-  propiedad es la que permite correrlo en un repo ajeno sin pedir confianza.
+- **`doctor` no escribe nunca.** Eso no se negocia: es lo que permite correrlo en un repo ajeno
+  sin pedir confianza. Por defecto tampoco lanza procesos; la única excepción es `--deep`, que
+  ejecuta los comandos del `.mcp.json` auditado para medirlos. Por eso es opt-in, avisa antes, y
+  la parte que ejecuta vive aislada en `src/doctor/probe.js`.
 - **Los números del reporte se declaran con su incertidumbre.** El conteo de tokens va con `≈` y
   lo que no se midió se dice explícitamente. Un titular inflado destruye la credibilidad de todo
   el reporte, que es el activo del producto.
@@ -79,6 +85,7 @@ src/manifest/           forma del manifest (sin parser todavía)
 src/registry/           mapa capability -> providers
 src/fs/                 utilidades de disco seguras
 src/legacy/             recomendador viejo, degradado a opcional
+docs/backlog.md         pendientes, deuda y riesgos conocidos
 docs/direction.md       por qué se hizo este cambio de rumbo
 docs/licensing.md       análisis de licencias de skills
 syntax.yaml             el entorno de este propio repo

@@ -25,6 +25,7 @@ su `.claude/`, su `.mcp.json` o su `AGENTS.md` armados a mano:
 
 ```bash
 node src/cli.js doctor /ruta/a/tu/proyecto
+node src/cli.js doctor --deep          # además, mide los MCP de verdad
 ```
 
 Salida real de este mismo repo:
@@ -34,10 +35,13 @@ Salida real de este mismo repo:
   Codex          3 skills · 1 archivo de reglas
                  · MCP de Codex no auditado: vive en la config de usuario, fuera del repo.
 
-  Costo de arranque       ≈3.482 tokens
-    reglas                      ≈2.711   CLAUDE.md, AGENTS.md
+  Costo de arranque       ≈15.992 tokens
+    schemas de herramientas MCP   ≈12.296   55 herramientas en 3 servers
+      chrome-devtools           ≈6.451   29 herramientas
+      playwright                ≈4.630   24 herramientas
+      context7                  ≈1.215   2 herramientas
+    reglas                      ≈2.925   CLAUDE.md, AGENTS.md
     descripciones de skills       ≈771   12 skills en total
-    NO MEDIDO                schemas de 3 MCP servers — requiere doctor --deep
 
   Drift entre runtimes
     x 6 skills de Claude Code que no están en Codex
@@ -45,15 +49,25 @@ Salida real de este mismo repo:
 
   Providers duplicados
     x Control e inspección de navegador: 2 providers instalados
-    ! Criterio visual y dirección de diseño: 2 providers (confianza media)
+      Quedarte con uno ahorra entre ≈4.630 y ≈6.451 tokens por arranque.
+      - chrome-devtools (Claude Code) — ≈6.451 tokens
+      - playwright (Claude Code) — ≈4.630 tokens
 
   Pérdida al compilar
     Codex: La config de MCP de Codex es de usuario, no de proyecto: no viaja con el repo.
 ```
 
-Ese último renglón es el tipo de hallazgo que justifica la herramienta: un equipo que comparte
-`AGENTS.md` cree que comparte entorno, y no comparte los MCP.
+Dos cosas que ese reporte deja ver y que no se ven de ninguna otra forma:
 
+**El 69% del arranque son dos servers haciendo lo mismo.** La redundancia deja de ser un consejo
+de estilo y pasa a tener precio.
+
+**Un equipo que comparte `AGENTS.md` cree que comparte entorno, y no comparte los MCP.** La
+configuración de MCP de Codex es de usuario: no viaja con el repo.
+
+`--deep` levanta cada MCP server por stdio y le pide su lista de herramientas. Sin él, el costo
+sale marcado como parcial y los schemas —la porción más grande— como NO MEDIDO. Ejecuta los
+comandos declarados en el `.mcp.json` del proyecto auditado, así que es opt-in y avisa antes.
 `--json` devuelve el reporte completo para consumo programático.
 
 ## Estado
@@ -61,7 +75,7 @@ Ese último renglón es el tipo de hallazgo que justifica la herramienta: un equ
 | Comando | Qué hace | |
 |---|---|---|
 | `doctor` | Audita el entorno. Solo lectura. | ✅ |
-| `doctor --deep` | Levanta cada MCP y mide sus schemas de verdad | ⬜ |
+| `doctor --deep` | Levanta cada MCP y mide sus schemas de verdad | ✅ |
 | `import` | Genera `syntax.yaml` desde lo que ya hay en disco | ⬜ |
 | `build --target <rt>` | Compila el manifest a un runtime, con reporte de pérdida | ⬜ |
 | `lock` | Fija SHAs y versiones en `syntax.lock` | ⬜ |
@@ -123,6 +137,7 @@ La documentación de agentes tiene **una sola fuente**: [`docs/agent-brief.md`](
 divergen. Es el primer target adapter en miniatura, y por qué cualquier IDE que abra este repo
 entiende lo mismo.
 
+- [`docs/backlog.md`](docs/backlog.md) — pendientes, deuda y riesgos conocidos
 - [`docs/direction.md`](docs/direction.md) — por qué SyntaX dejó de ser un buscador de skills
 - [`docs/licensing.md`](docs/licensing.md) — licencias de skills y qué no romper al copiarlas
 

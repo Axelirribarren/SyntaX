@@ -48,11 +48,15 @@ function renderEnvironment(report, lines) {
 function renderCost(report, lines) {
   if (!report.cost) return
 
-  lines.push(`  Costo de arranque       ${formatTokens(report.cost.total)} tokens`)
+  const alcance = report.deep ? '' : '  (parcial)'
+  lines.push(`  Costo de arranque       ${formatTokens(report.cost.total)} tokens${alcance}`)
   for (const part of report.cost.parts) {
     lines.push(
       `    ${part.label.padEnd(24)} ${formatTokens(part.tokens).padStart(9)}   ${part.detail || ''}`.trimEnd()
     )
+    for (const item of part.breakdown || []) {
+      lines.push(`      ${item.label.padEnd(22)} ${formatTokens(item.tokens).padStart(9)}   ${item.count} herramientas`)
+    }
   }
   for (const gap of report.cost.unmeasured) {
     lines.push(`    ${'NO MEDIDO'.padEnd(24)} ${gap.label} — ${gap.reason}`)
@@ -110,6 +114,10 @@ function renderVerdict(report, lines) {
   }
 
   lines.push(`  ${findings.length} hallazgos (${high} de severidad alta).`)
-  lines.push('  doctor es solo lectura: no se modificó nada.')
+  lines.push(
+    report.deep
+      ? '  doctor levantó los MCP servers para medirlos; no modificó nada.'
+      : '  doctor es solo lectura: no se modificó nada. Para medir los MCP: --deep'
+  )
   lines.push('')
 }

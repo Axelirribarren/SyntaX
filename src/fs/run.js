@@ -1,10 +1,13 @@
 import { spawnSync } from 'node:child_process'
 
-const WINDOWS_BATCH_MANAGERS = new Set(['npm', 'pnpm', 'yarn'])
+// Ejecutables que en Windows son .cmd. `npx` es el más importante: prácticamente
+// todo MCP server se lanza con él, así que sin esta entrada el probe y el futuro
+// `build` fallan en Windows sin un mensaje que explique por qué.
+const WINDOWS_BATCH_COMMANDS = new Set(['npm', 'npx', 'pnpm', 'pnpx', 'yarn', 'bunx'])
 const SAFE_BATCH_ARG = /^[a-zA-Z0-9@._/+:-]+$/
 
 export function commandInvocation(executable, args, platform = process.platform) {
-  if (platform !== 'win32' || !WINDOWS_BATCH_MANAGERS.has(executable)) {
+  if (platform !== 'win32' || !WINDOWS_BATCH_COMMANDS.has(executable)) {
     return { command: executable, args }
   }
 

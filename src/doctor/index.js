@@ -8,14 +8,21 @@ import { detectUnsupported } from '../targets/unknown.js'
 import drift from './checks/drift.js'
 import providers from './checks/providers.js'
 import orphans from './checks/orphans.js'
+import health from './checks/health.js'
 import staticCost from './checks/static-cost.js'
 
-export const CHECKS = [staticCost, drift, providers, orphans]
+export const CHECKS = [staticCost, drift, providers, orphans, health]
 
-// `doctor` no escribe nunca, no lanza procesos y no toca la red. Esa propiedad
-// es lo que permite correrlo en el repo de otra persona sin pedirle confianza —
-// y es la razón por la que es el primer comando del producto y no el último.
-export function runDoctor(root) {
+// `doctor` no escribe nunca. Esa propiedad no se negocia: es lo que permite
+// correrlo en el repo de otra persona sin pedirle confianza, y la razón por la
+// que es el primer comando del producto y no el último.
+//
+// Por defecto tampoco lanza procesos. La excepción es `--deep`, que levanta los
+// MCP servers declarados para medir sus schemas — o sea, ejecuta comandos que
+// vienen del repo auditado. Por eso es opt-in, la CLI lo advierte antes, y esta
+// función solo recibe los resultados ya obtenidos (`options.probes`): la parte
+// que ejecuta vive aislada en `probe.js` y nunca se activa sola.
+export function runDoctor(root, options = {}) {
   const targets = detectTargets(root)
   const snapshots = readAll(root, targets)
   const targetsById = Object.fromEntries(targets.map((target) => [target.id, target]))
@@ -25,6 +32,7 @@ export function runDoctor(root) {
     targets,
     targetsById,
     snapshots,
+    probes: options.probes || null,
     gitignore: readGitignore(root)
   }
 
@@ -37,6 +45,7 @@ export function runDoctor(root) {
   return {
     root,
     generatedAt: new Date().toISOString(),
+    deep: Boolean(options.probes),
     environment: summarize(snapshots),
     cost: results.find((result) => result.cost)?.cost || null,
     checks: results.map(({ cost, ...rest }) => rest),

@@ -1,4 +1,5 @@
 import { findCapability } from '../../registry/capabilities.js'
+import { formatTokens } from '../tokenize.js'
 
 // Varios providers instalados para la misma capability.
 //
@@ -13,7 +14,7 @@ export default {
   id: 'providers',
   title: 'Providers duplicados',
 
-  run({ snapshots }) {
+  run({ snapshots, probes }) {
     const found = new Map()
 
     for (const snapshot of snapshots) {
@@ -39,12 +40,35 @@ export default {
     for (const { capability, providers } of found.values()) {
       if (providers.size < 2) continue
 
+      const entries = [...providers.values()]
+      const costs = entries
+        .map((entry) => probes?.find((probe) => probe.ok && probe.id === entry.id)?.tokens)
+        .filter((tokens) => typeof tokens === 'number')
+
+      // Con `--deep` la redundancia deja de ser un consejo y pasa a tener
+      // precio. Es la diferencia entre "tenés dos cosas parecidas" y "una de
+      // las dos te cuesta esto en cada arranque".
+      let ahorro = null
+      if (costs.length === entries.length) {
+        const total = costs.reduce((sum, tokens) => sum + tokens, 0)
+        const menor = total - Math.max(...costs)
+        const mayor = total - Math.min(...costs)
+        ahorro =
+          menor === mayor
+            ? `Quedarte con uno ahorra ${formatTokens(menor)} tokens por arranque.`
+            : `Quedarte con uno ahorra entre ${formatTokens(menor)} y ${formatTokens(mayor)} tokens por arranque.`
+      }
+
       findings.push({
         severity: capability.confidence === 'alta' ? 'alta' : 'media',
         message: `${capability.label}: ${providers.size} providers instalados`,
-        detail: capability.why,
+        detail: ahorro ? `${capability.why} ${ahorro}` : capability.why,
         confidence: capability.confidence,
-        items: [...providers.values()].map((entry) => `${entry.id} (${entry.target})`)
+        items: entries.map((entry) => {
+          const tokens = probes?.find((probe) => probe.ok && probe.id === entry.id)?.tokens
+          const costo = typeof tokens === 'number' ? ` — ${formatTokens(tokens)} tokens` : ''
+          return `${entry.id} (${entry.target})${costo}`
+        })
       })
     }
 

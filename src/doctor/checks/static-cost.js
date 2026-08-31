@@ -17,7 +17,7 @@ export default {
   id: 'static-cost',
   title: 'Costo de arranque',
 
-  run({ snapshots }) {
+  run({ snapshots, probes }) {
     const parts = []
     const unmeasured = []
 
@@ -65,12 +65,34 @@ export default {
     }
 
     const servers = snapshots.flatMap((snapshot) => snapshot.objects.mcp || [])
-    if (servers.length) {
+
+    if (servers.length && !probes) {
       unmeasured.push({
         label: `schemas de ${servers.length} MCP servers`,
-        reason: 'requiere levantar cada server: doctor --deep (todavía no implementado)',
+        reason: 'requiere levantar cada server: doctor --deep',
         items: servers.map((server) => server.id)
       })
+    }
+
+    if (probes) {
+      // Los schemas de tools suelen ser la porción más grande del arranque, y
+      // es la que nadie mide. El desglose por server importa tanto como el
+      // total: sin él, el número es un reproche sin acción posible.
+      const medidos = probes.filter((probe) => probe.ok)
+      if (medidos.length) {
+        parts.push({
+          label: 'schemas de herramientas MCP',
+          tokens: medidos.reduce((total, probe) => total + probe.tokens, 0),
+          detail: `${medidos.reduce((total, probe) => total + probe.count, 0)} herramientas en ${medidos.length} servers`,
+          breakdown: medidos
+            .map((probe) => ({ label: probe.id, tokens: probe.tokens, count: probe.count }))
+            .sort((a, b) => b.tokens - a.tokens)
+        })
+      }
+
+      for (const probe of probes.filter((probe) => !probe.ok)) {
+        unmeasured.push({ label: `schemas de ${probe.id}`, reason: probe.reason })
+      }
     }
 
     const total = parts.reduce((sum, part) => sum + part.tokens, 0)

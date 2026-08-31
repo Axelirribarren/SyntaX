@@ -144,7 +144,7 @@ export function normalizeMcpServer(id, config) {
     }
   }
 
-  return {
+  const server = {
     id,
     kind: 'mcp',
     transport: 'stdio',
@@ -157,4 +157,15 @@ export function normalizeMcpServer(id, config) {
       .filter(([, value]) => !value)
       .map(([key]) => key)
   }
+
+  // Los valores de env hacen falta para levantar el server en `--deep`, pero no
+  // enumerable a propósito: así `JSON.stringify` no los arrastra al reporte
+  // `--json`, que suele terminar en un log de CI o pegado en un chat. Que la
+  // clave ya esté en el .mcp.json no es motivo para multiplicar dónde aparece.
+  Object.defineProperty(server, 'envValues', {
+    value: config.env || {},
+    enumerable: false
+  })
+
+  return server
 }
