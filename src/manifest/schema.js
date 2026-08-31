@@ -17,6 +17,14 @@ import { OBJECT_KINDS } from '../targets/contract.js'
 
 export const SCHEMA_VERSION = 2
 
+// Cómo se reparten los components entre targets.
+//   faithful — cada component vale en los targets donde fue observado.
+//              Es el default de `import`: describe lo que hay, sin inventar.
+//   mirror   — todo component tiene que existir en TODOS los targets. Es una
+//              política de convergencia: no se deduce del disco, la pide una
+//              persona con `import --mirror` y queda escrita acá.
+export const TARGET_POLICIES = ['faithful', 'mirror']
+
 // Referencia de la forma esperada. Es documentación ejecutable: los tests la
 // usan como fixture y `validateManifest` la respeta.
 export const SHAPE = {
@@ -34,11 +42,18 @@ export const SHAPE = {
       id: 'string — identidad estable del objeto',
       source: 'string — owner/repo, paquete npm, o ruta local',
       path: 'string — ruta dentro del source (skills)',
-      pin: 'string — commit SHA o versión exacta. Sin pin no hay reproducibilidad.',
+      // pin es ORIGEN/VERSIÓN: sirve para reinstalar lo mismo. La integridad
+      // de lo que hay hoy en disco NO vive acá: vive en syntax.lock como
+      // digest. Son propiedades distintas y confundirlas haría creer que hay
+      // reproducibilidad donde solo hay detección de cambios.
+      pin: 'string — commit SHA o versión exacta. Sin pin no se puede reinstalar igual.',
+      targets: 'string[] — targets donde vale este component (política faithful)',
+      why: 'string — por qué está. Opcional; `import` no lo puede saber.',
       env: '{ [nombre]: "${secret}" } — nunca valores reales'
     }
   ],
   permissions: { deny: 'string[]', allow: 'string[]', ask: 'string[]' },
+  targetPolicy: `string — uno de: ${TARGET_POLICIES.join(', ')} (default faithful)`,
   targets: 'string[] — ids de adapters'
 }
 
@@ -61,11 +76,24 @@ export function validateManifest(value) {
     }
     if (!component.id) errors.push(`${where} no tiene id.`)
 
-    // Un component sin pin hace que aplicar el mismo manifest dos veces dé
-    // entornos distintos. Es exactamente el bug del instalador anterior, así
-    // que se avisa aunque todavía nada consuma el campo.
+    // Un component con origen declarado pero sin pin no se puede reinstalar
+    // igual: es el bug del instalador anterior. Un component sin `source` —lo
+    // que produce `import`, que observa disco y no sabe de dónde vino— no tiene
+    // por qué tener pin todavía.
     if (component.source && !component.pin) {
-      errors.push(`${where} (${component.id}) no tiene pin: no es reproducible.`)
+      errors.push(`${where} (${component.id}) declara source sin pin: no se puede reinstalar igual.`)
+    }
+
+    if (component.targets !== undefined) {
+      if (!Array.isArray(component.targets) || !component.targets.length) {
+        errors.push(`${where} (${component.id}).targets tiene que listar al menos un target.`)
+      } else {
+        for (const target of component.targets) {
+          if (!(value.targets || []).includes(target)) {
+            errors.push(`${where} (${component.id}) declara el target '${target}', que no está en targets.`)
+          }
+        }
+      }
     }
 
     for (const [key, envValue] of Object.entries(component.env || {})) {
@@ -73,6 +101,10 @@ export function validateManifest(value) {
         errors.push(`${where}.env.${key} tiene un valor literal: los secretos no van al manifest.`)
       }
     }
+  }
+
+  if (value.targetPolicy !== undefined && !TARGET_POLICIES.includes(value.targetPolicy)) {
+    errors.push(`targetPolicy '${value.targetPolicy}' no es válida (${TARGET_POLICIES.join(' | ')}).`)
   }
 
   for (const [id, capability] of Object.entries(value.capabilities || {})) {

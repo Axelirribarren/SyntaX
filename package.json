@@ -13,8 +13,13 @@
   },
   "scripts": {
     "doctor": "node src/cli.js doctor",
+    "import": "node src/cli.js import",
+    "verify": "node src/cli.js verify",
     "docs": "node scripts/emit-docs.mjs",
     "docs:check": "node scripts/emit-docs.mjs --check",
     "test": "node --test"
+  },
+  "dependencies": {
+    "yaml": "^2.9.0"
   }
 }

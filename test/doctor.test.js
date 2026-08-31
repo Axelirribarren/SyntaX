@@ -102,10 +102,25 @@ test('encuentra backups huérfanos, carpetas rotas y credenciales faltantes', ()
 
 test('el costo declara explícitamente lo que no midió', () => {
   const report = runDoctor(fixture())
+  const claude = report.cost.byTarget.find((entry) => entry.target === 'claude-code')
 
-  assert.ok(report.cost.total > 0)
-  assert.equal(report.cost.unmeasured.length, 1)
-  assert.match(report.cost.unmeasured[0].reason, /doctor --deep/)
+  assert.ok(claude.total > 0)
+  assert.equal(claude.unmeasured.length, 1)
+  assert.match(claude.unmeasured[0].reason, /doctor --deep/)
+})
+
+test('el costo es por runtime y no suma lo que se instaló en los dos', () => {
+  // Regresión: sumar los snapshots contaba dos veces la skill instalada en
+  // ambos targets, y CLAUDE.md junto con AGENTS.md. Nadie corre los dos
+  // runtimes a la vez; un titular inflado se descubre a la primera.
+  const report = runDoctor(fixture())
+  const claude = report.cost.byTarget.find((entry) => entry.target === 'claude-code')
+  const codex = report.cost.byTarget.find((entry) => entry.target === 'codex')
+
+  assert.equal(claude.parts.find((part) => part.label.includes('skills')).detail, '3 skills')
+  assert.equal(codex.parts.find((part) => part.label.includes('skills')).detail, '1 skills')
+  assert.equal(claude.parts.find((part) => part.label === 'reglas').detail, 'CLAUDE.md')
+  assert.equal(codex.parts.find((part) => part.label === 'reglas').detail, 'AGENTS.md')
 })
 
 test('el reporte de pérdida sale del supports declarado, no de código por par', () => {

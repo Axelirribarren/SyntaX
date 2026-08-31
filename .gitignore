@@ -12,3 +12,7 @@ scripts/candidatos.json
 
 # Estado local de SyntaX (lock aplicado, ultimo reporte)
 .syntax/
+
+# Temporales de la escritura atomica (solo quedan si algo se corto a la mitad)
+*.syntax-tmp-*
+*.syntax-prev-*

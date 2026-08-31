@@ -35,13 +35,12 @@ entre runtimes es el mecanismo del diseño, no un bug a tapar.
 
 ## Estado real
 
-Implementado: `doctor` con cinco checks, el contrato de adapters, los adapters de Claude Code y
-Codex en modo lectura, y `doctor --deep`, que levanta cada MCP server por stdio y mide los tokens
-de sus schemas de verdad.
+Implementado: `doctor` con cinco checks y `--deep` (levanta cada MCP server por stdio y mide los
+tokens de sus schemas), el contrato de adapters, los adapters de Claude Code y Codex en modo
+lectura, y la franja `import` + `verify` para **skills**.
 
-No implementado todavía: `import`, `build`, `lock`, `verify`, `rollback` y el visor web de
-reportes. `src/manifest/schema.js` define la forma del manifest pero **no hay parser**:
-`syntax.yaml` está escrito a mano y todavía no lo consume nadie.
+No implementado todavía: `build`, `rollback`, `accept` (actualizar la línea base a propósito),
+resolución de origen en el lock, MCP y demás objetos en el manifest, y el visor web de reportes.
 
 Al describir el proyecto, no presentes como funcionando lo que está en la lista de no
 implementado.
@@ -49,6 +48,24 @@ implementado.
 Lo que quedó abierto —incluidas las decisiones que todavía no se tomaron y las que van a doler
 más adelante— está en `docs/backlog.md`. **Leelo antes de proponer trabajo nuevo**: es probable
 que ya esté anotado ahí, con el motivo por el que se dejó pendiente.
+
+## Las tres capas
+
+Son distintas y no se mezclan. Confundirlas es el error más caro de este dominio:
+
+| Capa | Archivo | Quién lo escribe | Responde |
+|---|---|---|---|
+| Observación | *(en memoria)* | los adapters, con `read()` | qué hay en disco |
+| Contrato | `syntax.yaml` | personas | qué queremos, y por qué |
+| Integridad | `syntax.lock` | la herramienta | la forma canónica de lo observado |
+
+Un **digest** es integridad, no versión: responde *"¿esto cambió?"*, no *"¿qué versión es?"* ni
+*"¿cómo lo reinstalo?"*. Tampoco es integridad byte a byte — normaliza finales de línea, BOM y
+unicode de rutas, porque si no `verify` sería inservible en un equipo mixto. La spec completa, con
+vectores de prueba, está en `docs/digest.md`.
+
+Un **pin** es lo otro: origen y versión, para poder reinstalar lo mismo. Va en el manifest y
+todavía no lo llena nadie.
 
 ## Reglas duras
 
@@ -65,6 +82,13 @@ que ya esté anotado ahí, con el motivo por el que se dejó pendiente.
   sección 4(a) exige entregar copia de la licencia junto al trabajo. La copia recursiva arrastra
   el `LICENSE.txt` sola. Si alguna vez se copia selectivamente, hay que seguir llevándolo. Ver
   `docs/licensing.md`.
+- **`import` observa; no infiere intención.** Adopta cada skill en los targets donde realmente
+  está, y el primer `verify` sale limpio. Que la unión deba existir en todos los targets es una
+  *política de convergencia*, no se deduce del disco: se pide con `--mirror` y queda escrita como
+  `targetPolicy` en el manifest. La herramienta distingue "encontré esto" de "el equipo quiere
+  esto" y nunca dice "supuse que el equipo quiere esto".
+- **`verify` nunca corrige.** Aceptar drift tiene que ser una acción deliberada de una persona. Una
+  herramienta que se autorepara esconde justo lo que vino a mostrar.
 - **`doctor` no escribe nunca.** Eso no se negocia: es lo que permite correrlo en un repo ajeno
   sin pedir confianza. Por defecto tampoco lanza procesos; la única excepción es `--deep`, que
   ejecuta los comandos del `.mcp.json` auditado para medirlos. Por eso es opt-in, avisa antes, y
@@ -79,14 +103,19 @@ que ya esté anotado ahí, con el motivo por el que se dejó pendiente.
 src/cli.js              dispatch de comandos
 src/doctor/             checks, orquestación y reporte
 src/targets/            contract.js + un adapter por runtime
-src/manifest/           forma del manifest (sin parser todavía)
+src/manifest/           schema, parser restringido, digest, lock, escritura atómica
+src/observe.js          la capa de observación, compartida por import y verify
+src/import.js           observación -> contrato
+src/verify.js           contrato vs. disco, con exit codes para CI
 src/registry/           mapa capability -> providers
 src/fs/                 utilidades de disco seguras
 src/legacy/             recomendador viejo, degradado a opcional
 docs/backlog.md         pendientes, deuda y riesgos conocidos
+docs/digest.md          spec del digest, con vectores de prueba
 docs/direction.md       por qué se hizo este cambio de rumbo
 docs/licensing.md       análisis de licencias de skills
-syntax.yaml             el entorno de este propio repo
+syntax.yaml             el contrato de este propio repo (generado por import)
+syntax.lock             su línea base de integridad
 ```
 
 ## Cómo sumar un runtime

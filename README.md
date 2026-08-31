@@ -16,7 +16,7 @@ responde ninguna herramienta:
 - **¿El entorno que corro es el que acordamos?** Sin pins ni verificación, dos personas del mismo
   equipo con el mismo repo corren cosas distintas y nadie se entera.
 
-Sin dependencias de runtime. Es Node puro.
+Una sola dependencia (`yaml`), y `doctor` ni la carga.
 
 ## Empezar
 
@@ -35,13 +35,17 @@ Salida real de este mismo repo:
   Codex          3 skills · 1 archivo de reglas
                  · MCP de Codex no auditado: vive en la config de usuario, fuera del repo.
 
-  Costo de arranque       ≈15.992 tokens
-    schemas de herramientas MCP   ≈12.296   55 herramientas en 3 servers
-      chrome-devtools           ≈6.451   29 herramientas
-      playwright                ≈4.630   24 herramientas
-      context7                  ≈1.215   2 herramientas
-    reglas                      ≈2.925   CLAUDE.md, AGENTS.md
-    descripciones de skills       ≈771   12 skills en total
+  Costo de arranque, por runtime
+    Claude Code              ≈14.887 tokens
+      schemas de herramientas MCP   ≈12.296   55 herramientas en 3 servers
+        chrome-devtools         ≈6.451   29 herramientas
+        playwright              ≈4.630   24 herramientas
+        context7                ≈1.215   2 herramientas
+      reglas                      ≈2.006   CLAUDE.md
+      descripciones de skills       ≈585   9 skills
+    Codex                     ≈2.145 tokens
+      reglas                      ≈1.959   AGENTS.md
+      descripciones de skills       ≈186   3 skills
 
   Drift entre runtimes
     x 6 skills de Claude Code que no están en Codex
@@ -59,8 +63,8 @@ Salida real de este mismo repo:
 
 Dos cosas que ese reporte deja ver y que no se ven de ninguna otra forma:
 
-**El 69% del arranque son dos servers haciendo lo mismo.** La redundancia deja de ser un consejo
-de estilo y pasa a tener precio.
+**El 74% del arranque de Claude Code son dos servers haciendo lo mismo.** La redundancia deja de
+ser un consejo de estilo y pasa a tener precio.
 
 **Un equipo que comparte `AGENTS.md` cree que comparte entorno, y no comparte los MCP.** La
 configuración de MCP de Codex es de usuario: no viaja con el repo.
@@ -76,19 +80,69 @@ comandos declarados en el `.mcp.json` del proyecto auditado, así que es opt-in 
 |---|---|---|
 | `doctor` | Audita el entorno. Solo lectura. | ✅ |
 | `doctor --deep` | Levanta cada MCP y mide sus schemas de verdad | ✅ |
-| `import` | Genera `syntax.yaml` desde lo que ya hay en disco | ⬜ |
+| `import` | Genera `syntax.yaml` y `syntax.lock` desde lo que hay en disco | ✅ |
 | `build --target <rt>` | Compila el manifest a un runtime, con reporte de pérdida | ⬜ |
-| `lock` | Fija SHAs y versiones en `syntax.lock` | ⬜ |
-| `verify --strict` | Falla si el entorno derivó del manifest. Para CI. | ⬜ |
+| `accept` | Actualiza la línea base a propósito | ⬜ |
+| `lock` | Suma resolución de origen para reinstalar igual | ⬜ |
+| `verify` | Falla si el entorno derivó del contrato. Solo lectura, para CI. | ✅ |
 | `rollback` | Revierte la última aplicación | ⬜ |
 
 Runtimes con adapter: **Claude Code** y **Codex**, ambos en modo lectura. Los demás se detectan y
 se reportan como presentes sin soporte.
 
-`syntax.yaml` está escrito a mano y todavía no lo consume nadie: es el artefacto norte y el caso
-real contra el que se valida el schema. Sus `pin` están vacíos porque `lock` no existe, así que
-**nuestro propio manifest no es reproducible** y `validateManifest` lo dice. Preferimos que se vea
-antes que disimularlo.
+Por ahora `import` y `verify` cubren **skills**. MCP, reglas y el resto de los objetos se suman
+después, sobre una franja que ya demostró el modelo completo.
+
+## Adoptar un entorno y verificarlo
+
+```bash
+node src/cli.js import     # observa el disco y escribe el contrato
+node src/cli.js verify     # ¿sigue siendo cierto?
+```
+
+`import` **observa; no infiere intención.** Adopta cada skill en los targets donde realmente está,
+así que el primer `verify` sale limpio. Que la unión deba existir en todos los targets es una
+*política de convergencia* que no se deduce del disco: se pide con `--mirror` y queda escrita en el
+manifest como `targetPolicy`. La herramienta distingue *"encontré esto"* de *"el equipo quiere
+esto"*, y nunca dice *"supuse que el equipo quiere esto"*.
+
+En este repo, esa distinción se ve de una:
+
+```
+$ syntax import && syntax verify
+  Entorno verificado: coincide con el contrato (política faithful).      exit 0
+
+$ syntax import --mirror --force && syntax verify
+  missing — declaradas y no instaladas
+    x a11y-audit en codex
+    x brand-guidelines en codex
+    … 6 en total                                                          exit 1
+```
+
+`verify` compara cuatro cosas y **nunca corrige**:
+
+| | | Por defecto |
+|---|---|---|
+| `missing` | declarada, no instalada | falla |
+| `modified` | el contenido no coincide con el lock | falla |
+| `diverged` | mismo id, contenido distinto entre targets | falla |
+| `unexpected` | instalada, no declarada | avisa; falla con `--strict` |
+
+Exit codes: `0` limpio · `1` diferencias · `2` error. Eso es lo que lo vuelve una línea de CI y no
+un reporte más.
+
+### Las tres capas
+
+| Capa | Archivo | Quién lo escribe |
+|---|---|---|
+| Observación | *(en memoria)* | los adapters |
+| Contrato | `syntax.yaml` | personas |
+| Integridad | `syntax.lock` | la herramienta |
+
+Un digest responde *"¿esto cambió?"* — no *"¿qué versión es?"*. Y no es integridad byte a byte:
+normaliza finales de línea, BOM y unicode de rutas, porque sin eso la misma skill en Windows y en
+macOS daría digests distintos y `verify` marcaría todo como modificado el primer día. La spec, con
+vectores de prueba, está en [`docs/digest.md`](docs/digest.md).
 
 ## Cómo funciona
 
@@ -138,6 +192,7 @@ divergen. Es el primer target adapter en miniatura, y por qué cualquier IDE que
 entiende lo mismo.
 
 - [`docs/backlog.md`](docs/backlog.md) — pendientes, deuda y riesgos conocidos
+- [`docs/digest.md`](docs/digest.md) — spec del digest, con vectores de prueba
 - [`docs/direction.md`](docs/direction.md) — por qué SyntaX dejó de ser un buscador de skills
 - [`docs/licensing.md`](docs/licensing.md) — licencias de skills y qué no romper al copiarlas
 

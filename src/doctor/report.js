@@ -49,17 +49,23 @@ function renderCost(report, lines) {
   if (!report.cost) return
 
   const alcance = report.deep ? '' : '  (parcial)'
-  lines.push(`  Costo de arranque       ${formatTokens(report.cost.total)} tokens${alcance}`)
-  for (const part of report.cost.parts) {
-    lines.push(
-      `    ${part.label.padEnd(24)} ${formatTokens(part.tokens).padStart(9)}   ${part.detail || ''}`.trimEnd()
-    )
-    for (const item of part.breakdown || []) {
-      lines.push(`      ${item.label.padEnd(22)} ${formatTokens(item.tokens).padStart(9)}   ${item.count} herramientas`)
+  lines.push(`  Costo de arranque, por runtime${alcance}`)
+
+  for (const entry of report.cost.byTarget) {
+    lines.push(`    ${entry.label.padEnd(22)} ${formatTokens(entry.total).padStart(9)} tokens`)
+    for (const part of entry.parts) {
+      lines.push(
+        `      ${part.label.padEnd(24)} ${formatTokens(part.tokens).padStart(9)}   ${part.detail || ''}`.trimEnd()
+      )
+      for (const item of part.breakdown || []) {
+        lines.push(
+          `        ${item.label.padEnd(20)} ${formatTokens(item.tokens).padStart(9)}   ${item.count} herramientas`
+        )
+      }
     }
-  }
-  for (const gap of report.cost.unmeasured) {
-    lines.push(`    ${'NO MEDIDO'.padEnd(24)} ${gap.label} — ${gap.reason}`)
+    for (const gap of entry.unmeasured) {
+      lines.push(`      ${'NO MEDIDO'.padEnd(24)} ${gap.label} — ${gap.reason}`)
+    }
   }
   lines.push('')
 }

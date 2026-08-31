@@ -1,10 +1,13 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
+import { mkdtempSync, mkdirSync, writeFileSync } from 'node:fs'
+import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 
 import { probeServer, probeEnvironment } from '../src/doctor/probe.js'
 import { runDoctor } from '../src/doctor/index.js'
 import { renderReport } from '../src/doctor/report.js'
+import { detectTargets, readAll } from '../src/targets/index.js'
 
 // El fixture vive fuera de test/ a propósito: el runner de Node ejecuta todo lo
 // que hay bajo ese directorio, y un server MCP esperando stdin cuelga la suite.
@@ -73,18 +76,29 @@ test('mide cada server una sola vez aunque lo declaren dos runtimes', async () =
 })
 
 test('el costo pasa de parcial a completo con los probes', async () => {
-  const snapshots = [{ objects: { mcp: [server('falso')] } }]
+  // Sobre un proyecto de verdad: el costo se atribuye por target mirando qué
+  // servers declara cada uno, así que un probe suelto sin proyecto no alcanza.
+  const root = mkdtempSync(join(tmpdir(), 'syntax-costo-'))
+  mkdirSync(join(root, '.claude/skills'), { recursive: true })
+  writeFileSync(
+    join(root, '.mcp.json'),
+    JSON.stringify({ mcpServers: { falso: { command: process.execPath, args: [FAKE] } } })
+  )
+
+  const snapshots = readAll(root, detectTargets(root))
   const probes = await probeEnvironment(snapshots)
 
-  const parcial = runDoctor(process.cwd())
-  const completo = runDoctor(process.cwd(), { probes })
+  const parcial = runDoctor(root)
+  const completo = runDoctor(root, { probes })
 
   assert.equal(parcial.deep, false)
-  assert.ok(parcial.cost.unmeasured.length > 0)
   assert.match(renderReport(parcial), /\(parcial\)/)
+  assert.ok(parcial.cost.byTarget.some((entry) => entry.unmeasured.length > 0))
 
   assert.equal(completo.deep, true)
-  const schemas = completo.cost.parts.find((part) => part.label.includes('schemas'))
+  const schemas = completo.cost.byTarget
+    .flatMap((entry) => entry.parts)
+    .find((part) => part.label.includes('schemas'))
   assert.ok(schemas, 'esperaba los schemas medidos entre las partes del costo')
   assert.ok(schemas.breakdown.length > 0, 'el desglose por server es lo que hace accionable el total')
 })

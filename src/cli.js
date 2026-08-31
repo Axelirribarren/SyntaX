@@ -12,10 +12,10 @@ const COMMANDS = {
     summary: 'Audita el entorno de agente de un proyecto. Solo lectura.',
     implemented: true
   },
-  import: { summary: 'Genera syntax.yaml desde lo que ya hay en disco.', implemented: false },
+  import: { summary: 'Genera syntax.yaml y syntax.lock desde lo que hay en disco.', implemented: true },
   build: { summary: 'Compila el manifest a un runtime, con reporte de pérdida.', implemented: false },
   lock: { summary: 'Fija SHAs y versiones en syntax.lock.', implemented: false },
-  verify: { summary: 'Falla si el entorno derivó del manifest. Para CI.', implemented: false },
+  verify: { summary: 'Falla si el entorno derivó del contrato. Solo lectura, para CI.', implemented: true },
   rollback: { summary: 'Revierte la última aplicación.', implemented: false }
 }
 
@@ -29,9 +29,15 @@ function usage() {
   lines.push('  · = todavía no implementado')
   lines.push('')
   lines.push('  syntax doctor [ruta] [--json] [--deep] [--timeout <segundos>]')
+  lines.push('  syntax import [ruta] [--mirror] [--force] [--dry-run]')
+  lines.push('  syntax verify [ruta] [--strict] [--json]')
   lines.push('')
-  lines.push('  --deep  levanta los MCP servers declarados para medir sus schemas.')
-  lines.push('          Ejecuta los comandos del .mcp.json del proyecto auditado.')
+  lines.push('  --deep    levanta los MCP servers declarados para medir sus schemas.')
+  lines.push('            Ejecuta los comandos del .mcp.json del proyecto auditado.')
+  lines.push('  --mirror  declara que la unión de skills debe existir en todos los')
+  lines.push('            targets. Es una política, no una observación: queda escrita')
+  lines.push('            en el manifest.')
+  lines.push('  --strict  hace que unexpected también rompa el build.')
   lines.push('')
   return lines.join('\n')
 }
@@ -71,6 +77,34 @@ async function doctor(args) {
   console.log(flags.json ? JSON.stringify(report, null, 2) : renderReport(report))
 }
 
+function rootFrom(args) {
+  return resolve(args.find((arg, index) => !arg.startsWith('--') && args[index - 1] !== '--timeout') || '.')
+}
+
+// La capa de manifest se carga con import() dinámico. Es aislamiento del CAMINO
+// DE EJECUCIÓN, no de supply chain: npx instala `yaml` igual. Lo que se evita es
+// que `doctor` —el comando con el que alguien prueba SyntaX en un repo ajeno—
+// parse nada ni pague el arranque de una dependencia que no usa.
+async function importar(args) {
+  const { runImport, renderImport } = await import('./import.js')
+  const result = runImport(rootFrom(args), {
+    mirror: args.includes('--mirror'),
+    force: args.includes('--force'),
+    dryRun: args.includes('--dry-run')
+  })
+
+  console.log(renderImport(result))
+  if (!result.ok) process.exitCode = 1
+}
+
+async function verificar(args) {
+  const { runVerify, renderVerify } = await import('./verify.js')
+  const result = runVerify(rootFrom(args), { strict: args.includes('--strict') })
+
+  console.log(args.includes('--json') ? JSON.stringify(result, null, 2) : renderVerify(result))
+  process.exitCode = result.exit
+}
+
 async function main(argv) {
   const args = argv.slice(2)
   const command = args[0]
@@ -80,19 +114,20 @@ async function main(argv) {
     return
   }
 
-  if (command !== 'doctor') {
-    const known = COMMANDS[command]
-    console.error(
-      known
-        ? `'${command}' todavía no está implementado: ${known.summary}`
-        : `Comando desconocido: ${command}`
-    )
-    console.error(usage())
-    process.exitCode = 1
-    return
-  }
+  const rest = args.slice(1)
 
-  await doctor(args.slice(1))
+  if (command === 'doctor') return doctor(rest)
+  if (command === 'import') return importar(rest)
+  if (command === 'verify') return verificar(rest)
+
+  const known = COMMANDS[command]
+  console.error(
+    known
+      ? `'${command}' todavía no está implementado: ${known.summary}`
+      : `Comando desconocido: ${command}`
+  )
+  console.error(usage())
+  process.exitCode = 1
 }
 
 main(process.argv)

@@ -1,72 +1,54 @@
-# El entorno de agente de este propio repo.
+# syntax.yaml — el contrato: qué entorno queremos, y por qué.
 #
-# Escrito a mano: todavía NO hay parser y nadie lo consume. Es el artefacto
-# norte y el caso real contra el que se valida el schema (src/manifest/schema.js)
-# antes de congelarlo.
+# Generado por `syntax import` a partir de lo que había en disco. Lo que la
+# herramienta NO puede saber es el porqué de cada cosa: completá `why:` en
+# los components que importen. Ese texto sobrevive a las reescrituras; los
+# comentarios no.
 #
-# Los `pin` están vacíos a propósito. `syntax lock` es quien los llena y todavía
-# no existe, así que este manifest NO es reproducible — y `validateManifest` lo
-# reporta como tal. Dejarlo visible es más útil que disimularlo: es exactamente
-# el problema que el producto dice resolver, en su propia casa.
+# La integridad de lo instalado no vive acá: vive en syntax.lock.
 
 version: 2
-name: syntax
-
-# Qué necesita este entorno, y con qué se cumple. La colisión que `doctor`
-# encuentra hoy en .mcp.json (chrome-devtools + playwright a la vez) queda acá
-# resuelta a un solo provider, con el otro como alternativa.
-capabilities:
-  browser-control:
-    provider: chrome-devtools
-    fallback: [playwright]
-  docs-lookup:
-    provider: context7
-  design-direction:
-    provider: frontend-design
-    fallback: [ui-ux-pro-max]
-
-components:
-  - kind: mcp
-    id: chrome-devtools
-    source: ChromeDevTools/chrome-devtools-mcp
-    command: [npx, -y, chrome-devtools-mcp@latest]
-    pin:
-
-  - kind: mcp
-    id: context7
-    source: upstash/context7
-    command: [npx, -y, "@upstash/context7-mcp@latest"]
-    pin:
-
-  - kind: skill
-    id: frontend-design
-    source: anthropics/skills
-    path: skills/frontend-design
-    pin:
-
-  - kind: skill
-    id: webapp-testing
-    source: anthropics/skills
-    path: skills/webapp-testing
-    pin:
-
-  - kind: skill
-    id: canvas-design
-    source: anthropics/skills
-    path: skills/canvas-design
-    pin:
-
-  - kind: rule
-    id: agent-brief
-    source: docs/agent-brief.md
-
-permissions:
-  deny:
-    # Git es del usuario: la regla más dura del repo, y acá es ejecutable.
-    - "bash(git commit *)"
-    - "bash(git push *)"
-    - "bash(git reset *)"
-
+name: SyntaX
 targets:
   - claude-code
   - codex
+components:
+  - kind: skill
+    id: a11y-audit
+    targets:
+      - claude-code
+  - kind: skill
+    id: brand-guidelines
+    targets:
+      - claude-code
+  - kind: skill
+    id: canvas-design
+    targets:
+      - claude-code
+      - codex
+  - kind: skill
+    id: design-audit
+    targets:
+      - claude-code
+  - kind: skill
+    id: frontend-design
+    targets:
+      - claude-code
+      - codex
+  - kind: skill
+    id: theme-factory
+    targets:
+      - claude-code
+  - kind: skill
+    id: ui-ux-pro-max
+    targets:
+      - claude-code
+  - kind: skill
+    id: web-artifacts-builder
+    targets:
+      - claude-code
+  - kind: skill
+    id: webapp-testing
+    targets:
+      - claude-code
+      - codex

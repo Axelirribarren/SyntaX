@@ -48,7 +48,7 @@ test('reconoce runtimes que todavía no sabemos compilar', () => {
   assert.ok(Array.isArray(encontrados))
 })
 
-test('el manifest sin pin se reporta como no reproducible', () => {
+test('declarar origen sin pin impide reinstalar igual', () => {
   const errores = validateManifest({
     version: 2,
     name: 'x',
@@ -56,7 +56,21 @@ test('el manifest sin pin se reporta como no reproducible', () => {
     components: [{ kind: 'skill', id: 'frontend-design', source: 'anthropics/skills' }]
   })
 
-  assert.ok(errores.some((error) => /no es reproducible/.test(error)))
+  assert.ok(errores.some((error) => /no se puede reinstalar igual/.test(error)))
+})
+
+test('un component observado en disco no necesita pin', () => {
+  // `pin` es origen/versión, no integridad. Lo que produce `import` observa el
+  // disco y no sabe de dónde vino: exigirle pin sería confundir dos propiedades
+  // distintas. La integridad de esa skill vive en el lock, como digest.
+  const errores = validateManifest({
+    version: 2,
+    name: 'x',
+    targets: ['claude-code'],
+    components: [{ kind: 'skill', id: 'frontend-design', targets: ['claude-code'] }]
+  })
+
+  assert.deepEqual(errores, [])
 })
 
 test('el manifest rechaza secretos literales', () => {

@@ -51,16 +51,45 @@ Dos salidas, y hay que elegir antes de que el archivo crezca:
 Mientras tanto: **no engordar el archivo a mano más allá de lo que se verifica.** Si crece a
 cincuenta entradas curadas, volvimos al catálogo.
 
+## Correcciones a entradas anteriores de este backlog
+
+**Digest ≠ pin.** Una versión previa de este documento describía el digest como sustituto del pin.
+Está mal y ordenarlo cambió el diseño: un digest es **integridad** (*"¿esto cambió?"*), un pin es
+**origen y versión** (*"¿cómo reinstalo lo mismo?"*). Confundirlos dejaría a un equipo convencido
+de tener reproducibilidad cuando lo que tiene es detección de manipulación. Están en archivos
+distintos a propósito: pin en `syntax.yaml`, digest en `syntax.lock`.
+
+**El digest tampoco es integridad byte a byte.** Normaliza EOL, BOM y unicode de rutas, así que dos
+árboles con bytes distintos pueden dar el mismo valor. Es deliberado —sin eso `verify` no serviría
+en un equipo mixto— pero hay que decirlo así y no prometer los bytes exactos. Ver `digest.md`.
+
+**El costo se sumaba entre runtimes.** `static-cost` hacía `flatMap` sobre todos los snapshots:
+contaba 12 skills donde la unión real son 9, y sumaba `CLAUDE.md` junto con `AGENTS.md`. El titular
+de ≈15.992 tokens estaba inflado por sumar dos entornos que nunca corren a la vez. Corregido: el
+costo es por target. El número real de Claude Code es ≈14.887 y el de Codex ≈2.145.
+
 ## Contrato y manifest — deuda antes de `build`
 
 | | Qué | Por qué importa |
 |---|---|---|
-| bloquea `import` | **No hay parser de YAML.** `syntax.yaml` se escribe a mano y nadie lo lee. | Decisión pendiente: entra una dependencia (el repo hoy tiene cero) o se escribe un parser mínimo. Tener cero dependencias es señal, pero no a cualquier precio. |
 | bloquea `build` | **`emit` no está implementado en ningún adapter.** Solo existe `read`. | El `supports` declarativo produce el reporte de pérdida, pero esa derivación nunca se ejerció contra una compilación real. La afirmación de que "migrar entre N runtimes no cuesta N²" está sin probar. |
 | bloquea `build` | **El adapter de Codex lee TOML con una expresión regular.** | Alcanza para contar y comparar. Para *escribir* `config.toml` hace falta un parser de verdad. |
 | bloquea `build` | **`mode: 'merge-markdown'` está declarado y no implementado.** | ¿Qué pasa cuando el proyecto ya tiene un `CLAUDE.md` escrito por una persona? Pisarlo es inaceptable. Los marcadores de `emit-docs.mjs` son una respuesta posible, pero hay que decidirlo. |
 | bloquea `build` | **Los secretos no tienen mecanismo de resolución.** El schema exige `${secret}`, pero nadie define de dónde sale el valor: ¿`.env`? ¿keychain del sistema? ¿prompt interactivo? | Es la causa más común de instalación fallida y no está diseñado. |
+| bloquea `accept` | **No existe el comando para actualizar la línea base.** Hoy la única forma de aceptar drift es `import --force`, que reescribe el manifest entero y pierde los `why`. | Aceptar drift tiene que ser deliberado *y* quirúrgico. Está nombrado (`accept`) para que no se invente otra cosa después. |
+| vigilar | **`import` crea pero no fusiona.** Con `--force` se pierde todo lo escrito a mano, `why` incluido. | Es el mismo problema de `merge-markdown` en otra forma. Hasta que exista el merge, conviene no tocar el manifest a mano si se va a reimportar. |
 | vigilar | **`scripts/emit-docs.mjs` es un segundo pipeline de compilación.** | Cuando `build` exista, tiene que absorberlo. Si no, quedan dos formas de generar documentación y van a divergir — el problema que el script existe para evitar. |
+
+## La franja de skills — lo que quedó afuera
+
+`import` y `verify` cubren skills. Antes de extenderlos:
+
+| | Qué | Por qué importa |
+|---|---|---|
+| bloquea MCP | **Sanitización antes de serializar.** El manifest se commitea; serializar un `.mcp.json` tal cual escribiría credenciales en él. | Hoy la franja lo esquiva porque las skills no llevan `env`. Es lo primero a diseñar cuando entren los MCP. |
+| vigilar | **"Las skills no tienen secretos" es un matiz, no un absoluto.** Una skill puede tener credenciales hardcodeadas en cualquier archivo. | La franja no serializa su contenido, así que el riesgo es bajo — pero hay que seguir sin imprimir contenido ni rutas sensibles en los reportes. |
+| vigilar | **Los digests solo se probaron en Windows.** Los fixtures de EOL, unicode y symlinks corren donde se ejecuten los tests. | El symlink se saltea con `EPERM` en Windows sin modo desarrollador: ese caso hoy no se está verificando en ningún lado. Se cierra con CI en Linux. |
+| vigilar | **Una extensión nueva en la allowlist del digest cambia los digests de ese formato.** | Exige bump del nombre del algoritmo y actualizar los vectores de `docs/digest.md`. Está escrito allá, pero es fácil de pasar por alto en un PR chico. |
 
 ## Legacy
 

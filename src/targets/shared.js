@@ -1,6 +1,6 @@
 // Lecturas de disco que comparten los adapters. Nada de esto escribe.
 
-import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs'
+import { existsSync, lstatSync, readdirSync, readFileSync, statSync } from 'node:fs'
 import { join } from 'node:path'
 
 export const BACKUP_SUFFIX = '.syntax-backup-'
@@ -111,9 +111,21 @@ export function readSkillsDirectory(root, relativeDir) {
       backups.push({ id: name, path, relativePath: `${relativeDir}/${name}` })
       continue
     }
+    // lstat y no el Dirent de readdirSync: el Dirent no reporta symlinks de
+    // forma consistente entre plataformas. Una carpeta de skill que en realidad
+    // es un enlace apunta afuera del proyecto y no se puede versionar; se marca
+    // acá para que observe.js lo reporte en vez de tratarla como una skill más.
+    let symlink = false
+    try {
+      symlink = lstatSync(path).isSymbolicLink()
+    } catch {
+      symlink = false
+    }
+
     const meta = readSkillMeta(path)
     skills.push({
       id: name,
+      symlink,
       kind: 'skill',
       path,
       relativePath: `${relativeDir}/${name}`,

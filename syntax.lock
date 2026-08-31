@@ -1,0 +1,91 @@
+{
+  "lockVersion": 1,
+  "digestAlgorithm": "syntax-skill-tree-v1",
+  "generatedAt": "2026-08-31T20:14:05.868Z",
+  "skills": [
+    {
+      "id": "a11y-audit",
+      "target": "claude-code",
+      "path": ".claude/skills/a11y-audit",
+      "files": 1,
+      "digest": "sha256:5c8c9f52be7eb81e72223b6684df87a818b0df519e9d337cbe3ff01f88060563"
+    },
+    {
+      "id": "brand-guidelines",
+      "target": "claude-code",
+      "path": ".claude/skills/brand-guidelines",
+      "files": 2,
+      "digest": "sha256:68455e4b2a3bb55316a1aca989ccebb38491356b4894923205a5203f48f0b493"
+    },
+    {
+      "id": "canvas-design",
+      "target": "claude-code",
+      "path": ".claude/skills/canvas-design",
+      "files": 83,
+      "digest": "sha256:b48e11ae2b361dda6985f271e8c5d4b080d5865b8d569868d5a90050dcf84509"
+    },
+    {
+      "id": "canvas-design",
+      "target": "codex",
+      "path": ".agents/skills/canvas-design",
+      "files": 83,
+      "digest": "sha256:b48e11ae2b361dda6985f271e8c5d4b080d5865b8d569868d5a90050dcf84509"
+    },
+    {
+      "id": "design-audit",
+      "target": "claude-code",
+      "path": ".claude/skills/design-audit",
+      "files": 1,
+      "digest": "sha256:20813823c47944db78b232b1d3dbf7a6986f0b2f49a2502fa593e1adfdcec0b7"
+    },
+    {
+      "id": "frontend-design",
+      "target": "claude-code",
+      "path": ".claude/skills/frontend-design",
+      "files": 2,
+      "digest": "sha256:d225ecdd65e473b1d892f3bfe385e6aa7819d3ec77888912d4f6c961177694b0"
+    },
+    {
+      "id": "frontend-design",
+      "target": "codex",
+      "path": ".agents/skills/frontend-design",
+      "files": 2,
+      "digest": "sha256:d225ecdd65e473b1d892f3bfe385e6aa7819d3ec77888912d4f6c961177694b0"
+    },
+    {
+      "id": "theme-factory",
+      "target": "claude-code",
+      "path": ".claude/skills/theme-factory",
+      "files": 13,
+      "digest": "sha256:69b9992c80a52ff7a2f080b4aaca77ffaa34a499a61a9eaf608da93a5174dbd4"
+    },
+    {
+      "id": "ui-ux-pro-max",
+      "target": "claude-code",
+      "path": ".claude/skills/ui-ux-pro-max",
+      "files": 70,
+      "digest": "sha256:1099d4f61a1589b726529b08e0c2b61bb5c20b5680fd183e30ec72ca360512b2"
+    },
+    {
+      "id": "web-artifacts-builder",
+      "target": "claude-code",
+      "path": ".claude/skills/web-artifacts-builder",
+      "files": 5,
+      "digest": "sha256:2dffe0751d3b7b7c06637ce8b6c287aedd9b0f9f32acc5f14f105ff1c9cad844"
+    },
+    {
+      "id": "webapp-testing",
+      "target": "claude-code",
+      "path": ".claude/skills/webapp-testing",
+      "files": 6,
+      "digest": "sha256:48b318488e2fbcd02d51c61208bec76b553db24250cd99c6e7d860f0b1307f18"
+    },
+    {
+      "id": "webapp-testing",
+      "target": "codex",
+      "path": ".agents/skills/webapp-testing",
+      "files": 6,
+      "digest": "sha256:48b318488e2fbcd02d51c61208bec76b553db24250cd99c6e7d860f0b1307f18"
+    }
+  ]
+}
