@@ -53,6 +53,18 @@ cincuenta entradas curadas, volvimos al catálogo.
 
 ## Correcciones a entradas anteriores de este backlog
 
+**Un primer diseño de `accept` aceptaba demasiado.** Trataba `modified` y `unexpected` como "bajo
+riesgo" y los aceptaba en una corrida a ciegas. Está mal: un `unexpected` es una capacidad
+ejecutable nueva para el agente, y aceptarlo es **establecer confianza**, no actualizar
+información. Además "es reversible" solo vale si está en git — pisar el digest del lock no lo es
+por sí mismo. De ahí que `accept` sea interactivo, que no exista un `--all` genérico, y que la
+acción se nombre en vez de inferirse del estado.
+
+**Se prometía atomicidad que no existía.** `writeAllAtomic` hace dos renames: cada uno es atómico,
+los dos juntos no son una transacción. El comentario decía "los dos archivos o ninguno" y era
+falso. Ahora se promete lo que sí se cumple —interrupción detectable, con journal y
+`manifestDigest`— y el comentario del código lo dice.
+
 **Digest ≠ pin.** Una versión previa de este documento describía el digest como sustituto del pin.
 Está mal y ordenarlo cambió el diseño: un digest es **integridad** (*"¿esto cambió?"*), un pin es
 **origen y versión** (*"¿cómo reinstalo lo mismo?"*). Confundirlos dejaría a un equipo convencido
@@ -80,6 +92,14 @@ costo es por target. El número real de Claude Code es ≈14.887 y el de Codex �
 | vigilar | **`import` crea pero no fusiona.** Con `--force` se pierde todo lo escrito a mano, `why` incluido. | Es el mismo problema de `merge-markdown` en otra forma. Hasta que exista el merge, conviene no tocar el manifest a mano si se va a reimportar. |
 | vigilar | **`scripts/emit-docs.mjs` es un segundo pipeline de compilación.** | Cuando `build` exista, tiene que absorberlo. Si no, quedan dos formas de generar documentación y van a divergir — el problema que el script existe para evitar. |
 
+## `accept` y el lock — lo que quedó abierto
+
+| | Qué | Por qué importa |
+|---|---|---|
+| vigilar | **`allowDivergence` es una lista de targets, no un modelo de variantes.** La solución de fondo sería que cada variante tenga identidad propia. | Con la lista, una divergencia entre otros targets sigue reportándose, que era el agujero del booleano. Pero seguimos sin poder decir *en qué* se diferencian legítimamente. |
+| vigilar | **El lock creció bastante** con el inventario por archivo: `canvas-design` sola aporta decenas de entradas. | Se asumió a cambio de que `accept` pueda decir qué cambió. Si el archivo se vuelve incómodo de revisar, la salida es un formato más compacto, no volver a un digest ciego. |
+| vigilar | **`import --relock` bendice lo que coincide.** Solo rehace las entradas cuyo digest no cambió; las que difieren conservan el digest viejo para que `verify` las siga reportando. | La frontera de confianza se sostiene, pero es una ruta que hay que revisar cada vez que se toque el formato del lock. |
+
 ## La franja de skills — lo que quedó afuera
 
 `import` y `verify` cubren skills. Antes de extenderlos:
@@ -88,7 +108,7 @@ costo es por target. El número real de Claude Code es ≈14.887 y el de Codex �
 |---|---|---|
 | bloquea MCP | **Sanitización antes de serializar.** El manifest se commitea; serializar un `.mcp.json` tal cual escribiría credenciales en él. | Hoy la franja lo esquiva porque las skills no llevan `env`. Es lo primero a diseñar cuando entren los MCP. |
 | vigilar | **"Las skills no tienen secretos" es un matiz, no un absoluto.** Una skill puede tener credenciales hardcodeadas en cualquier archivo. | La franja no serializa su contenido, así que el riesgo es bajo — pero hay que seguir sin imprimir contenido ni rutas sensibles en los reportes. |
-| vigilar | **Los digests solo se probaron en Windows.** Los fixtures de EOL, unicode y symlinks corren donde se ejecuten los tests. | El symlink se saltea con `EPERM` en Windows sin modo desarrollador: ese caso hoy no se está verificando en ningún lado. Se cierra con CI en Linux. |
+| vigilar | **La evidencia multiplataforma recién existe cuando CI corra.** Está el workflow y está `scripts/report-eol.mjs`, que dice qué finales de línea recibió cada runner en vez de suponerlos. | Hasta el primer verde en las tres plataformas, el determinismo del digest sigue siendo una promesa. En esta máquina Windows el checkout llega con CRLF y `verify` pasa, así que hay evidencia parcial. |
 | vigilar | **Una extensión nueva en la allowlist del digest cambia los digests de ese formato.** | Exige bump del nombre del algoritmo y actualizar los vectores de `docs/digest.md`. Está escrito allá, pero es fácil de pasar por alto en un PR chico. |
 
 ## Legacy
@@ -104,9 +124,20 @@ significa que si alguien lo toca, nada lo detecta.
 
 | | Qué | Por qué importa |
 |---|---|---|
-| bloquea equipo | **No hay CI.** `npm test` y `npm run docs:check` corren solo en local. | El guard de drift de documentación no sirve de mucho si nadie lo corre antes de pushear. Es la primera cosa que un segundo integrante rompe sin querer. |
+| vigilar | **CI corre en Node 22 solamente.** `engines` dice `>=20.11`. | O se prueba el piso declarado, o se sube el piso. Hoy la declaración no está respaldada. |
 | vigilar | **La extensibilidad del contrato está sin probar.** Hay dos adapters y los escribió la misma persona el mismo día. | La afirmación "sumar un runtime es barato" recién se verifica cuando alguien más escriba el tercero sin tocar el núcleo. Hasta entonces es una hipótesis de diseño. |
 | vigilar | **El `.mcp.json` de este repo mantiene la colisión de navegador a propósito**, igual que el drift entre `.claude/skills` y `.agents/skills`. | Es el fixture del dogfood. Está anotado en `AGENTS.md` para que nadie lo "arregle" en silencio y nos deje sin caso de demo. |
+
+## Idioma
+
+El README está en inglés y el resto —CLI, `agent-brief`, `direction`, `digest`, este archivo— en
+castellano. Es una incoherencia deliberada: sostenible mientras el equipo sea hispanohablante y el
+público de afuera solo lea el README.
+
+Los ejemplos de salida del README quedan en castellano porque son salida real; traducirlos
+mostraría algo que la herramienta no imprime. Si en algún momento se quiere coherencia completa,
+la decisión de fondo es **traducir la salida de la CLI**, y eso arrastra los tests, que hacen match
+sobre los mensajes.
 
 ## Riesgos de producto
 

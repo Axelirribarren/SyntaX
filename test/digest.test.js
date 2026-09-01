@@ -92,22 +92,38 @@ test('los directorios vacíos no aportan al digest', () => {
   assert.equal(computeSkillDigest(dir).digest, VECTORES.skillMd)
 })
 
-test('un symlink deja el digest no calculable, no lo saltea', () => {
+test('un symlink deja el digest no calculable, no lo saltea', (t) => {
   const dir = skillDir({ 'SKILL.md': LF })
   const afuera = skillDir({ 'secreto.md': Buffer.from('x\n') })
 
   try {
     symlinkSync(afuera, join(dir, 'fuga'), 'dir')
   } catch (error) {
-    // Windows sin modo desarrollador no deja crear symlinks. El caso se
-    // verifica en las plataformas donde se puede.
-    if (error.code === 'EPERM' || error.code === 'EACCES') return
-    throw error
+    if (error.code !== 'EPERM' && error.code !== 'EACCES') throw error
+    // Windows sin modo desarrollador no deja crear symlinks. Se saltea de forma
+    // VISIBLE: un `return` mudo haría que el reporte diga que el caso pasó
+    // cuando en realidad no se ejecutó. En Linux y macOS corre siempre.
+    return t.skip('el sistema no permite crear symlinks (Windows sin modo desarrollador)')
   }
 
   const resultado = computeSkillDigest(dir)
   assert.equal(resultado.ok, false)
   assert.match(resultado.reason, /symlink/)
+})
+
+test('en Windows, un junction tampoco se sigue', (t) => {
+  // Los junctions son reparse points y se crean sin permisos especiales, así
+  // que son la forma realista de que aparezca un enlace en un repo Windows. Sin
+  // este caso, la política de symlinks quedaría demostrada solo en Unix.
+  if (process.platform !== 'win32') return t.skip('solo aplica a Windows')
+
+  const dir = skillDir({ 'SKILL.md': LF })
+  const afuera = skillDir({ 'secreto.md': Buffer.from('x\n') })
+  symlinkSync(afuera, join(dir, 'union'), 'junction')
+
+  const resultado = computeSkillDigest(dir)
+  assert.equal(resultado.ok, false)
+  assert.match(resultado.reason, /symlink|no regular/)
 })
 
 test('el nombre del algoritmo viaja dentro del hash', () => {

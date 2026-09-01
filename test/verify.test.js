@@ -5,9 +5,8 @@ import { join } from 'node:path'
 
 import { runImport } from '../src/import.js'
 import { runVerify, EXIT } from '../src/verify.js'
-import { proyecto } from './import.test.js'
+import { proyecto, skill } from '../fixtures/proyecto.mjs'
 
-const skill = (nombre) => `---\nname: ${nombre}\ndescription: hace algo.\n---\n\nCuerpo.\n`
 
 function importado(skills, options) {
   const root = proyecto(skills)

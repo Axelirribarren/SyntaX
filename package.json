@@ -2,7 +2,7 @@
   "name": "syntax",
   "private": true,
   "version": "0.2.0",
-  "description": "Compilador de entornos de agente: un manifest, todos los runtimes, con costo y pérdida medidos antes de aplicar.",
+  "description": "A compiler for agent environments: one manifest, every runtime, with cost and loss measured before anything is applied.",
   "license": "MIT",
   "type": "module",
   "bin": {
@@ -17,7 +17,8 @@
     "verify": "node src/cli.js verify",
     "docs": "node scripts/emit-docs.mjs",
     "docs:check": "node scripts/emit-docs.mjs --check",
-    "test": "node --test"
+    "test": "node --test",
+    "accept": "node src/cli.js accept"
   },
   "dependencies": {
     "yaml": "^2.9.0"

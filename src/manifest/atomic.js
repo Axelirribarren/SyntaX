@@ -1,16 +1,28 @@
-// Escritura atómica de varios archivos, todo o nada.
+// Escritura de varios archivos con interrupción detectable.
 //
-// `import` escribe syntax.yaml y syntax.lock juntos. Si el segundo falla y el
-// primero ya está en disco, el proyecto queda con un contrato sin su línea base
-// de integridad: `verify` no podría distinguir "nadie tocó nada" de "no sé qué
-// había antes". Es peor que no haber escrito nada.
+// QUÉ GARANTIZA, exactamente: cada rename individual es atómico a nivel del
+// sistema de archivos, y antes de renombrar nada los contenidos ya están
+// escritos y sincronizados a disco.
+//
+// QUÉ NO GARANTIZA: que los dos renames sean una sola transacción. El proceso
+// puede morir entre uno y otro. Prometer "los dos archivos o ninguno" sería
+// falso, y una promesa falsa acá es peor que no dar ninguna: alguien confiaría
+// en que el par siempre es coherente.
+//
+// Lo que sí se hace es dejar rastro. Antes de tocar los destinos se escribe un
+// journal con la operación y los backups; se borra recién cuando terminó todo.
+// Si sobrevive un journal, la escritura se cortó, y los comandos lo informan al
+// arrancar en vez de dejar que la inconsistencia se lea como "cambió todo".
+//
+// Además el lock guarda `manifestDigest`, así que un par que no va junto se
+// detecta aunque el journal se haya perdido.
 
-import { existsSync, renameSync, rmSync, writeFileSync } from 'node:fs'
+import { closeSync, existsSync, fsyncSync, openSync, renameSync, rmSync, writeFileSync } from 'node:fs'
 
-// files: [{ path, content }]. Escribe cada uno en un temporal al lado del
-// destino (mismo volumen, para que el rename sea atómico) y recién después
-// mueve todos. Si algo falla, se limpia y se restaura lo que había.
-export function writeAllAtomic(files) {
+import { clearJournal, writeJournal } from './journal.js'
+
+// files: [{ path, content }]. root y command son para el journal.
+export function writeAllAtomic(files, { root, command } = {}) {
   const stamp = `${process.pid}-${Date.now()}`
   const staged = []
   const backups = []
@@ -18,8 +30,16 @@ export function writeAllAtomic(files) {
   try {
     for (const file of files) {
       const temporary = `${file.path}.syntax-tmp-${stamp}`
-      writeFileSync(temporary, file.content, 'utf8')
+      writeAndSync(temporary, file.content)
       staged.push({ ...file, temporary })
+    }
+
+    if (root) {
+      writeJournal(root, {
+        command,
+        files: files.map((file) => file.path),
+        temporales: staged.map((file) => file.temporary)
+      })
     }
 
     for (const file of staged) {
@@ -27,25 +47,50 @@ export function writeAllAtomic(files) {
         const backup = `${file.path}.syntax-prev-${stamp}`
         renameSync(file.path, backup)
         backups.push({ path: file.path, backup })
+        if (root) {
+          writeJournal(root, {
+            command,
+            files: files.map((entry) => entry.path),
+            backups
+          })
+        }
       }
       renameSync(file.temporary, file.path)
     }
 
     for (const entry of backups) rmSync(entry.backup, { force: true })
+    if (root) clearJournal(root)
+
     return { ok: true, written: files.map((file) => file.path) }
   } catch (error) {
-    // Revertir: volver a poner lo anterior y borrar lo que quedó a medias.
+    // Revertir lo que se pueda: volver a poner lo anterior y limpiar temporales.
     for (const entry of backups) {
       try {
         rmSync(entry.path, { force: true })
         renameSync(entry.backup, entry.path)
       } catch {
-        // Si tampoco se puede restaurar, el error original es el que importa;
-        // el backup queda en disco con nombre reconocible.
+        // Si tampoco se puede restaurar, el backup queda en disco con nombre
+        // reconocible y el journal dice dónde está. El error original es el que
+        // le importa a quien llamó.
       }
     }
     for (const file of staged) rmSync(file.temporary, { force: true })
+    if (root) clearJournal(root)
 
     return { ok: false, reason: error.message }
+  }
+}
+
+// Escribir y sincronizar antes de renombrar: sin fsync, un corte de energía
+// puede dejar el destino renombrado apuntando a contenido que nunca llegó al
+// disco. El rename sería atómico y el contenido, basura.
+function writeAndSync(path, content) {
+  writeFileSync(path, content, 'utf8')
+
+  const fd = openSync(path, 'r+')
+  try {
+    fsyncSync(fd)
+  } finally {
+    closeSync(fd)
   }
 }

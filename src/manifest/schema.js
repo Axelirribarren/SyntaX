@@ -49,6 +49,11 @@ export const SHAPE = {
       pin: 'string — commit SHA o versión exacta. Sin pin no se puede reinstalar igual.',
       targets: 'string[] — targets donde vale este component (política faithful)',
       why: 'string — por qué está. Opcional; `import` no lo puede saber.',
+      // Autorizar divergencia NO autoriza mutación: cada copia sigue teniendo
+      // que coincidir con su propio digest en el lock. Se acepta que sean
+      // distintas entre sí, no que cambien sin que nadie mire.
+      allowDivergence: 'string[] — targets entre los que se acepta que difieran',
+      divergenceWhy: 'string — obligatorio si hay allowDivergence',
       env: '{ [nombre]: "${secret}" } — nunca valores reales'
     }
   ],
@@ -82,6 +87,20 @@ export function validateManifest(value) {
     // por qué tener pin todavía.
     if (component.source && !component.pin) {
       errors.push(`${where} (${component.id}) declara source sin pin: no se puede reinstalar igual.`)
+    }
+
+    if (component.allowDivergence !== undefined) {
+      if (!Array.isArray(component.allowDivergence) || component.allowDivergence.length < 2) {
+        errors.push(
+          `${where} (${component.id}).allowDivergence tiene que listar al menos dos targets: una divergencia es entre dos.`
+        )
+      }
+      // Un booleano no dice entre qué targets vale ni por qué, y autorizaría en
+      // silencio a un runtime que todavía no existe. La razón es obligatoria
+      // porque una excepción sin motivo escrito se vuelve permanente sola.
+      if (!component.divergenceWhy) {
+        errors.push(`${where} (${component.id}) permite divergencia sin explicar por qué.`)
+      }
     }
 
     if (component.targets !== undefined) {

@@ -15,7 +15,8 @@ import { join } from 'node:path'
 
 import { observeSkills, findDiverged } from './observe.js'
 import { readManifest } from './manifest/parse.js'
-import { readLock, findEntry } from './manifest/lock.js'
+import { readLock, findEntry, manifestDigest } from './manifest/lock.js'
+import { readJournal, describeJournal } from './manifest/journal.js'
 import { MANIFEST_FILE, LOCK_FILE } from './import.js'
 
 export const EXIT = { LIMPIO: 0, DIFERENCIAS: 1, ERROR: 2 }
@@ -23,6 +24,11 @@ export const EXIT = { LIMPIO: 0, DIFERENCIAS: 1, ERROR: 2 }
 export function runVerify(root, options = {}) {
   const manifestPath = join(root, MANIFEST_FILE)
   const lockPath = join(root, LOCK_FILE)
+
+  // Una escritura interrumpida se informa ANTES de comparar nada: los archivos
+  // podrían estar a medio camino y todo lo que sigue sería ruido.
+  const pendiente = readJournal(root)
+  if (pendiente) return { exit: EXIT.ERROR, error: describeJournal(pendiente) }
 
   if (!existsSync(manifestPath) || !existsSync(lockPath)) {
     return {
@@ -39,6 +45,18 @@ export function runVerify(root, options = {}) {
 
   const manifest = parsed.manifest
   const lock = locked.lock
+
+  // El par tiene que ir junto. Si alguien commiteó uno de los dos archivos y no
+  // el otro, o una escritura se cortó y el journal se perdió, comparar digests
+  // produciría un mundo de diferencias falsas. Es un error de estado.
+  const esperado = manifestDigest(manifest)
+  if (lock.manifestDigest && lock.manifestDigest !== esperado) {
+    return {
+      exit: EXIT.ERROR,
+      error: `${LOCK_FILE} no corresponde a este ${MANIFEST_FILE}: el contrato cambió sin regenerar la línea base.`
+    }
+  }
+
   const observed = observeSkills(root)
 
   const instaladas = new Set(observed.skills.map((skill) => `${skill.id}@${skill.target}`))
@@ -87,14 +105,27 @@ export function runVerify(root, options = {}) {
     }
   }
 
-  const diverged = findDiverged(observed.skills)
+  // Una divergencia autorizada deja de reportarse SOLO entre los targets que la
+  // autorización nombra. Y autorizarla no autoriza mutación: cada copia sigue
+  // comparándose contra su propio digest más arriba.
+  const permitida = new Map(
+    (manifest.components || [])
+      .filter((component) => component.allowDivergence)
+      .map((component) => [component.id, new Set(component.allowDivergence)])
+  )
+
+  const diverged = findDiverged(observed.skills).filter((entry) => {
+    const autorizados = permitida.get(entry.id)
+    if (!autorizados) return true
+    return !entry.copias.every((copia) => autorizados.has(copia.target))
+  })
 
   // `unexpected` no rompe por defecto: alguien tiene que poder probar una skill
   // sin romperle el build al equipo. Quien quiera entorno sellado usa --strict.
   const fallan =
     missing.length + modified.length + diverged.length + (options.strict ? unexpected.length : 0)
 
-  return {
+  const result = {
     exit: fallan ? EXIT.DIFERENCIAS : EXIT.LIMPIO,
     strict: Boolean(options.strict),
     policy: manifest.targetPolicy || 'faithful',
@@ -105,6 +136,18 @@ export function runVerify(root, options = {}) {
     problems: observed.problems,
     warnings: parsed.warnings
   }
+
+  // `accept` necesita lo observado (digests e inventarios) para poder explicar
+  // qué cambió y actualizar el lock. Va como propiedad no enumerable para que
+  // `verify --json` siga siendo el diagnóstico y no un volcado del disco.
+  //
+  // Lo importante es que `accept` NO vuelva a mirar el disco por su cuenta: los
+  // dos comandos tienen que ver exactamente el mismo estado, o alguien podría
+  // autorizar algo distinto de lo que le mostramos.
+  Object.defineProperty(result, 'observed', { value: observed, enumerable: false })
+  Object.defineProperty(result, 'lock', { value: lock, enumerable: false })
+
+  return result
 }
 
 export function renderVerify(result) {

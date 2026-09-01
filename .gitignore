@@ -16,3 +16,6 @@ scripts/candidatos.json
 # Temporales de la escritura atomica (solo quedan si algo se corto a la mitad)
 *.syntax-tmp-*
 *.syntax-prev-*
+
+# Journal de escrituras interrumpidas: estado local y transitorio
+.syntax-journal.json

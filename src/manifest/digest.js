@@ -90,6 +90,8 @@ export function computeSkillDigest(dir) {
   hash.update(Buffer.from(ALGORITHM, 'utf8'))
   hash.update(NUL)
 
+  const inventory = []
+
   for (const entry of entries) {
     let content
     try {
@@ -105,9 +107,48 @@ export function computeSkillDigest(dir) {
     hash.update(Buffer.from(String(content.length), 'ascii'))
     hash.update(NUL)
     hash.update(content)
+
+    inventory.push({ path: entry.path, digest: fileDigest(content) })
   }
 
-  return { ok: true, digest: `sha256:${hash.digest('hex')}`, files: entries.length }
+  return {
+    ok: true,
+    digest: `sha256:${hash.digest('hex')}`,
+    files: entries.length,
+    // El inventario es lo que le permite a `accept` decir QUÉ cambió en vez de
+    // "confiá en este hash nuevo". Sin él, autorizar una modificación es un
+    // acto de fe, y `accept` es justamente donde una persona da confianza.
+    inventory
+  }
+}
+
+const FILE_ALGORITHM = 'syntax-skill-file-v1'
+
+// Digest de un archivo suelto, con su propio prefijo de dominio: no puede
+// confundirse con el del árbol que lo contiene.
+export function fileDigest(canonicalContent) {
+  const hash = createHash('sha256')
+  hash.update(Buffer.from(FILE_ALGORITHM, 'utf8'))
+  hash.update(NUL)
+  hash.update(Buffer.from(String(canonicalContent.length), 'ascii'))
+  hash.update(NUL)
+  hash.update(canonicalContent)
+  return `sha256:${hash.digest('hex')}`
+}
+
+// Compara dos inventarios y dice qué pasó. Es la información que `accept`
+// muestra antes de pedir confirmación.
+export function diffInventories(before = [], after = []) {
+  const antes = new Map(before.map((entry) => [entry.path, entry.digest]))
+  const despues = new Map(after.map((entry) => [entry.path, entry.digest]))
+
+  const agregados = [...despues.keys()].filter((path) => !antes.has(path)).sort()
+  const eliminados = [...antes.keys()].filter((path) => !despues.has(path)).sort()
+  const modificados = [...despues.keys()]
+    .filter((path) => antes.has(path) && antes.get(path) !== despues.get(path))
+    .sort()
+
+  return { agregados, eliminados, modificados }
 }
 
 function collect(dir, root, out = []) {

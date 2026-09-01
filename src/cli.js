@@ -14,7 +14,8 @@ const COMMANDS = {
   },
   import: { summary: 'Genera syntax.yaml y syntax.lock desde lo que hay en disco.', implemented: true },
   build: { summary: 'Compila el manifest a un runtime, con reporte de pérdida.', implemented: false },
-  lock: { summary: 'Fija SHAs y versiones en syntax.lock.', implemented: false },
+  accept: { summary: 'Autoriza cambios en el entorno, de a uno y a propósito.', implemented: true },
+  lock: { summary: 'Suma resolución de origen para reinstalar igual.', implemented: false },
   verify: { summary: 'Falla si el entorno derivó del contrato. Solo lectura, para CI.', implemented: true },
   rollback: { summary: 'Revierte la última aplicación.', implemented: false }
 }
@@ -29,8 +30,10 @@ function usage() {
   lines.push('  · = todavía no implementado')
   lines.push('')
   lines.push('  syntax doctor [ruta] [--json] [--deep] [--timeout <segundos>]')
-  lines.push('  syntax import [ruta] [--mirror] [--force] [--dry-run]')
+  lines.push('  syntax import [ruta] [--mirror] [--relock] [--dry-run]')
   lines.push('  syntax verify [ruta] [--strict] [--json]')
+  lines.push('  syntax accept [<id>] [--target X] [--adopt | --remove | --allow-divergence --why "…"]')
+  lines.push('                [--all-modified] [--all-unexpected] [--dry-run]')
   lines.push('')
   lines.push('  --deep    levanta los MCP servers declarados para medir sus schemas.')
   lines.push('            Ejecuta los comandos del .mcp.json del proyecto auditado.')
@@ -38,6 +41,10 @@ function usage() {
   lines.push('            targets. Es una política, no una observación: queda escrita')
   lines.push('            en el manifest.')
   lines.push('  --strict  hace que unexpected también rompa el build.')
+  lines.push('  --relock  regenera solo syntax.lock y conserva el manifest con sus why.')
+  lines.push('')
+  lines.push('  accept sin argumentos pregunta por cada cambio y necesita una terminal.')
+  lines.push('  Sin TTY no modifica nada: la autorización es de una persona.')
   lines.push('')
   return lines.join('\n')
 }
@@ -89,7 +96,7 @@ async function importar(args) {
   const { runImport, renderImport } = await import('./import.js')
   const result = runImport(rootFrom(args), {
     mirror: args.includes('--mirror'),
-    force: args.includes('--force'),
+    relock: args.includes('--relock'),
     dryRun: args.includes('--dry-run')
   })
 
@@ -103,6 +110,39 @@ async function verificar(args) {
 
   console.log(args.includes('--json') ? JSON.stringify(result, null, 2) : renderVerify(result))
   process.exitCode = result.exit
+}
+
+// El argumento posicional de `accept` es el ID de la skill, no una ruta: por eso
+// no usa rootFrom. El proyecto es siempre el directorio actual.
+const VALORES = new Set(['--target', '--why'])
+
+async function aceptar(args) {
+  const { runAccept, renderAccept, isInteractive } = await import('./accept.js')
+
+  const valorDe = (nombre) => {
+    const index = args.indexOf(nombre)
+    return index === -1 ? undefined : args[index + 1]
+  }
+
+  const id = args.find(
+    (arg, index) => !arg.startsWith('--') && !VALORES.has(args[index - 1])
+  )
+
+  const result = await runAccept(resolve('.'), {
+    id,
+    target: valorDe('--target'),
+    why: valorDe('--why'),
+    adopt: args.includes('--adopt'),
+    remove: args.includes('--remove'),
+    allowDivergence: args.includes('--allow-divergence'),
+    allModified: args.includes('--all-modified'),
+    allUnexpected: args.includes('--all-unexpected'),
+    dryRun: args.includes('--dry-run'),
+    interactive: isInteractive()
+  })
+
+  console.log(renderAccept(result))
+  if (!result.ok) process.exitCode = 1
 }
 
 async function main(argv) {
@@ -119,6 +159,7 @@ async function main(argv) {
   if (command === 'doctor') return doctor(rest)
   if (command === 'import') return importar(rest)
   if (command === 'verify') return verificar(rest)
+  if (command === 'accept') return aceptar(rest)
 
   const known = COMMANDS[command]
   console.error(

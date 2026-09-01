@@ -71,7 +71,8 @@ export function observeSkills(root) {
         label: snapshot.label,
         path: skill.relativePath,
         files: digest.files,
-        digest: digest.digest
+        digest: digest.digest,
+        inventory: digest.inventory
       })
     }
   }

@@ -13,12 +13,14 @@
 //
 // La tercera solo se dice cuando alguien la pidió.
 
-import { existsSync } from 'node:fs'
+import { existsSync, readFileSync } from 'node:fs'
 import { basename, join } from 'node:path'
 
 import { observeSkills, findDiverged, groupById } from './observe.js'
 import { buildLock, serializeLock } from './manifest/lock.js'
+import { readJournal, describeJournal } from './manifest/journal.js'
 import { serializeManifest } from './manifest/serialize.js'
+import { readManifest } from './manifest/parse.js'
 import { writeAllAtomic } from './manifest/atomic.js'
 import { SCHEMA_VERSION } from './manifest/schema.js'
 
@@ -29,11 +31,26 @@ export function runImport(root, options = {}) {
   const manifestPath = join(root, MANIFEST_FILE)
   const lockPath = join(root, LOCK_FILE)
 
-  if (existsSync(manifestPath) && !options.force) {
+  if (options.relock) return runRelock(root, manifestPath, lockPath)
+
+  // Sin --force a propósito. Si `accept` es el único lugar donde se acepta
+  // drift, un flag que reescribe el manifest entero lo puentea y se lleva
+  // puestos los `why`. Empezar de cero exige borrar el archivo a mano: es una
+  // decisión visible, no un flag perdido en la historia del shell.
+  if (existsSync(manifestPath)) {
     return {
       ok: false,
-      reason: `${MANIFEST_FILE} ya existe. import crea, no fusiona: usá --force para reemplazarlo.`
+      reason: [
+        `${MANIFEST_FILE} ya existe. import crea, no fusiona.`,
+        'Para aceptar cambios puntuales: syntax accept',
+        `Para empezar de cero: borrá ${MANIFEST_FILE} y ${LOCK_FILE} a mano.`
+      ].join('\n  ')
     }
+  }
+
+  const pendiente = readJournal(root)
+  if (pendiente) {
+    return { ok: false, reason: describeJournal(pendiente) }
   }
 
   const observed = observeSkills(root)
@@ -72,24 +89,92 @@ export function runImport(root, options = {}) {
       target: skill.target,
       path: skill.path,
       files: skill.files,
-      digest: skill.digest
-    }))
+      digest: skill.digest,
+      inventory: skill.inventory
+    })),
+    manifest
   )
 
   if (options.dryRun) {
     return { ok: true, dryRun: true, manifest, lock, observed, diverged, mirror }
   }
 
-  // Los dos archivos o ninguno: un contrato sin su línea base de integridad
-  // deja a `verify` sin poder distinguir "nadie tocó nada" de "no sé qué había".
-  const written = writeAllAtomic([
-    { path: manifestPath, content: serializeManifest(manifest) },
-    { path: lockPath, content: serializeLock(lock) }
-  ])
+  // Los dos archivos se escriben juntos, pero los dos renames NO son una sola
+  // transacción: si el proceso muere en el medio queda un journal, y el próximo
+  // comando lo informa. Ver el comentario de src/manifest/atomic.js.
+  const written = writeAllAtomic(
+    [
+      { path: manifestPath, content: serializeManifest(manifest) },
+      { path: lockPath, content: serializeLock(lock) }
+    ],
+    { root, command: 'import' }
+  )
 
   if (!written.ok) return { ok: false, reason: `No se pudo escribir: ${written.reason}` }
 
   return { ok: true, manifest, lock, observed, diverged, mirror, written: written.written }
+}
+
+// Regenera SOLO el lock, conservando el manifest y sus `why`.
+//
+// Existe porque sacar `--force` dejó un hueco: ante un cambio de formato del
+// lock, o un lock corrupto, la única salida habría sido borrar el manifest y
+// perder todo lo que escribió una persona.
+//
+// Lo importante es que NO es un "aceptar todo" por la puerta de atrás. Una
+// entrada solo se rehace con lo que hay en disco si su digest coincide con el
+// que ya estaba: si el contenido no cambió, bendecirlo no otorga confianza
+// nueva. Cuando el digest difiere, se conserva el ANTERIOR, y `verify` sigue
+// reportando esa skill como modificada hasta que alguien la acepte a propósito.
+function runRelock(root, manifestPath, lockPath) {
+  if (!existsSync(manifestPath)) {
+    return { ok: false, reason: `No hay ${MANIFEST_FILE} que conservar. Corré: syntax import` }
+  }
+
+  const parsed = readManifest(manifestPath)
+  if (!parsed.ok) return { ok: false, reason: parsed.errors.join('\n  ') }
+
+  const previo = existsSync(lockPath) ? leerLockCrudo(lockPath) : null
+  const observed = observeSkills(root)
+  const conservados = []
+
+  const entradas = observed.skills.map((skill) => {
+    const anterior = (previo?.skills || []).find(
+      (entry) => entry.id === skill.id && entry.target === skill.target
+    )
+
+    if (anterior && anterior.digest !== skill.digest) {
+      conservados.push({ id: skill.id, target: skill.target })
+      return { ...anterior }
+    }
+
+    return {
+      id: skill.id,
+      target: skill.target,
+      path: skill.path,
+      files: skill.files,
+      digest: skill.digest,
+      inventory: skill.inventory
+    }
+  })
+
+  const lock = buildLock(entradas, parsed.manifest)
+  const written = writeAllAtomic([{ path: lockPath, content: serializeLock(lock) }], {
+    root,
+    command: 'import --relock'
+  })
+
+  if (!written.ok) return { ok: false, reason: `No se pudo escribir: ${written.reason}` }
+
+  return { ok: true, relock: true, lock, conservados, observed }
+}
+
+function leerLockCrudo(path) {
+  try {
+    return JSON.parse(readFileSync(path, 'utf8'))
+  } catch {
+    return null
+  }
 }
 
 export function renderImport(result) {
@@ -97,6 +182,19 @@ export function renderImport(result) {
 
   if (!result.ok) {
     lines.push(`  ${result.reason}`, '')
+    return lines.join('\n')
+  }
+
+  if (result.relock) {
+    lines.push(`  ${LOCK_FILE} regenerado: ${result.lock.skills.length} entradas.`)
+    lines.push(`  ${MANIFEST_FILE} intacto, con sus \`why\`.`)
+    if (result.conservados.length) {
+      lines.push('')
+      lines.push('  Estas ya no coinciden con su digest anterior y se dejó el viejo,')
+      lines.push('  para que verify las siga reportando hasta que alguien las acepte:')
+      for (const entry of result.conservados) lines.push(`    ! ${entry.id} en ${entry.target}`)
+    }
+    lines.push('')
     return lines.join('\n')
   }
 
