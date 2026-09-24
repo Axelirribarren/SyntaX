@@ -67,6 +67,12 @@ const TARGETS = [
   }
 ]
 
+// Un checkout de Windows con core.autocrlf trae CRLF; el bloque generado usa LF.
+// Sin normalizar al leer, --check compara bytes y falla solo en Windows.
+function readText(path) {
+  return readFileSync(path, 'utf8').replace(/\r\n/g, '\n')
+}
+
 function render(brief, target, previous) {
   const block = `${START}\n\n${brief.trim()}\n\n${END}`
 
@@ -81,12 +87,12 @@ function render(brief, target, previous) {
 
 function main() {
   const check = process.argv.includes('--check')
-  const brief = readFileSync(SOURCE, 'utf8')
+  const brief = readText(SOURCE)
   const stale = []
 
   for (const target of TARGETS) {
     const path = join(ROOT, target.file)
-    const previous = existsSync(path) ? readFileSync(path, 'utf8') : null
+    const previous = existsSync(path) ? readText(path) : null
     const next = render(brief, target, previous)
 
     if (previous === next) continue
