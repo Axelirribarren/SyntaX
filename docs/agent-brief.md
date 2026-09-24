@@ -10,9 +10,8 @@ falla. Editá el brief y corré `npm run docs`.
 y si son las que el equipo aceptó.**
 
 Un entorno de agente (skills, MCP servers, reglas, agentes, hooks, permisos) queda declarado en
-un manifest como **contrato de equipo** (hoy `syntax.yaml`; `pactlock.yaml` después de la
-migración), con su línea base de integridad en el lock (hoy `syntax.lock`). pactlock responde
-tres preguntas, en este orden de prioridad:
+un manifest como **contrato de equipo** (`pactlock.yaml`), con su línea base de integridad en el
+lock (`pactlock.lock`). pactlock responde tres preguntas, en este orden de prioridad:
 
 1. **¿Es el entorno que acordamos?** `verify --strict` falla en CI cuando alguien derivó.
    Aceptar una capacidad nueva es una decisión explícita de una persona (`accept`), no una
@@ -49,15 +48,15 @@ sin que el usuario lo decida explícitamente:
 Si una idea nueva no fortalece la pregunta 1 o la 2, o no hace que más gente pruebe `doctor`,
 probablemente es derrape. Anotala en `docs/backlog.md` con su motivo en vez de construirla.
 
-## Nombre: pactlock (ex SyntaX), migración pendiente
+## Nombre: pactlock (ex SyntaX)
 
 **El producto se llama `pactlock`** (`docs/adr/0001-nombre-pactlock.md`). SyntaX es el nombre
 histórico: se conserva solo en las secciones de historia.
 
-**Estado de transición:** la migración de nombre es el primer paso de la fase 0 y todavía no se
-hizo. Hasta que se haga, el código, el binario, los mensajes y los archivos del contrato siguen
-diciendo `syntax` (`syntax.yaml`, `syntax.lock`, `syntax-skill-tree-v1`). Este brief ya usa el
-nombre nuevo; cuando nombra un archivo o un comando que existe hoy, usa el nombre actual.
+**Estado de la migración:** el código, el binario, los mensajes, los archivos del contrato y el
+algoritmo del digest ya dicen `pactlock` (pasos 1 a 5 del ADR 0001). Faltan el paso 6, que hace
+el usuario (renombrar el repo en GitHub y mover la carpeta), y la comprobación final con `grep`
+del paso 7, que además espera el borrado de `src/legacy/` (fase 0-A).
 
 Reglas de la migración:
 
@@ -94,8 +93,7 @@ Implementado: `doctor` con cinco checks y `--deep` (levanta cada MCP server por 
 tokens de sus schemas), el contrato de adapters, los adapters de Claude Code y Codex en modo
 lectura, y la franja `import` + `verify` (con `--strict`) + `accept` para **skills**.
 
-No implementado todavía: la migración de nombre a pactlock, check de permisos, salida de la CLI
-en inglés, publicación en npm,
+No implementado todavía: check de permisos, salida de la CLI en inglés, publicación en npm,
 GitHub Action, MCP y demás objetos en el manifest, `build`, `rollback`, resolución de origen en
 el lock, y el visor web de reportes.
 
@@ -118,8 +116,8 @@ Son distintas y no se mezclan. Confundirlas es el error más caro de este domini
 | Capa | Archivo | Quién lo escribe | Responde |
 |---|---|---|---|
 | Observación | *(en memoria)* | los adapters, con `read()` | qué hay en disco |
-| Contrato | `syntax.yaml` | personas | qué queremos, y por qué |
-| Integridad | `syntax.lock` | la herramienta | la forma canónica de lo observado |
+| Contrato | `pactlock.yaml` | personas | qué queremos, y por qué |
+| Integridad | `pactlock.lock` | la herramienta | la forma canónica de lo observado |
 
 Un **digest** es integridad, no versión: responde *"¿esto cambió?"*, no *"¿qué versión es?"* ni
 *"¿cómo lo reinstalo?"*. Tampoco es integridad byte a byte — normaliza finales de línea, BOM y
@@ -179,8 +177,8 @@ docs/backlog.md         pendientes, deuda y riesgos conocidos
 docs/digest.md          spec del digest, con vectores de prueba
 docs/direction.md       por qué se hizo cada cambio de rumbo, y el foco vigente
 docs/licensing.md       análisis de licencias de skills
-syntax.yaml             el contrato de este propio repo (generado por import)
-syntax.lock             su línea base de integridad
+pactlock.yaml           el contrato de este propio repo (generado por import)
+pactlock.lock           su línea base de integridad
 ```
 
 ## Cómo sumar un runtime

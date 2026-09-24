@@ -9,7 +9,7 @@ import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 
 export function proyecto(skills) {
-  const root = mkdtempSync(join(tmpdir(), 'syntax-proyecto-'))
+  const root = mkdtempSync(join(tmpdir(), 'pactlock-proyecto-'))
   for (const [ruta, cuerpo] of Object.entries(skills)) {
     const dir = join(root, ruta)
     mkdirSync(dir, { recursive: true })

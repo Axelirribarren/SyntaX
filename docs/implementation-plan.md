@@ -75,11 +75,9 @@ de origen, `merge-markdown`, resolución de secretos).
 
 **Drift conocido:**
 
-- el README dice que el entorno "se compila a cada runtime", pero `build` no existe;
-- todo dice `syntax` (paquete, binario, archivos del contrato, algoritmo del digest), pero el
-  producto ahora se llama `pactlock` (ADR 0001).
+- el README dice que el entorno "se compila a cada runtime", pero `build` no existe.
 
-Los dos se corrigen en la fase 0. El drift del brief sobre `accept` ya se corrigió en esta
+Se corrige en la fase 0-A. El drift del brief sobre `accept` ya se corrigió en esta
 revisión.
 
 ## Principios
@@ -139,6 +137,9 @@ El inventario completo y el orden están en el ADR 0001. En resumen:
    `scripts/emit-docs.mjs`;
 7. comprobación final con `grep -ri syntax`: solo quedan la detección de backups viejos y las
    menciones históricas.
+
+**Estado (2026-09-24):** pasos 1 a 5 hechos. Faltan el 6 (usuario) y el 7, que además espera el
+borrado de `src/legacy/` de la fase 0-A: es residuo del producto anterior y todavía dice SyntaX.
 
 **Puerta de salida de 0-M:** suite verde, `pactlock verify --strict` limpio sobre este repo, y el
 `grep` final sin residuos.

@@ -138,7 +138,7 @@ composer.
 falla en CI cuando el entorno de alguien derivó del acordado. Config que se puede ignorar no es
 política, y sin política no hay presupuesto.
 
-**El run-time es una opción, no un plan.** SyntaX es config-time: escribe archivos y se va.
+**El run-time es una opción, no un plan.** pactlock es config-time: escribe archivos y se va.
 Observar y cortar en ejecución es otro producto, otro set de competidores y un rewrite. Queda como
 hipótesis que se abre si dominamos lo anterior — no como destino escrito, porque escribirlo obliga
 a decisiones de arquitectura caras hoy por algo que quizás no se construya nunca.

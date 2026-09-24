@@ -12,10 +12,8 @@ empeora si se ignora.
 
 | | Qué | Por qué importa |
 |---|---|---|
-| bloquea `npx` | **Nombre decidido: `pactlock`** (ADR 0001, 2026-09-23; `syntax` estaba tomado en npm). Falta ejecutar la migración (fase 0-M del plan) y publicar. | Sin nombre publicable no hay `npx pactlock doctor`, y ese comando de una línea es todo el mecanismo de adopción del producto. |
-| bloquea `npx` | **`"private": true` en `package.json`.** Viene del producto anterior. | npm rechaza la publicación mientras esté. Se saca en la migración a pactlock (0-M). |
+| bloquea `npx` | **Nombre decidido: `pactlock`** (ADR 0001, 2026-09-23; `syntax` estaba tomado en npm). La migración del repo está hecha (fase 0-M, pasos 1 a 5); falta publicar. | Sin nombre publicable no hay `npx pactlock doctor`, y ese comando de una línea es todo el mecanismo de adopción del producto. |
 | vigilar | **Path anidado `SyntaX/SyntaX`.** | Se resuelve en la migración (paso 6 de 0-M): el usuario mueve la carpeta a `C:\Proyectos GRANDES\pactlock` y renombra el repo en GitHub. |
-| vigilar | **`SyntaX` suelto en la raíz**: un PNG de 1672×941 sin extensión, ya commiteado. | Se borra en la migración; el logo se rehace con el nombre nuevo (ADR 0001). |
 
 ## `doctor` — lo que le falta para ser el gancho
 
@@ -72,7 +70,7 @@ falso. Ahora se promete lo que sí se cumple —interrupción detectable, con jo
 Está mal y ordenarlo cambió el diseño: un digest es **integridad** (*"¿esto cambió?"*), un pin es
 **origen y versión** (*"¿cómo reinstalo lo mismo?"*). Confundirlos dejaría a un equipo convencido
 de tener reproducibilidad cuando lo que tiene es detección de manipulación. Están en archivos
-distintos a propósito: pin en `syntax.yaml`, digest en `syntax.lock`.
+distintos a propósito: pin en `pactlock.yaml`, digest en `pactlock.lock`.
 
 **El digest tampoco es integridad byte a byte.** Normaliza EOL, BOM y unicode de rutas, así que dos
 árboles con bytes distintos pueden dar el mismo valor. Es deliberado —sin eso `verify` no serviría

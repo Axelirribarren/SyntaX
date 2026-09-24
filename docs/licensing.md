@@ -6,8 +6,8 @@ sin darse cuenta.
 
 ## La cadena de redistribución
 
-SyntaX no redistribuye nada por sí mismo: clona desde el repo original y la copia ocurre en la
-máquina del usuario.
+El instalador de SyntaX (el producto anterior, hoy en `src/legacy/`) no redistribuía nada por sí
+mismo: clonaba desde el repo original y la copia ocurría en la máquina del usuario.
 
 Pero ese usuario después normalmente commitea `.claude/skills/` o `.agents/skills/` en su propio
 repo. **Ahí sí redistribuye**, y la obligación de licencia pasa a ser suya. La herramienta tiene

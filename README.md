@@ -1,12 +1,14 @@
-<p align="center"><img src="docs/assets/syntax.png" alt="SyntaX" width="640"></p>
+<p align="center"><img src="docs/assets/hero.png" alt="pactlock" width="640"></p>
 
-# SyntaX
+# pactlock
+
+*(formerly SyntaX)*
 
 **A compiler for agent environments: one manifest, every runtime, with cost and loss measured
 before anything is applied.**
 
 An agent environment — skills, MCP servers, rules, agents, hooks, permissions — is declared once
-and compiled to each runtime. Before writing anything, SyntaX answers three questions no other
+and compiled to each runtime. Before writing anything, pactlock answers three questions no other
 tool answers today:
 
 - **What does this environment cost me?** Every MCP server injects its tool schemas at every
@@ -94,10 +96,10 @@ from *"the team wants this"*, and it never says *"I assumed the team wants this"
 In this repo the distinction shows up immediately:
 
 ```
-$ syntax import && syntax verify
+$ pactlock import && pactlock verify
   Entorno verificado: coincide con el contrato (política faithful).      exit 0
 
-$ syntax import --mirror && syntax verify
+$ pactlock import --mirror && pactlock verify
   missing — declaradas y no instaladas
     x a11y-audit en codex
     … 6 in total                                                          exit 1
@@ -147,8 +149,8 @@ whole reason it exists instead of a destructive `--force`.
 | Layer | File | Written by |
 |---|---|---|
 | Observation | *(in memory)* | the adapters |
-| Contract | `syntax.yaml` | people |
-| Integrity | `syntax.lock` | the tool |
+| Contract | `pactlock.yaml` | people |
+| Integrity | `pactlock.lock` | the tool |
 
 A digest answers *"did this change?"* — not *"which version is this?"*. And it is **not** byte-level
 integrity: it normalizes line endings, BOM and path Unicode, because without that the same skill
@@ -161,7 +163,7 @@ modified on day one. The spec, with published test vectors, is in [`docs/digest.
 |---|---|---|
 | `doctor` | Audits the environment. Read-only. | ✅ |
 | `doctor --deep` | Starts each MCP server and measures its schemas for real | ✅ |
-| `import` | Writes `syntax.yaml` and `syntax.lock` from what's on disk | ✅ |
+| `import` | Writes `pactlock.yaml` and `pactlock.lock` from what's on disk | ✅ |
 | `verify` | Fails if the environment drifted from the contract. For CI. | ✅ |
 | `accept` | Authorizes changes, one at a time and on purpose | ✅ |
 | `build --target <rt>` | Compiles the manifest to a runtime, with a loss report | ⬜ |
@@ -230,7 +232,7 @@ converts to CRLF" would be assuming too much.
 
 - [`docs/backlog.md`](docs/backlog.md) — open work, debt and known risks
 - [`docs/digest.md`](docs/digest.md) — digest spec, with test vectors
-- [`docs/direction.md`](docs/direction.md) — why SyntaX stopped being a skill finder
+- [`docs/direction.md`](docs/direction.md) — why the project stopped being a skill finder
 - [`docs/licensing.md`](docs/licensing.md) — skill licensing and what not to break when copying
 
 `src/legacy/` holds the recommender and installer from the previous product. It is not extended:

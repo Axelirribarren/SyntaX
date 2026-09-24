@@ -4,13 +4,13 @@
 # norte y el caso real contra el que se valida el schema (src/manifest/schema.js)
 # antes de congelarlo.
 #
-# Los `pin` están vacíos a propósito. `syntax lock` es quien los llena y todavía
+# Los `pin` están vacíos a propósito. `pactlock lock` es quien los llena y todavía
 # no existe, así que este manifest NO es reproducible — y `validateManifest` lo
 # reporta como tal. Dejarlo visible es más útil que disimularlo: es exactamente
 # el problema que el producto dice resolver, en su propia casa.
 
 version: 2
-name: syntax
+name: pactlock
 
 # Qué necesita este entorno, y con qué se cumple. La colisión que `doctor`
 # encuentra hoy en .mcp.json (chrome-devtools + playwright a la vez) queda acá
