@@ -1,6 +1,6 @@
 // Levanta cada MCP server y le pregunta qué herramientas expone.
 //
-// Es la única parte de SyntaX que ejecuta código del proyecto auditado, y por
+// Es la única parte de pactlock que ejecuta código del proyecto auditado, y por
 // eso vive detrás de `--deep` y nunca corre en el `doctor` normal. Quien la
 // invoca está ejecutando los comandos declarados en el .mcp.json de ese repo:
 // la CLI lo advierte antes de hacerlo.
@@ -13,9 +13,14 @@
 //   -> tools/list                 (lo que vinimos a buscar)
 
 import { spawn } from 'node:child_process'
+import { readFileSync } from 'node:fs'
 
 import { commandInvocation } from '../fs/run.js'
 import { countTokens } from './tokenize.js'
+
+const VERSION = JSON.parse(
+  readFileSync(new URL('../../package.json', import.meta.url), 'utf8')
+).version
 
 const PROTOCOL_VERSION = '2025-06-18'
 export const DEFAULT_TIMEOUT_MS = 30_000
@@ -151,7 +156,7 @@ function requestTools(server, options) {
       params: {
         protocolVersion: PROTOCOL_VERSION,
         capabilities: {},
-        clientInfo: { name: 'syntax-doctor', version: '0.2.0' }
+        clientInfo: { name: 'pactlock-doctor', version: VERSION }
       }
     })
   })

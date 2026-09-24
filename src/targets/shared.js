@@ -3,7 +3,15 @@
 import { existsSync, lstatSync, readdirSync, readFileSync, statSync } from 'node:fs'
 import { join } from 'node:path'
 
-export const BACKUP_SUFFIX = '.syntax-backup-'
+export const BACKUP_SUFFIX = '.pactlock-backup-'
+
+// Los de SyntaX, el nombre anterior del producto, siguen apareciendo en repos
+// donde corrió la CLI vieja. Se reconocen igual: son residuos reales.
+export const BACKUP_SUFFIXES = [BACKUP_SUFFIX, '.syntax-backup-']
+
+export function isBackupName(name) {
+  return BACKUP_SUFFIXES.some((suffix) => name.includes(suffix))
+}
 
 export function readJsonSafe(path) {
   if (!existsSync(path)) return null
@@ -107,7 +115,7 @@ export function readSkillsDirectory(root, relativeDir) {
 
   for (const name of entries) {
     const path = join(base, name)
-    if (name.includes(BACKUP_SUFFIX)) {
+    if (isBackupName(name)) {
       backups.push({ id: name, path, relativePath: `${relativeDir}/${name}` })
       continue
     }

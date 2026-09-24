@@ -1,4 +1,4 @@
-// Lectura de syntax.yaml con YAML deliberadamente restringido.
+// Lectura de pactlock.yaml con YAML deliberadamente restringido.
 //
 // Se usa un parser de verdad porque uno propio falla en silencio con el valor
 // equivocado: `pin: 0123` devuelve el número 123, `deny: [no]` devuelve false.

@@ -1,9 +1,8 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
-import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
 
-import { START, END } from '../scripts/emit-docs.mjs'
+import { START, END, readText } from '../scripts/emit-docs.mjs'
 
 const ROOT = join(import.meta.dirname, '..')
 
@@ -21,10 +20,10 @@ function bloqueDe(contenido) {
 }
 
 test('CLAUDE.md y AGENTS.md llevan el brief sin editar', () => {
-  const brief = readFileSync(join(ROOT, 'docs/agent-brief.md'), 'utf8').trim()
+  const brief = readText(join(ROOT, 'docs/agent-brief.md')).trim()
 
   for (const destino of DESTINOS) {
-    const contenido = readFileSync(join(ROOT, destino), 'utf8')
+    const contenido = readText(join(ROOT, destino))
     const bloque = bloqueDe(contenido)
 
     assert.ok(bloque !== null, `${destino} perdió los marcadores del brief`)
@@ -34,7 +33,7 @@ test('CLAUDE.md y AGENTS.md llevan el brief sin editar', () => {
 
 test('cada destino conserva su sección propia fuera del bloque compartido', () => {
   for (const destino of DESTINOS) {
-    const contenido = readFileSync(join(ROOT, destino), 'utf8')
+    const contenido = readText(join(ROOT, destino))
     const despues = contenido.slice(contenido.indexOf(END) + END.length)
 
     assert.match(despues, /## Específico de/, `${destino} perdió su sección propia`)

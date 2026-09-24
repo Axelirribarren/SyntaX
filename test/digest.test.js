@@ -7,7 +7,7 @@ import { dirname, join } from 'node:path'
 import { ALGORITHM, computeSkillDigest, isTextFile } from '../src/manifest/digest.js'
 
 function skillDir(files) {
-  const dir = mkdtempSync(join(tmpdir(), 'syntax-digest-'))
+  const dir = mkdtempSync(join(tmpdir(), 'pactlock-digest-'))
   for (const [name, content] of Object.entries(files)) {
     const path = join(dir, name)
     mkdirSync(dirname(path), { recursive: true })

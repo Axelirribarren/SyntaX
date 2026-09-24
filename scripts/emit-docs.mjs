@@ -2,7 +2,7 @@
 //
 // Es deliberadamente el primer target adapter, en miniatura: un origen, varios
 // destinos, una sección propia por runtime y verificación de drift. Cuando
-// `syntax build` exista, este script se absorbe — y para entonces el repo ya
+// `pactlock build` exista, este script se absorbe — y para entonces el repo ya
 // venía compilando su propia documentación en vez de mantenerla a mano.
 //
 // Uso:
@@ -16,8 +16,8 @@ import { fileURLToPath } from 'node:url'
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..')
 const SOURCE = join(ROOT, 'docs/agent-brief.md')
 
-export const START = '<!-- SYNTAX:BRIEF:START — generado desde docs/agent-brief.md, no editar a mano -->'
-export const END = '<!-- SYNTAX:BRIEF:END -->'
+export const START = '<!-- PACTLOCK:BRIEF:START — generado desde docs/agent-brief.md, no editar a mano -->'
+export const END = '<!-- PACTLOCK:BRIEF:END -->'
 
 // Cada destino declara su archivo y lo poco que sí le es propio. La sección
 // específica se escribe una sola vez: si el archivo ya existe, se respeta lo
@@ -41,7 +41,7 @@ const TARGETS = [
       'propósito: dentro de OneDrive la sincronización rompía `npm install`. No moverlo ni',
       'sugerir moverlo ahí.',
       '',
-      'Este repo declara su propio entorno en `syntax.yaml` y es el caso de prueba de `doctor`.',
+      'Este repo declara su propio entorno en `pactlock.yaml` y es el caso de prueba de `doctor`.',
       'Si cambiás skills o MCP servers acá, corré `npm run doctor` y fijate que el reporte siga',
       'teniendo sentido: es el dogfood del producto.'
     ].join('\n')
@@ -69,7 +69,7 @@ const TARGETS = [
 
 // Un checkout de Windows con core.autocrlf trae CRLF; el bloque generado usa LF.
 // Sin normalizar al leer, --check compara bytes y falla solo en Windows.
-function readText(path) {
+export function readText(path) {
   return readFileSync(path, 'utf8').replace(/\r\n/g, '\n')
 }
 

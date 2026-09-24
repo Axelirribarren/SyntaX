@@ -10,7 +10,7 @@ export function renderReport(report) {
   const lines = []
 
   lines.push('')
-  lines.push(`SyntaX doctor · ${report.root}`)
+  lines.push(`pactlock doctor · ${report.root}`)
   lines.push('')
 
   renderEnvironment(report, lines)

@@ -81,13 +81,13 @@ test('sin manifest ni lock: exit 2, que es error y no diferencia', () => {
   const resultado = runVerify(root)
 
   assert.equal(resultado.exit, EXIT.ERROR)
-  assert.match(resultado.error, /syntax import/)
+  assert.match(resultado.error, /pactlock import/)
 })
 
 test('un lock de otro algoritmo es error, no un mundo de diferencias', () => {
   // Comparar digests incomparables reportaría que cambió absolutamente todo.
   const root = importado({ '.claude/skills/una': skill('una') })
-  const lockPath = join(root, 'syntax.lock')
+  const lockPath = join(root, 'pactlock.lock')
   const lock = JSON.parse(readFileSync(lockPath, 'utf8'))
   lock.digestAlgorithm = 'syntax-skill-tree-v0'
   writeFileSync(lockPath, JSON.stringify(lock))
@@ -100,7 +100,7 @@ test('un lock de otro algoritmo es error, no un mundo de diferencias', () => {
 test('un manifest con YAML prohibido no se acepta a medias', () => {
   const root = importado({ '.claude/skills/una': skill('una') })
   writeFileSync(
-    join(root, 'syntax.yaml'),
+    join(root, 'pactlock.yaml'),
     'version: 2\nname: x\ntargets: &t\n  - claude-code\ncomponents: []\n'
   )
 

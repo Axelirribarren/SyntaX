@@ -11,8 +11,8 @@ import { join } from 'node:path'
 
 import { observeSkills } from '../src/observe.js'
 
-const home = mkdtempSync(join(tmpdir(), 'syntax-home-'))
-const proyecto = mkdtempSync(join(tmpdir(), 'syntax-scope-'))
+const home = mkdtempSync(join(tmpdir(), 'pactlock-home-'))
+const proyecto = mkdtempSync(join(tmpdir(), 'pactlock-scope-'))
 
 // Una skill "global", del tipo que podría tener cualquiera en su máquina.
 mkdirSync(join(home, '.claude/skills/global'), { recursive: true })

@@ -1,6 +1,6 @@
 // Journal de escrituras interrumpidas.
 //
-// `syntax.yaml` y `syntax.lock` se escriben juntos, y cada rename es atómico —
+// `pactlock.yaml` y `pactlock.lock` se escriben juntos, y cada rename es atómico —
 // pero los dos juntos NO son una transacción. El proceso puede morir entre uno
 // y otro y dejar un manifest nuevo con un lock viejo.
 //
@@ -11,7 +11,7 @@
 import { existsSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
 
-export const JOURNAL_FILE = '.syntax-journal.json'
+export const JOURNAL_FILE = '.pactlock-journal.json'
 
 export function journalPath(root) {
   return join(root, JOURNAL_FILE)
@@ -48,12 +48,12 @@ export function readJournal(root) {
 export function describeJournal(journal) {
   if (!journal) return null
   if (journal.corrupto) {
-    return `Hay un ${JOURNAL_FILE} ilegible: una escritura anterior se interrumpió. Revisá los archivos .syntax-prev-* antes de seguir.`
+    return `Hay un ${JOURNAL_FILE} ilegible: una escritura anterior se interrumpió. Revisá los archivos .pactlock-prev-* antes de seguir.`
   }
 
   const backups = (journal.backups || []).map((entry) => entry.backup)
   return [
-    `Una escritura de ${journal.command || 'SyntaX'} se interrumpió el ${journal.startedAt}.`,
+    `Una escritura de ${journal.command || 'pactlock'} se interrumpió el ${journal.startedAt}.`,
     backups.length
       ? `El estado anterior quedó en: ${backups.join(', ')}`
       : 'No había estado anterior que preservar.',

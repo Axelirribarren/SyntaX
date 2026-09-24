@@ -41,7 +41,7 @@ jobs:
 
       - run: npm run doctor
 
-      # El dogfood: el mismo syntax.lock, contra checkouts que pueden diferir en
+      # El dogfood: el mismo pactlock.lock, contra checkouts que pueden diferir en
       # finales de línea. `--strict` porque el repo sostiene el contrato que
       # promociona: si aparece una skill que nadie declaró, rompe.
       - name: verify (dogfood)

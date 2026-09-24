@@ -11,7 +11,7 @@ import { renderReport } from '../src/doctor/report.js'
 // drift entre runtimes, dos providers de navegador, un backup huérfano, una
 // carpeta de skill sin SKILL.md y un server sin credencial.
 function fixture() {
-  const root = mkdtempSync(join(tmpdir(), 'syntax-doctor-'))
+  const root = mkdtempSync(join(tmpdir(), 'pactlock-doctor-'))
 
   writeSkill(join(root, '.claude/skills/frontend-design'), 'Dirección visual y jerarquía.')
   writeSkill(join(root, '.claude/skills/webapp-testing'), 'Prueba la experiencia real.')
@@ -100,6 +100,27 @@ test('encuentra backups huérfanos, carpetas rotas y credenciales faltantes', ()
   assert.ok(credenciales.items[0].includes('FIGMA_API_KEY'))
 })
 
+test('reconoce backups de pactlock y de SyntaX, y exige ignorar cada familia', () => {
+  const root = fixture()
+  mkdirSync(join(root, '.claude/skills/nueva.pactlock-backup-2026-09-24'), { recursive: true })
+
+  const backupsDe = (gitignore) => {
+    writeFileSync(join(root, '.gitignore'), gitignore)
+    return findingsOf(runDoctor(root), 'orphans').find((finding) =>
+      finding.message.includes('backups huérfanos')
+    )
+  }
+
+  const soloViejos = backupsDe('*.syntax-backup-*\n')
+  assert.deepEqual(soloViejos.items, [
+    '.claude/skills/nueva.pactlock-backup-2026-09-24',
+    '.claude/skills/vieja.syntax-backup-2026-01-01'
+  ])
+  assert.match(soloViejos.detail, /se commitean/, 'un .gitignore que cubre solo una familia no alcanza')
+
+  assert.doesNotMatch(backupsDe('*.syntax-backup-*\n*.pactlock-backup-*\n').detail, /se commitean/)
+})
+
 test('el costo declara explícitamente lo que no midió', () => {
   const report = runDoctor(fixture())
   const claude = report.cost.byTarget.find((entry) => entry.target === 'claude-code')
@@ -139,7 +160,7 @@ test('doctor no escribe nada', () => {
 })
 
 test('un proyecto sin ningún runtime no rompe el reporte', () => {
-  const root = mkdtempSync(join(tmpdir(), 'syntax-vacio-'))
+  const root = mkdtempSync(join(tmpdir(), 'pactlock-vacio-'))
   const report = runDoctor(root)
 
   assert.equal(report.environment.length, 0)

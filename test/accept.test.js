@@ -15,7 +15,7 @@ function importado(skills) {
 }
 
 function manifiesto(root) {
-  return readFileSync(join(root, 'syntax.yaml'), 'utf8')
+  return readFileSync(join(root, 'pactlock.yaml'), 'utf8')
 }
 
 function tocar(root, ruta, contenido) {
@@ -36,7 +36,7 @@ test('el why y los comentarios sobreviven a accept', async () => {
   const root = importado({ '.claude/skills/una': skill('una') })
 
   writeFileSync(
-    join(root, 'syntax.yaml'),
+    join(root, 'pactlock.yaml'),
     manifiesto(root)
       .replace('    id: una', '    id: una\n    why: la usamos en todas las revisiones de UI')
       .concat('\n# comentario al final que tiene que seguir acá\n')
@@ -48,7 +48,7 @@ test('el why y los comentarios sobreviven a accept', async () => {
   const despues = manifiesto(root)
   assert.match(despues, /why: la usamos en todas las revisiones de UI/)
   assert.match(despues, /# comentario al final que tiene que seguir acá/)
-  assert.match(despues, /# syntax\.yaml — el contrato/, 'el encabezado también')
+  assert.match(despues, /# pactlock\.yaml — el contrato/, 'el encabezado también')
   assert.equal(runVerify(root).exit, EXIT.LIMPIO)
 })
 
@@ -116,7 +116,7 @@ test('--remove saca la declaración y su entrada del lock', async () => {
   await runAccept(root, { id: 'otra', remove: true, target: 'claude-code', interactive: false })
 
   assert.doesNotMatch(manifiesto(root), /id: otra/)
-  const lock = JSON.parse(readFileSync(join(root, 'syntax.lock'), 'utf8'))
+  const lock = JSON.parse(readFileSync(join(root, 'pactlock.lock'), 'utf8'))
   assert.equal(lock.skills.find((entry) => entry.id === 'otra'), undefined)
   assert.equal(runVerify(root).exit, EXIT.LIMPIO)
 })

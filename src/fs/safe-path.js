@@ -1,6 +1,6 @@
 import { basename, isAbsolute, relative, resolve } from 'node:path'
 
-// Toda escritura de SyntaX cae dentro del proyecto del usuario. Una ruta que
+// Toda escritura de pactlock cae dentro del proyecto del usuario. Una ruta que
 // escapa del destino previsto (por un `path` con `..` en el manifest, o por un
 // nombre de skill con separadores) deja de ser un bug de la herramienta y pasa a
 // ser escritura arbitraria en la máquina de quien la corre. Se valida siempre,

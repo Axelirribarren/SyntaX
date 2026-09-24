@@ -1,4 +1,4 @@
-// `syntax accept` — el único lugar donde una persona autoriza algo.
+// `pactlock accept` — el único lugar donde una persona autoriza algo.
 //
 // No es un actualizador de hashes. Dos razones por las que el diseño es más
 // estricto de lo que parece necesario:
@@ -237,7 +237,7 @@ export function applyAccept(root, acciones, diagnostico) {
 
 export async function runAccept(root, options = {}) {
   if (!existsSync(join(root, MANIFEST_FILE))) {
-    return { ok: false, reason: `No hay ${MANIFEST_FILE}. Corré: syntax import` }
+    return { ok: false, reason: `No hay ${MANIFEST_FILE}. Corré: pactlock import` }
   }
 
   const plan = planAccept(root, options)

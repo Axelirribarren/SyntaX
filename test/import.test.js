@@ -36,7 +36,7 @@ test('la adopción fiel declara cada skill donde se la observó', () => {
   const root = conDrift()
   runImport(root)
 
-  const { manifest } = parseManifest(readFileSync(join(root, 'syntax.yaml'), 'utf8'))
+  const { manifest } = parseManifest(readFileSync(join(root, 'pactlock.yaml'), 'utf8'))
   const compartida = manifest.components.find((c) => c.id === 'compartida')
   const soloClaude = manifest.components.find((c) => c.id === 'solo-claude')
 
@@ -49,7 +49,7 @@ test('--mirror escribe la política en el manifest y recién ahí aparece el dri
   const root = conDrift()
   runImport(root, { mirror: true })
 
-  const { manifest } = parseManifest(readFileSync(join(root, 'syntax.yaml'), 'utf8'))
+  const { manifest } = parseManifest(readFileSync(join(root, 'pactlock.yaml'), 'utf8'))
   assert.equal(manifest.targetPolicy, 'mirror')
 
   const resultado = runVerify(root)
@@ -61,7 +61,7 @@ test('el lock guarda una entrada por skill y por target', () => {
   const root = conDrift()
   runImport(root)
 
-  const lock = JSON.parse(readFileSync(join(root, 'syntax.lock'), 'utf8'))
+  const lock = JSON.parse(readFileSync(join(root, 'pactlock.lock'), 'utf8'))
   assert.equal(lock.skills.length, 3)
   assert.equal(lock.digestAlgorithm, 'syntax-skill-tree-v1')
   assert.equal(lock.lockVersion, 2)
@@ -79,7 +79,7 @@ test('import crea, no fusiona, y no tiene bypass', () => {
 
   const segundo = runImport(root, { force: true })
   assert.equal(segundo.ok, false)
-  assert.match(segundo.reason, /syntax accept/)
+  assert.match(segundo.reason, /pactlock accept/)
 })
 
 test('--dry-run no escribe nada', () => {
@@ -87,8 +87,8 @@ test('--dry-run no escribe nada', () => {
   const resultado = runImport(root, { dryRun: true })
 
   assert.equal(resultado.ok, true)
-  assert.equal(existsSync(join(root, 'syntax.yaml')), false)
-  assert.equal(existsSync(join(root, 'syntax.lock')), false)
+  assert.equal(existsSync(join(root, 'pactlock.yaml')), false)
+  assert.equal(existsSync(join(root, 'pactlock.lock')), false)
 })
 
 test('detecta la divergencia antes de escribir', () => {
@@ -113,7 +113,7 @@ test('reporta el desacuerdo entre carpeta y frontmatter sin resolverlo solo', ()
 })
 
 test('si falla la escritura de uno, no queda el otro a medias', () => {
-  const root = mkdtempSync(join(tmpdir(), 'syntax-atomic-'))
+  const root = mkdtempSync(join(tmpdir(), 'pactlock-atomic-'))
   const bueno = join(root, 'uno.txt')
 
   const resultado = writeAllAtomic([
@@ -131,7 +131,7 @@ test('una escritura interrumpida deja journal y bloquea los comandos', () => {
   // se promete atomicidad, se promete que la interrupción sea DETECTABLE.
   const root = conDrift()
   runImport(root)
-  writeJournal(root, { command: 'import', files: ['syntax.yaml', 'syntax.lock'] })
+  writeJournal(root, { command: 'import', files: ['pactlock.yaml', 'pactlock.lock'] })
 
   const resultado = runVerify(root)
   assert.equal(resultado.exit, EXIT.ERROR)
@@ -144,7 +144,7 @@ test('el par manifest/lock tiene que ir junto', () => {
 
   // Alguien edita el contrato y no regenera la línea base: comparar digests
   // daría diferencias falsas. Es un error de estado, no un montón de drift.
-  const manifestPath = join(root, 'syntax.yaml')
+  const manifestPath = join(root, 'pactlock.yaml')
   writeFileSync(
     manifestPath,
     readFileSync(manifestPath, 'utf8').replace('id: solo-claude', 'id: renombrada')

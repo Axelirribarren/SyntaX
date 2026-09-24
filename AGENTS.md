@@ -1,4 +1,4 @@
-<!-- SYNTAX:BRIEF:START — generado desde docs/agent-brief.md, no editar a mano -->
+<!-- PACTLOCK:BRIEF:START — generado desde docs/agent-brief.md, no editar a mano -->
 
 # pactlock (ex SyntaX) — brief para agentes
 
@@ -194,7 +194,7 @@ datos: qué objetos sabe expresar y en qué archivo o directorio), y `read(root)
 `src/targets/index.js`. El reporte de pérdida sale solo de `supports` — no se escribe código
 específico por par de runtimes.
 
-<!-- SYNTAX:BRIEF:END -->
+<!-- PACTLOCK:BRIEF:END -->
 
 ## Específico de Codex
 

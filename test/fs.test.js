@@ -27,7 +27,7 @@ test('rechaza argumentos que podrían inyectar operadores del shell', () => {
 })
 
 test('respalda una skill antes de reemplazar su contenido', () => {
-  const root = mkdtempSync(join(tmpdir(), 'syntax-skill-test-'))
+  const root = mkdtempSync(join(tmpdir(), 'pactlock-skill-test-'))
   const source = join(root, 'source')
   const destination = join(root, 'destination')
   mkdirSync(source)

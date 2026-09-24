@@ -1,7 +1,7 @@
 import { existsSync, readdirSync } from 'node:fs'
 import { join } from 'node:path'
 
-import { BACKUP_SUFFIX } from '../../targets/shared.js'
+import { BACKUP_SUFFIXES, isBackupName } from '../../targets/shared.js'
 
 // Restos que quedaron en el repo y que nadie va a limpiar solo.
 //
@@ -22,10 +22,10 @@ export default {
     const total = backups.length + rootBackups.length
 
     if (total) {
-      const ignored = gitignore.includes('syntax-backup')
+      const ignored = backupKinds(backups, rootBackups).every((kind) => gitignore.includes(kind))
       findings.push({
         severity: total > 5 ? 'alta' : 'media',
-        message: `${total} backups huérfanos de SyntaX`,
+        message: `${total} backups huérfanos de pactlock o de SyntaX, su nombre anterior`,
         detail: ignored
           ? 'No hay comando que los liste ni los revierta.'
           : 'No hay comando que los revierta y .gitignore no los excluye: se commitean.',
@@ -67,12 +67,21 @@ export default {
   }
 }
 
+// Qué familias de backup aparecieron, como patrón de .gitignore sin los puntos.
+// Un repo puede ignorar los de SyntaX y no los de pactlock: cada familia se
+// comprueba por separado.
+function backupKinds(backups, rootBackups) {
+  const names = [...backups.map((entry) => entry.id), ...rootBackups]
+  return BACKUP_SUFFIXES
+    .filter((suffix) => names.some((name) => name.includes(suffix)))
+    .map((suffix) => suffix.replace(/^\.|-$/g, ''))
+}
+
 function listRootBackups(root) {
   if (!existsSync(root)) return []
   try {
     return readdirSync(root)
-      .filter((name) => name.includes(BACKUP_SUFFIX))
-      .map((name) => name)
+      .filter(isBackupName)
   } catch {
     return []
   }

@@ -78,7 +78,7 @@ test('mide cada server una sola vez aunque lo declaren dos runtimes', async () =
 test('el costo pasa de parcial a completo con los probes', async () => {
   // Sobre un proyecto de verdad: el costo se atribuye por target mirando qué
   // servers declara cada uno, así que un probe suelto sin proyecto no alcanza.
-  const root = mkdtempSync(join(tmpdir(), 'syntax-costo-'))
+  const root = mkdtempSync(join(tmpdir(), 'pactlock-costo-'))
   mkdirSync(join(root, '.claude/skills'), { recursive: true })
   writeFileSync(
     join(root, '.mcp.json'),

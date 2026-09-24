@@ -1,4 +1,4 @@
-// Escritura de syntax.yaml.
+// Escritura de pactlock.yaml.
 //
 // El manifest es el archivo que edita una persona y que un equipo revisa en un
 // diff, así que se genera con un encabezado que explica qué es y qué falta
@@ -10,14 +10,14 @@ import { stringify } from 'yaml'
 import { SCHEMA_VERSION } from './schema.js'
 
 const ENCABEZADO = [
-  '# syntax.yaml — el contrato: qué entorno queremos, y por qué.',
+  '# pactlock.yaml — el contrato: qué entorno queremos, y por qué.',
   '#',
-  '# Generado por `syntax import` a partir de lo que había en disco. Lo que la',
+  '# Generado por `pactlock import` a partir de lo que había en disco. Lo que la',
   '# herramienta NO puede saber es el porqué de cada cosa: completá `why:` en',
   '# los components que importen. Ese texto sobrevive a las reescrituras; los',
   '# comentarios no.',
   '#',
-  '# La integridad de lo instalado no vive acá: vive en syntax.lock.',
+  '# La integridad de lo instalado no vive acá: vive en pactlock.lock.',
   ''
 ]
 

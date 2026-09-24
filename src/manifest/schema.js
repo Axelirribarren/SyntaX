@@ -1,4 +1,4 @@
-// Forma del manifest. Todavía NO hay parser: `syntax.yaml` se escribe a mano y
+// Forma del manifest. Todavía NO hay parser: `pactlock.yaml` se escribe a mano y
 // nadie lo consume. El schema se define primero y se valida contra un caso real
 // —el entorno de este mismo repo— antes de congelarlo, porque un contrato
 // portable que se define en abstracto se rompe en el primer caso concreto.
@@ -43,7 +43,7 @@ export const SHAPE = {
       source: 'string — owner/repo, paquete npm, o ruta local',
       path: 'string — ruta dentro del source (skills)',
       // pin es ORIGEN/VERSIÓN: sirve para reinstalar lo mismo. La integridad
-      // de lo que hay hoy en disco NO vive acá: vive en syntax.lock como
+      // de lo que hay hoy en disco NO vive acá: vive en pactlock.lock como
       // digest. Son propiedades distintas y confundirlas haría creer que hay
       // reproducibilidad donde solo hay detección de cambios.
       pin: 'string — commit SHA o versión exacta. Sin pin no se puede reinstalar igual.',

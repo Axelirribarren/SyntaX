@@ -7,7 +7,7 @@ export function replaceSkillDirectory(source, destination, stamp, platform = pro
   let updatedInPlace = false
 
   if (existsSync(destination)) {
-    backup = `${destination}.syntax-backup-${stamp}`
+    backup = `${destination}.pactlock-backup-${stamp}`
     // Copiar primero conserva el estado anterior incluso si Windows mantiene
     // un handle abierto sobre la carpeta e impide renombrarla o borrarla.
     cpSync(destination, backup, { recursive: true, force: true, errorOnExist: true })

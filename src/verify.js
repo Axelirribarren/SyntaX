@@ -1,4 +1,4 @@
-// `syntax verify` — el entorno que corre, ¿es el que acordamos?
+// `pactlock verify` — el entorno que corre, ¿es el que acordamos?
 //
 // Estrictamente solo lectura: sin red, sin procesos, sin escribir. Nunca
 // corrige. Aceptar drift tiene que ser una acción deliberada de una persona
@@ -33,7 +33,7 @@ export function runVerify(root, options = {}) {
   if (!existsSync(manifestPath) || !existsSync(lockPath)) {
     return {
       exit: EXIT.ERROR,
-      error: `Faltan ${MANIFEST_FILE} o ${LOCK_FILE}. Corré: syntax import`
+      error: `Faltan ${MANIFEST_FILE} o ${LOCK_FILE}. Corré: pactlock import`
     }
   }
 

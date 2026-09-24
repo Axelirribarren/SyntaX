@@ -12,7 +12,7 @@ const COMMANDS = {
     summary: 'Audita el entorno de agente de un proyecto. Solo lectura.',
     implemented: true
   },
-  import: { summary: 'Genera syntax.yaml y syntax.lock desde lo que hay en disco.', implemented: true },
+  import: { summary: 'Genera pactlock.yaml y pactlock.lock desde lo que hay en disco.', implemented: true },
   build: { summary: 'Compila el manifest a un runtime, con reporte de pérdida.', implemented: false },
   accept: { summary: 'Autoriza cambios en el entorno, de a uno y a propósito.', implemented: true },
   lock: { summary: 'Suma resolución de origen para reinstalar igual.', implemented: false },
@@ -21,7 +21,7 @@ const COMMANDS = {
 }
 
 function usage() {
-  const lines = ['', 'SyntaX — compilador de entornos de agente', '']
+  const lines = ['', 'pactlock — lockfile y política para entornos de agente', '']
   for (const [name, command] of Object.entries(COMMANDS)) {
     const mark = command.implemented ? ' ' : '·'
     lines.push(`  ${mark} ${name.padEnd(10)} ${command.summary}`)
@@ -29,10 +29,10 @@ function usage() {
   lines.push('')
   lines.push('  · = todavía no implementado')
   lines.push('')
-  lines.push('  syntax doctor [ruta] [--json] [--deep] [--timeout <segundos>]')
-  lines.push('  syntax import [ruta] [--mirror] [--relock] [--dry-run]')
-  lines.push('  syntax verify [ruta] [--strict] [--json]')
-  lines.push('  syntax accept [<id>] [--target X] [--adopt | --remove | --allow-divergence --why "…"]')
+  lines.push('  pactlock doctor [ruta] [--json] [--deep] [--timeout <segundos>]')
+  lines.push('  pactlock import [ruta] [--mirror] [--relock] [--dry-run]')
+  lines.push('  pactlock verify [ruta] [--strict] [--json]')
+  lines.push('  pactlock accept [<id>] [--target X] [--adopt | --remove | --allow-divergence --why "…"]')
   lines.push('                [--all-modified] [--all-unexpected] [--dry-run]')
   lines.push('')
   lines.push('  --deep    levanta los MCP servers declarados para medir sus schemas.')
@@ -41,7 +41,7 @@ function usage() {
   lines.push('            targets. Es una política, no una observación: queda escrita')
   lines.push('            en el manifest.')
   lines.push('  --strict  hace que unexpected también rompa el build.')
-  lines.push('  --relock  regenera solo syntax.lock y conserva el manifest con sus why.')
+  lines.push('  --relock  regenera solo pactlock.lock y conserva el manifest con sus why.')
   lines.push('')
   lines.push('  accept sin argumentos pregunta por cada cambio y necesita una terminal.')
   lines.push('  Sin TTY no modifica nada: la autorización es de una persona.')
@@ -90,7 +90,7 @@ function rootFrom(args) {
 
 // La capa de manifest se carga con import() dinámico. Es aislamiento del CAMINO
 // DE EJECUCIÓN, no de supply chain: npx instala `yaml` igual. Lo que se evita es
-// que `doctor` —el comando con el que alguien prueba SyntaX en un repo ajeno—
+// que `doctor` —el comando con el que alguien prueba pactlock en un repo ajeno—
 // parse nada ni pague el arranque de una dependencia que no usa.
 async function importar(args) {
   const { runImport, renderImport } = await import('./import.js')

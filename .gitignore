@@ -7,15 +7,17 @@ dist-ssr
 # Salida generada por scripts/discover.mjs
 scripts/candidatos.json
 
-# Backups que deja la CLI. doctor los reporta como huerfanos.
+# Backups que deja la CLI. doctor los reporta como huerfanos. Los
+# *.syntax-backup-* son del producto anterior (SyntaX): se siguen ignorando.
+*.pactlock-backup-*
 *.syntax-backup-*
 
-# Estado local de SyntaX (lock aplicado, ultimo reporte)
-.syntax/
+# Estado local de pactlock (lock aplicado, ultimo reporte)
+.pactlock/
 
 # Temporales de la escritura atomica (solo quedan si algo se corto a la mitad)
-*.syntax-tmp-*
-*.syntax-prev-*
+*.pactlock-tmp-*
+*.pactlock-prev-*
 
 # Journal de escrituras interrumpidas: estado local y transitorio
-.syntax-journal.json
+.pactlock-journal.json

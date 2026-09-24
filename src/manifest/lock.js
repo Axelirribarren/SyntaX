@@ -1,7 +1,7 @@
-// syntax.lock — la línea base de integridad.
+// pactlock.lock — la línea base de integridad.
 //
 // Es la tercera capa: observación (los adapters, en memoria), contrato
-// (syntax.yaml, escrito por personas), integridad (esto, generado). Nunca se
+// (pactlock.yaml, escrito por personas), integridad (esto, generado). Nunca se
 // edita a mano, así que el contenido es JSON: se lee sin parser y no ensucia el
 // diff del archivo que la gente sí edita.
 //

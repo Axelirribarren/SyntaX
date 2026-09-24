@@ -1,4 +1,4 @@
-// `syntax import` — convierte lo observado en contrato.
+// `pactlock import` — convierte lo observado en contrato.
 //
 // La regla que ordena todo el comando: OBSERVA, NO INFIERE INTENCIÓN.
 //
@@ -24,8 +24,8 @@ import { readManifest } from './manifest/parse.js'
 import { writeAllAtomic } from './manifest/atomic.js'
 import { SCHEMA_VERSION } from './manifest/schema.js'
 
-export const MANIFEST_FILE = 'syntax.yaml'
-export const LOCK_FILE = 'syntax.lock'
+export const MANIFEST_FILE = 'pactlock.yaml'
+export const LOCK_FILE = 'pactlock.lock'
 
 export function runImport(root, options = {}) {
   const manifestPath = join(root, MANIFEST_FILE)
@@ -42,7 +42,7 @@ export function runImport(root, options = {}) {
       ok: false,
       reason: [
         `${MANIFEST_FILE} ya existe. import crea, no fusiona.`,
-        'Para aceptar cambios puntuales: syntax accept',
+        'Para aceptar cambios puntuales: pactlock accept',
         `Para empezar de cero: borrá ${MANIFEST_FILE} y ${LOCK_FILE} a mano.`
       ].join('\n  ')
     }
@@ -128,7 +128,7 @@ export function runImport(root, options = {}) {
 // reportando esa skill como modificada hasta que alguien la acepte a propósito.
 function runRelock(root, manifestPath, lockPath) {
   if (!existsSync(manifestPath)) {
-    return { ok: false, reason: `No hay ${MANIFEST_FILE} que conservar. Corré: syntax import` }
+    return { ok: false, reason: `No hay ${MANIFEST_FILE} que conservar. Corré: pactlock import` }
   }
 
   const parsed = readManifest(manifestPath)

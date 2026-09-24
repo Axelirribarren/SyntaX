@@ -1,4 +1,4 @@
-<!-- SYNTAX:BRIEF:START — generado desde docs/agent-brief.md, no editar a mano -->
+<!-- PACTLOCK:BRIEF:START — generado desde docs/agent-brief.md, no editar a mano -->
 
 # pactlock (ex SyntaX) — brief para agentes
 
@@ -194,7 +194,7 @@ datos: qué objetos sabe expresar y en qué archivo o directorio), y `read(root)
 `src/targets/index.js`. El reporte de pérdida sale solo de `supports` — no se escribe código
 específico por par de runtimes.
 
-<!-- SYNTAX:BRIEF:END -->
+<!-- PACTLOCK:BRIEF:END -->
 
 ## Específico de Claude Code
 
@@ -210,6 +210,6 @@ El proyecto vive en `C:\Proyectos GRANDES\SyntaX\SyntaX`, **fuera de OneDrive** 
 propósito: dentro de OneDrive la sincronización rompía `npm install`. No moverlo ni
 sugerir moverlo ahí.
 
-Este repo declara su propio entorno en `syntax.yaml` y es el caso de prueba de `doctor`.
+Este repo declara su propio entorno en `pactlock.yaml` y es el caso de prueba de `doctor`.
 Si cambiás skills o MCP servers acá, corré `npm run doctor` y fijate que el reporte siga
 teniendo sentido: es el dogfood del producto.

@@ -29,7 +29,7 @@ export function writeAllAtomic(files, { root, command } = {}) {
 
   try {
     for (const file of files) {
-      const temporary = `${file.path}.syntax-tmp-${stamp}`
+      const temporary = `${file.path}.pactlock-tmp-${stamp}`
       writeAndSync(temporary, file.content)
       staged.push({ ...file, temporary })
     }
@@ -44,7 +44,7 @@ export function writeAllAtomic(files, { root, command } = {}) {
 
     for (const file of staged) {
       if (existsSync(file.path)) {
-        const backup = `${file.path}.syntax-prev-${stamp}`
+        const backup = `${file.path}.pactlock-prev-${stamp}`
         renameSync(file.path, backup)
         backups.push({ path: file.path, backup })
         if (root) {
