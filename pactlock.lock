@@ -1,0 +1,1212 @@
+{
+  "lockVersion": 2,
+  "digestAlgorithm": "pactlock-skill-tree-v1",
+  "manifestDigest": "sha256:0420edebdd1564882ffbee27abe7b737279bbe0059a3d686691bdaf2075b6dd6",
+  "generatedAt": "2026-09-24T21:57:30.547Z",
+  "skills": [
+    {
+      "id": "a11y-audit",
+      "target": "claude-code",
+      "path": ".claude/skills/a11y-audit",
+      "files": 1,
+      "digest": "sha256:fcc3c14faa99056a149f6fd22dba6a02a4b67e7b36ef7e94df1b2f1925ef06b7",
+      "inventory": [
+        {
+          "path": "SKILL.md",
+          "digest": "sha256:213602f8e8d9fdccd7b127c861bd9d51e1182172ee01f48eeb6e0b9d966069b8"
+        }
+      ]
+    },
+    {
+      "id": "brand-guidelines",
+      "target": "claude-code",
+      "path": ".claude/skills/brand-guidelines",
+      "files": 2,
+      "digest": "sha256:ea2d0fdd1ac311f6aac85ad1d821760f24585e41c4f044b615566e534dd58f0b",
+      "inventory": [
+        {
+          "path": "LICENSE.txt",
+          "digest": "sha256:ddd208f368e34d53de6509bf70e1129a13aaa4066a5692d5419cc529df45d6cd"
+        },
+        {
+          "path": "SKILL.md",
+          "digest": "sha256:f30d49c2ae12d4d135a036e407393e3b2c87bb5278ac62795972322e41960c8c"
+        }
+      ]
+    },
+    {
+      "id": "canvas-design",
+      "target": "claude-code",
+      "path": ".claude/skills/canvas-design",
+      "files": 83,
+      "digest": "sha256:80e268bde5f2379ec5ff043317072fd1f7b1fdc381ed743fba889d8208975ad2",
+      "inventory": [
+        {
+          "path": "LICENSE.txt",
+          "digest": "sha256:ddd208f368e34d53de6509bf70e1129a13aaa4066a5692d5419cc529df45d6cd"
+        },
+        {
+          "path": "SKILL.md",
+          "digest": "sha256:a85807eb3144945731be406711fe3cc4b5fedfbe71e6601b8846f0848b109cbe"
+        },
+        {
+          "path": "canvas-fonts/ArsenalSC-OFL.txt",
+          "digest": "sha256:4c2cdb3256a0fb5da9b7a12d5228c663ac2ef6c05ac7ce510bc79d1be4587385"
+        },
+        {
+          "path": "canvas-fonts/ArsenalSC-Regular.ttf",
+          "digest": "sha256:1a58991aaf871da6fa4bf7acd3bfc1c2d22bb99ffedc14cac09238687e01c9d6"
+        },
+        {
+          "path": "canvas-fonts/BigShoulders-Bold.ttf",
+          "digest": "sha256:4f49a954c8b5a4ec3ed20872d7809a98e52ee65fa36c368f5bd5c81f63774aef"
+        },
+        {
+          "path": "canvas-fonts/BigShoulders-OFL.txt",
+          "digest": "sha256:0c00863b409607be541ea5f9d18edb97837f181b8164c2b864a90c38b056b333"
+        },
+        {
+          "path": "canvas-fonts/BigShoulders-Regular.ttf",
+          "digest": "sha256:8c86bad8753240160dd274037001a89f6d191121989c704a240cef40d5b3528f"
+        },
+        {
+          "path": "canvas-fonts/Boldonse-OFL.txt",
+          "digest": "sha256:bd2c2f68313eba7b197beeb9e3a3b10426065bee21488e96d51d05b6620fa1e5"
+        },
+        {
+          "path": "canvas-fonts/Boldonse-Regular.ttf",
+          "digest": "sha256:9261ed42360aacfdb255480a3abf4f0a98c8f9713b3e4ed707427b38763b3753"
+        },
+        {
+          "path": "canvas-fonts/BricolageGrotesque-Bold.ttf",
+          "digest": "sha256:509754024fb234505c0045bed01841c44084e5ca8519dc3c47fed560c0cd4550"
+        },
+        {
+          "path": "canvas-fonts/BricolageGrotesque-OFL.txt",
+          "digest": "sha256:70a60ecc63bdb50bd68c89c3ed030434885a1f549eef564a8c162947f407e223"
+        },
+        {
+          "path": "canvas-fonts/BricolageGrotesque-Regular.ttf",
+          "digest": "sha256:dfdee52b58143fea5648f463fa2aeae6e3b8beb06da28800c59301ad20e1b123"
+        },
+        {
+          "path": "canvas-fonts/CrimsonPro-Bold.ttf",
+          "digest": "sha256:9685a844c4d4f8b3947a32f8f00c8e8347521ca66d8ce07075c0c339dc851adc"
+        },
+        {
+          "path": "canvas-fonts/CrimsonPro-Italic.ttf",
+          "digest": "sha256:7557a74acbffb0416a74dce96ed81754df897bec17dab54fcecf7284a5efc7eb"
+        },
+        {
+          "path": "canvas-fonts/CrimsonPro-OFL.txt",
+          "digest": "sha256:fed3fc975d1e28fba915f66f3b5238771226006a515a707d9508e948245873c8"
+        },
+        {
+          "path": "canvas-fonts/CrimsonPro-Regular.ttf",
+          "digest": "sha256:c12467d15ba73f89eb7dbedb0165178d6568b06e2916bca15ec5474c99cd8cc6"
+        },
+        {
+          "path": "canvas-fonts/DMMono-OFL.txt",
+          "digest": "sha256:f557872f00bbf07a69b7a59e5e4de724402dba73afecc65bff96631a9dfa7145"
+        },
+        {
+          "path": "canvas-fonts/DMMono-Regular.ttf",
+          "digest": "sha256:0118480acaab93f348ac4ba8a91c1c17123e3eb9796ef7d42a4df66714e1d857"
+        },
+        {
+          "path": "canvas-fonts/EricaOne-OFL.txt",
+          "digest": "sha256:5c37b7482cb2cb63e45302757449f6222fd5d1fd021c4ed590eb19701174e49a"
+        },
+        {
+          "path": "canvas-fonts/EricaOne-Regular.ttf",
+          "digest": "sha256:ff1c7b1428becc32b07d7cd69c1a0019e7d1e65c360d46577b1df65333d590af"
+        },
+        {
+          "path": "canvas-fonts/GeistMono-Bold.ttf",
+          "digest": "sha256:e2edd17f3c3545f1c0d44946e58d1078cd451c913d5d392dc7a5c99fcf3d22d4"
+        },
+        {
+          "path": "canvas-fonts/GeistMono-OFL.txt",
+          "digest": "sha256:d7cc2ece87265a910a44144f11ded45328dea5c60e867158863bb4709c7fe6ad"
+        },
+        {
+          "path": "canvas-fonts/GeistMono-Regular.ttf",
+          "digest": "sha256:ab1308ab3ec54367811245628d8c2aaa06e9d6c31268bb410ad100d42eef7b62"
+        },
+        {
+          "path": "canvas-fonts/Gloock-OFL.txt",
+          "digest": "sha256:485ce2663759d91ec317bd26771fce4c9f12eaab9fcc3c8182137d00c06320bc"
+        },
+        {
+          "path": "canvas-fonts/Gloock-Regular.ttf",
+          "digest": "sha256:a4d5407b83520069a6a8780b99e1ccf7abda7b61b14b79503437e1915b9b22ea"
+        },
+        {
+          "path": "canvas-fonts/IBMPlexMono-Bold.ttf",
+          "digest": "sha256:7a9c2a851e9aa1eae58d1109e5bae759f53a451c907a616ed9ae1d327e742625"
+        },
+        {
+          "path": "canvas-fonts/IBMPlexMono-OFL.txt",
+          "digest": "sha256:6f86b47564d70b8444b590f11912c03a2f2e81782cd40313c07753901318ecfa"
+        },
+        {
+          "path": "canvas-fonts/IBMPlexMono-Regular.ttf",
+          "digest": "sha256:255912bb23e37693374443494959e564ecca22ca84c027cb1e361fe1648221c4"
+        },
+        {
+          "path": "canvas-fonts/IBMPlexSerif-Bold.ttf",
+          "digest": "sha256:2949ad6e182fa541c7b017477b059de2c4519067b106882a6b8d70a453ae1b69"
+        },
+        {
+          "path": "canvas-fonts/IBMPlexSerif-BoldItalic.ttf",
+          "digest": "sha256:662d21a6ea7878c1debe4c300a43ecfb37b32fa939640b6326e1505ebdf505cc"
+        },
+        {
+          "path": "canvas-fonts/IBMPlexSerif-Italic.ttf",
+          "digest": "sha256:fe02788e1e4ebcba6b12cf3e99dfc70761dc5cea8aac366cb6f053140307b780"
+        },
+        {
+          "path": "canvas-fonts/IBMPlexSerif-Regular.ttf",
+          "digest": "sha256:208117bd5c3ea917e90b8a50aa1f4958e05b5785e014ca540897743f746b3fe8"
+        },
+        {
+          "path": "canvas-fonts/InstrumentSans-Bold.ttf",
+          "digest": "sha256:360faafcf3ebd71402568652d40b5c6bc831901b578e30d5e0b2bef0b5bf920e"
+        },
+        {
+          "path": "canvas-fonts/InstrumentSans-BoldItalic.ttf",
+          "digest": "sha256:5cf3b120ab645935cb71f0b66cf442eede5e00c17654e1c43a810503fdec62a2"
+        },
+        {
+          "path": "canvas-fonts/InstrumentSans-Italic.ttf",
+          "digest": "sha256:d22b4c25136959dcb06509748cfcdfbd863ab81135887178579e2fde9a415a2f"
+        },
+        {
+          "path": "canvas-fonts/InstrumentSans-OFL.txt",
+          "digest": "sha256:90b41f01dfc205f728e18509c30467d3bdd0d53d004347ac9302b463c77d7ee8"
+        },
+        {
+          "path": "canvas-fonts/InstrumentSans-Regular.ttf",
+          "digest": "sha256:d411177eca325c5265d54f276efa4e37fef0d64af159e7a63f3908dca0c7ba45"
+        },
+        {
+          "path": "canvas-fonts/InstrumentSerif-Italic.ttf",
+          "digest": "sha256:347c7d41d208c94f60f757c815cb7b70adbf77004ff2a6f52a8a3fd5532b2b36"
+        },
+        {
+          "path": "canvas-fonts/InstrumentSerif-Regular.ttf",
+          "digest": "sha256:0d7ba1c1cd0607bfa0d1b2341a929b390d73c441099ad1cd361af5648b3079a6"
+        },
+        {
+          "path": "canvas-fonts/Italiana-OFL.txt",
+          "digest": "sha256:1b744db6b3cb37131c6db785b1acaecebae6b7d2c45b32b0a7cf6556034f0ba9"
+        },
+        {
+          "path": "canvas-fonts/Italiana-Regular.ttf",
+          "digest": "sha256:634b74407d373a2d5dba5d905c532f675f04878c404c300c98c2d073956ffd4e"
+        },
+        {
+          "path": "canvas-fonts/JetBrainsMono-Bold.ttf",
+          "digest": "sha256:196238bc10f092cc28784119a7721e3c41298d849be6b4c370a085fa41e4a2c1"
+        },
+        {
+          "path": "canvas-fonts/JetBrainsMono-OFL.txt",
+          "digest": "sha256:8841d6f49ad327c060323f5d498d9655b87e55169614b7ee22d49df4cab97d87"
+        },
+        {
+          "path": "canvas-fonts/JetBrainsMono-Regular.ttf",
+          "digest": "sha256:8eb5bf980f5e84aa717e214be02a35238a0ec46355fc95a21415dadacbb9ce68"
+        },
+        {
+          "path": "canvas-fonts/Jura-Light.ttf",
+          "digest": "sha256:6212c637db1b560fec648db94acf37ab056cc86d13b05327335b85a046ccbdc9"
+        },
+        {
+          "path": "canvas-fonts/Jura-Medium.ttf",
+          "digest": "sha256:0d7efe80f2c5c634dd6fbe208f085ee3c72aa0e2f3bf8ee4e045ddbeb43be698"
+        },
+        {
+          "path": "canvas-fonts/Jura-OFL.txt",
+          "digest": "sha256:7218c001f8fc3b27253170b87ea6894bec454899c28ebaf4362052d142ae0892"
+        },
+        {
+          "path": "canvas-fonts/LibreBaskerville-OFL.txt",
+          "digest": "sha256:78a62276229664c02c3e6732c4e9f7ba418779419ddb87cd3415be2f8c71b29b"
+        },
+        {
+          "path": "canvas-fonts/LibreBaskerville-Regular.ttf",
+          "digest": "sha256:a894f13f0a38759f90a4c8cfc2b8b426d5a73fc3581d9f270c8dd13610676b89"
+        },
+        {
+          "path": "canvas-fonts/Lora-Bold.ttf",
+          "digest": "sha256:87e3f8be6f78dfc81018729999efdf6019b98d3263a6f84c2684f52a021e6f63"
+        },
+        {
+          "path": "canvas-fonts/Lora-BoldItalic.ttf",
+          "digest": "sha256:a3498ee6e9b7369d8f73e0c441c764c5fa670c32a05ed79822b88d95c1ee5377"
+        },
+        {
+          "path": "canvas-fonts/Lora-Italic.ttf",
+          "digest": "sha256:9ba5dbc7c91cc6a439af192e92e0e44501ff8783778f25f63f50bae7a18f5237"
+        },
+        {
+          "path": "canvas-fonts/Lora-OFL.txt",
+          "digest": "sha256:8ca8958f27d20ce30fa297bc8a6c00c0f3411ac567de592a7944f5ce3c0bbc95"
+        },
+        {
+          "path": "canvas-fonts/Lora-Regular.ttf",
+          "digest": "sha256:a15dbf2e02a08a31b31a34d97cae5a6dd701a965c6bf25958a7ce3d0786871b6"
+        },
+        {
+          "path": "canvas-fonts/NationalPark-Bold.ttf",
+          "digest": "sha256:5c58d9f012accafb24921320c5009e5e31970a215246cd699e063c95a9fda709"
+        },
+        {
+          "path": "canvas-fonts/NationalPark-OFL.txt",
+          "digest": "sha256:c6bdac1ad0d2b6f94360a6dbb03e1d9a1aae09c1d6884c2057d58aa1fd7f7e42"
+        },
+        {
+          "path": "canvas-fonts/NationalPark-Regular.ttf",
+          "digest": "sha256:b10a70d13665a18722f8d499efc126e10e317e6df72f4855e30b0e5c58eb656f"
+        },
+        {
+          "path": "canvas-fonts/NothingYouCouldDo-OFL.txt",
+          "digest": "sha256:1383dade5daf2bd7b0029c06075a422718bf1cd6d764bc23d6c0cf365aa20cf5"
+        },
+        {
+          "path": "canvas-fonts/NothingYouCouldDo-Regular.ttf",
+          "digest": "sha256:9adea4fffb1f0f8607365c27ad7e5b9c3f31f20fa0ca9f060e6a3596fa7b3b15"
+        },
+        {
+          "path": "canvas-fonts/Outfit-Bold.ttf",
+          "digest": "sha256:c34de8d0559f61b851b4635fe86c761f98abb55eacf39e9f577bc58e088a9aa1"
+        },
+        {
+          "path": "canvas-fonts/Outfit-OFL.txt",
+          "digest": "sha256:cda6790b859d6d542110d37c92c9fdf62ceba45ec700338612230bf587e9b128"
+        },
+        {
+          "path": "canvas-fonts/Outfit-Regular.ttf",
+          "digest": "sha256:da46774363b09d4b66272d547372c82f0ae211851cfa1fd47479b9a3a906b744"
+        },
+        {
+          "path": "canvas-fonts/PixelifySans-Medium.ttf",
+          "digest": "sha256:4a48eea6f4eadc7fedfa0d35357f4b91e4fb05ac473d71ce85e421b75921376c"
+        },
+        {
+          "path": "canvas-fonts/PixelifySans-OFL.txt",
+          "digest": "sha256:8d4c174874aad53bb0bb516588e377ceeab1c1d29d4f738aea8414b789d3257a"
+        },
+        {
+          "path": "canvas-fonts/PoiretOne-OFL.txt",
+          "digest": "sha256:d962a1ad15dc89cc88dbe8ec893bd75cf4efe2b30f9b5d130e54557f88b54aad"
+        },
+        {
+          "path": "canvas-fonts/PoiretOne-Regular.ttf",
+          "digest": "sha256:b2bca0d9bc7c247ede01f3fae0a5d17fffe7ec98ce926b10531541a218a56f9c"
+        },
+        {
+          "path": "canvas-fonts/RedHatMono-Bold.ttf",
+          "digest": "sha256:2a745e11a223309d6206c00a759ff17bbff1a9b8e381a19fe4a6ceadc60cb040"
+        },
+        {
+          "path": "canvas-fonts/RedHatMono-OFL.txt",
+          "digest": "sha256:19d1f781adcdbf3ff2bc16bf6de52398c957eb9b599f7b34fc5415c905e604b1"
+        },
+        {
+          "path": "canvas-fonts/RedHatMono-Regular.ttf",
+          "digest": "sha256:e781d2ca56518fdad2595f6aed753d597a4c49dc299d6e1c18dd3b9910988399"
+        },
+        {
+          "path": "canvas-fonts/Silkscreen-OFL.txt",
+          "digest": "sha256:1b8ad71b1cc771575bb5813c018cf0e9056951f7214afc01325e6ff51e4849d9"
+        },
+        {
+          "path": "canvas-fonts/Silkscreen-Regular.ttf",
+          "digest": "sha256:6b47e40dce26a8fb5df7725a18d2c6d75fca157aecd71031c940debe4530eb50"
+        },
+        {
+          "path": "canvas-fonts/SmoochSans-Medium.ttf",
+          "digest": "sha256:4c63bce97bc2c3e501261ff0d091a79cd34207720c0ca40582c01d7c20f9c294"
+        },
+        {
+          "path": "canvas-fonts/SmoochSans-OFL.txt",
+          "digest": "sha256:56181dd6911d0f482b1c3ad45265aeaad9d0894e061855805e07c56d96727b42"
+        },
+        {
+          "path": "canvas-fonts/Tektur-Medium.ttf",
+          "digest": "sha256:80bd241d80aafbf4d50635cb431238ffa64b3607fae7a5db4ecb9b9e336afb0a"
+        },
+        {
+          "path": "canvas-fonts/Tektur-OFL.txt",
+          "digest": "sha256:c0b9933172dbfe8ecde9e6e6eb592bdcecc7490fd50d7b6ef61bae62f068ab42"
+        },
+        {
+          "path": "canvas-fonts/Tektur-Regular.ttf",
+          "digest": "sha256:b4a415afccc6c6304e2702eabc70d10bfd8d9885997193e40c80322e0f610bd9"
+        },
+        {
+          "path": "canvas-fonts/WorkSans-Bold.ttf",
+          "digest": "sha256:5b42c533ef54096fa907233a26dc7bc5024fec013f017b6ff9fd274daccfef6b"
+        },
+        {
+          "path": "canvas-fonts/WorkSans-BoldItalic.ttf",
+          "digest": "sha256:65b60921d5067fccc395ed878d4dbc466676cb0b902921e82656144636b7c955"
+        },
+        {
+          "path": "canvas-fonts/WorkSans-Italic.ttf",
+          "digest": "sha256:4e6095b7f259d74bf6bf7e4fa7768c1f0b64019dfc77a81a6493ca9eb1a607ae"
+        },
+        {
+          "path": "canvas-fonts/WorkSans-OFL.txt",
+          "digest": "sha256:214fd3baebe3be2e74718b18846206951de23ae38cdb9c1aa720d4ff7d87a84c"
+        },
+        {
+          "path": "canvas-fonts/WorkSans-Regular.ttf",
+          "digest": "sha256:869a0d702121bb85e1c7ebef9a87f292ae61aede4cf3bf876d4a50a30594142f"
+        },
+        {
+          "path": "canvas-fonts/YoungSerif-OFL.txt",
+          "digest": "sha256:e31819f6cbceb39511563eb5a9a520d761630f64cf54b17e46ccdc138e793410"
+        },
+        {
+          "path": "canvas-fonts/YoungSerif-Regular.ttf",
+          "digest": "sha256:562fed7a85dfe527cfa98481d685f6c438eece0f6d540ff49d6f54f92aba481a"
+        }
+      ]
+    },
+    {
+      "id": "canvas-design",
+      "target": "codex",
+      "path": ".agents/skills/canvas-design",
+      "files": 83,
+      "digest": "sha256:80e268bde5f2379ec5ff043317072fd1f7b1fdc381ed743fba889d8208975ad2",
+      "inventory": [
+        {
+          "path": "LICENSE.txt",
+          "digest": "sha256:ddd208f368e34d53de6509bf70e1129a13aaa4066a5692d5419cc529df45d6cd"
+        },
+        {
+          "path": "SKILL.md",
+          "digest": "sha256:a85807eb3144945731be406711fe3cc4b5fedfbe71e6601b8846f0848b109cbe"
+        },
+        {
+          "path": "canvas-fonts/ArsenalSC-OFL.txt",
+          "digest": "sha256:4c2cdb3256a0fb5da9b7a12d5228c663ac2ef6c05ac7ce510bc79d1be4587385"
+        },
+        {
+          "path": "canvas-fonts/ArsenalSC-Regular.ttf",
+          "digest": "sha256:1a58991aaf871da6fa4bf7acd3bfc1c2d22bb99ffedc14cac09238687e01c9d6"
+        },
+        {
+          "path": "canvas-fonts/BigShoulders-Bold.ttf",
+          "digest": "sha256:4f49a954c8b5a4ec3ed20872d7809a98e52ee65fa36c368f5bd5c81f63774aef"
+        },
+        {
+          "path": "canvas-fonts/BigShoulders-OFL.txt",
+          "digest": "sha256:0c00863b409607be541ea5f9d18edb97837f181b8164c2b864a90c38b056b333"
+        },
+        {
+          "path": "canvas-fonts/BigShoulders-Regular.ttf",
+          "digest": "sha256:8c86bad8753240160dd274037001a89f6d191121989c704a240cef40d5b3528f"
+        },
+        {
+          "path": "canvas-fonts/Boldonse-OFL.txt",
+          "digest": "sha256:bd2c2f68313eba7b197beeb9e3a3b10426065bee21488e96d51d05b6620fa1e5"
+        },
+        {
+          "path": "canvas-fonts/Boldonse-Regular.ttf",
+          "digest": "sha256:9261ed42360aacfdb255480a3abf4f0a98c8f9713b3e4ed707427b38763b3753"
+        },
+        {
+          "path": "canvas-fonts/BricolageGrotesque-Bold.ttf",
+          "digest": "sha256:509754024fb234505c0045bed01841c44084e5ca8519dc3c47fed560c0cd4550"
+        },
+        {
+          "path": "canvas-fonts/BricolageGrotesque-OFL.txt",
+          "digest": "sha256:70a60ecc63bdb50bd68c89c3ed030434885a1f549eef564a8c162947f407e223"
+        },
+        {
+          "path": "canvas-fonts/BricolageGrotesque-Regular.ttf",
+          "digest": "sha256:dfdee52b58143fea5648f463fa2aeae6e3b8beb06da28800c59301ad20e1b123"
+        },
+        {
+          "path": "canvas-fonts/CrimsonPro-Bold.ttf",
+          "digest": "sha256:9685a844c4d4f8b3947a32f8f00c8e8347521ca66d8ce07075c0c339dc851adc"
+        },
+        {
+          "path": "canvas-fonts/CrimsonPro-Italic.ttf",
+          "digest": "sha256:7557a74acbffb0416a74dce96ed81754df897bec17dab54fcecf7284a5efc7eb"
+        },
+        {
+          "path": "canvas-fonts/CrimsonPro-OFL.txt",
+          "digest": "sha256:fed3fc975d1e28fba915f66f3b5238771226006a515a707d9508e948245873c8"
+        },
+        {
+          "path": "canvas-fonts/CrimsonPro-Regular.ttf",
+          "digest": "sha256:c12467d15ba73f89eb7dbedb0165178d6568b06e2916bca15ec5474c99cd8cc6"
+        },
+        {
+          "path": "canvas-fonts/DMMono-OFL.txt",
+          "digest": "sha256:f557872f00bbf07a69b7a59e5e4de724402dba73afecc65bff96631a9dfa7145"
+        },
+        {
+          "path": "canvas-fonts/DMMono-Regular.ttf",
+          "digest": "sha256:0118480acaab93f348ac4ba8a91c1c17123e3eb9796ef7d42a4df66714e1d857"
+        },
+        {
+          "path": "canvas-fonts/EricaOne-OFL.txt",
+          "digest": "sha256:5c37b7482cb2cb63e45302757449f6222fd5d1fd021c4ed590eb19701174e49a"
+        },
+        {
+          "path": "canvas-fonts/EricaOne-Regular.ttf",
+          "digest": "sha256:ff1c7b1428becc32b07d7cd69c1a0019e7d1e65c360d46577b1df65333d590af"
+        },
+        {
+          "path": "canvas-fonts/GeistMono-Bold.ttf",
+          "digest": "sha256:e2edd17f3c3545f1c0d44946e58d1078cd451c913d5d392dc7a5c99fcf3d22d4"
+        },
+        {
+          "path": "canvas-fonts/GeistMono-OFL.txt",
+          "digest": "sha256:d7cc2ece87265a910a44144f11ded45328dea5c60e867158863bb4709c7fe6ad"
+        },
+        {
+          "path": "canvas-fonts/GeistMono-Regular.ttf",
+          "digest": "sha256:ab1308ab3ec54367811245628d8c2aaa06e9d6c31268bb410ad100d42eef7b62"
+        },
+        {
+          "path": "canvas-fonts/Gloock-OFL.txt",
+          "digest": "sha256:485ce2663759d91ec317bd26771fce4c9f12eaab9fcc3c8182137d00c06320bc"
+        },
+        {
+          "path": "canvas-fonts/Gloock-Regular.ttf",
+          "digest": "sha256:a4d5407b83520069a6a8780b99e1ccf7abda7b61b14b79503437e1915b9b22ea"
+        },
+        {
+          "path": "canvas-fonts/IBMPlexMono-Bold.ttf",
+          "digest": "sha256:7a9c2a851e9aa1eae58d1109e5bae759f53a451c907a616ed9ae1d327e742625"
+        },
+        {
+          "path": "canvas-fonts/IBMPlexMono-OFL.txt",
+          "digest": "sha256:6f86b47564d70b8444b590f11912c03a2f2e81782cd40313c07753901318ecfa"
+        },
+        {
+          "path": "canvas-fonts/IBMPlexMono-Regular.ttf",
+          "digest": "sha256:255912bb23e37693374443494959e564ecca22ca84c027cb1e361fe1648221c4"
+        },
+        {
+          "path": "canvas-fonts/IBMPlexSerif-Bold.ttf",
+          "digest": "sha256:2949ad6e182fa541c7b017477b059de2c4519067b106882a6b8d70a453ae1b69"
+        },
+        {
+          "path": "canvas-fonts/IBMPlexSerif-BoldItalic.ttf",
+          "digest": "sha256:662d21a6ea7878c1debe4c300a43ecfb37b32fa939640b6326e1505ebdf505cc"
+        },
+        {
+          "path": "canvas-fonts/IBMPlexSerif-Italic.ttf",
+          "digest": "sha256:fe02788e1e4ebcba6b12cf3e99dfc70761dc5cea8aac366cb6f053140307b780"
+        },
+        {
+          "path": "canvas-fonts/IBMPlexSerif-Regular.ttf",
+          "digest": "sha256:208117bd5c3ea917e90b8a50aa1f4958e05b5785e014ca540897743f746b3fe8"
+        },
+        {
+          "path": "canvas-fonts/InstrumentSans-Bold.ttf",
+          "digest": "sha256:360faafcf3ebd71402568652d40b5c6bc831901b578e30d5e0b2bef0b5bf920e"
+        },
+        {
+          "path": "canvas-fonts/InstrumentSans-BoldItalic.ttf",
+          "digest": "sha256:5cf3b120ab645935cb71f0b66cf442eede5e00c17654e1c43a810503fdec62a2"
+        },
+        {
+          "path": "canvas-fonts/InstrumentSans-Italic.ttf",
+          "digest": "sha256:d22b4c25136959dcb06509748cfcdfbd863ab81135887178579e2fde9a415a2f"
+        },
+        {
+          "path": "canvas-fonts/InstrumentSans-OFL.txt",
+          "digest": "sha256:90b41f01dfc205f728e18509c30467d3bdd0d53d004347ac9302b463c77d7ee8"
+        },
+        {
+          "path": "canvas-fonts/InstrumentSans-Regular.ttf",
+          "digest": "sha256:d411177eca325c5265d54f276efa4e37fef0d64af159e7a63f3908dca0c7ba45"
+        },
+        {
+          "path": "canvas-fonts/InstrumentSerif-Italic.ttf",
+          "digest": "sha256:347c7d41d208c94f60f757c815cb7b70adbf77004ff2a6f52a8a3fd5532b2b36"
+        },
+        {
+          "path": "canvas-fonts/InstrumentSerif-Regular.ttf",
+          "digest": "sha256:0d7ba1c1cd0607bfa0d1b2341a929b390d73c441099ad1cd361af5648b3079a6"
+        },
+        {
+          "path": "canvas-fonts/Italiana-OFL.txt",
+          "digest": "sha256:1b744db6b3cb37131c6db785b1acaecebae6b7d2c45b32b0a7cf6556034f0ba9"
+        },
+        {
+          "path": "canvas-fonts/Italiana-Regular.ttf",
+          "digest": "sha256:634b74407d373a2d5dba5d905c532f675f04878c404c300c98c2d073956ffd4e"
+        },
+        {
+          "path": "canvas-fonts/JetBrainsMono-Bold.ttf",
+          "digest": "sha256:196238bc10f092cc28784119a7721e3c41298d849be6b4c370a085fa41e4a2c1"
+        },
+        {
+          "path": "canvas-fonts/JetBrainsMono-OFL.txt",
+          "digest": "sha256:8841d6f49ad327c060323f5d498d9655b87e55169614b7ee22d49df4cab97d87"
+        },
+        {
+          "path": "canvas-fonts/JetBrainsMono-Regular.ttf",
+          "digest": "sha256:8eb5bf980f5e84aa717e214be02a35238a0ec46355fc95a21415dadacbb9ce68"
+        },
+        {
+          "path": "canvas-fonts/Jura-Light.ttf",
+          "digest": "sha256:6212c637db1b560fec648db94acf37ab056cc86d13b05327335b85a046ccbdc9"
+        },
+        {
+          "path": "canvas-fonts/Jura-Medium.ttf",
+          "digest": "sha256:0d7efe80f2c5c634dd6fbe208f085ee3c72aa0e2f3bf8ee4e045ddbeb43be698"
+        },
+        {
+          "path": "canvas-fonts/Jura-OFL.txt",
+          "digest": "sha256:7218c001f8fc3b27253170b87ea6894bec454899c28ebaf4362052d142ae0892"
+        },
+        {
+          "path": "canvas-fonts/LibreBaskerville-OFL.txt",
+          "digest": "sha256:78a62276229664c02c3e6732c4e9f7ba418779419ddb87cd3415be2f8c71b29b"
+        },
+        {
+          "path": "canvas-fonts/LibreBaskerville-Regular.ttf",
+          "digest": "sha256:a894f13f0a38759f90a4c8cfc2b8b426d5a73fc3581d9f270c8dd13610676b89"
+        },
+        {
+          "path": "canvas-fonts/Lora-Bold.ttf",
+          "digest": "sha256:87e3f8be6f78dfc81018729999efdf6019b98d3263a6f84c2684f52a021e6f63"
+        },
+        {
+          "path": "canvas-fonts/Lora-BoldItalic.ttf",
+          "digest": "sha256:a3498ee6e9b7369d8f73e0c441c764c5fa670c32a05ed79822b88d95c1ee5377"
+        },
+        {
+          "path": "canvas-fonts/Lora-Italic.ttf",
+          "digest": "sha256:9ba5dbc7c91cc6a439af192e92e0e44501ff8783778f25f63f50bae7a18f5237"
+        },
+        {
+          "path": "canvas-fonts/Lora-OFL.txt",
+          "digest": "sha256:8ca8958f27d20ce30fa297bc8a6c00c0f3411ac567de592a7944f5ce3c0bbc95"
+        },
+        {
+          "path": "canvas-fonts/Lora-Regular.ttf",
+          "digest": "sha256:a15dbf2e02a08a31b31a34d97cae5a6dd701a965c6bf25958a7ce3d0786871b6"
+        },
+        {
+          "path": "canvas-fonts/NationalPark-Bold.ttf",
+          "digest": "sha256:5c58d9f012accafb24921320c5009e5e31970a215246cd699e063c95a9fda709"
+        },
+        {
+          "path": "canvas-fonts/NationalPark-OFL.txt",
+          "digest": "sha256:c6bdac1ad0d2b6f94360a6dbb03e1d9a1aae09c1d6884c2057d58aa1fd7f7e42"
+        },
+        {
+          "path": "canvas-fonts/NationalPark-Regular.ttf",
+          "digest": "sha256:b10a70d13665a18722f8d499efc126e10e317e6df72f4855e30b0e5c58eb656f"
+        },
+        {
+          "path": "canvas-fonts/NothingYouCouldDo-OFL.txt",
+          "digest": "sha256:1383dade5daf2bd7b0029c06075a422718bf1cd6d764bc23d6c0cf365aa20cf5"
+        },
+        {
+          "path": "canvas-fonts/NothingYouCouldDo-Regular.ttf",
+          "digest": "sha256:9adea4fffb1f0f8607365c27ad7e5b9c3f31f20fa0ca9f060e6a3596fa7b3b15"
+        },
+        {
+          "path": "canvas-fonts/Outfit-Bold.ttf",
+          "digest": "sha256:c34de8d0559f61b851b4635fe86c761f98abb55eacf39e9f577bc58e088a9aa1"
+        },
+        {
+          "path": "canvas-fonts/Outfit-OFL.txt",
+          "digest": "sha256:cda6790b859d6d542110d37c92c9fdf62ceba45ec700338612230bf587e9b128"
+        },
+        {
+          "path": "canvas-fonts/Outfit-Regular.ttf",
+          "digest": "sha256:da46774363b09d4b66272d547372c82f0ae211851cfa1fd47479b9a3a906b744"
+        },
+        {
+          "path": "canvas-fonts/PixelifySans-Medium.ttf",
+          "digest": "sha256:4a48eea6f4eadc7fedfa0d35357f4b91e4fb05ac473d71ce85e421b75921376c"
+        },
+        {
+          "path": "canvas-fonts/PixelifySans-OFL.txt",
+          "digest": "sha256:8d4c174874aad53bb0bb516588e377ceeab1c1d29d4f738aea8414b789d3257a"
+        },
+        {
+          "path": "canvas-fonts/PoiretOne-OFL.txt",
+          "digest": "sha256:d962a1ad15dc89cc88dbe8ec893bd75cf4efe2b30f9b5d130e54557f88b54aad"
+        },
+        {
+          "path": "canvas-fonts/PoiretOne-Regular.ttf",
+          "digest": "sha256:b2bca0d9bc7c247ede01f3fae0a5d17fffe7ec98ce926b10531541a218a56f9c"
+        },
+        {
+          "path": "canvas-fonts/RedHatMono-Bold.ttf",
+          "digest": "sha256:2a745e11a223309d6206c00a759ff17bbff1a9b8e381a19fe4a6ceadc60cb040"
+        },
+        {
+          "path": "canvas-fonts/RedHatMono-OFL.txt",
+          "digest": "sha256:19d1f781adcdbf3ff2bc16bf6de52398c957eb9b599f7b34fc5415c905e604b1"
+        },
+        {
+          "path": "canvas-fonts/RedHatMono-Regular.ttf",
+          "digest": "sha256:e781d2ca56518fdad2595f6aed753d597a4c49dc299d6e1c18dd3b9910988399"
+        },
+        {
+          "path": "canvas-fonts/Silkscreen-OFL.txt",
+          "digest": "sha256:1b8ad71b1cc771575bb5813c018cf0e9056951f7214afc01325e6ff51e4849d9"
+        },
+        {
+          "path": "canvas-fonts/Silkscreen-Regular.ttf",
+          "digest": "sha256:6b47e40dce26a8fb5df7725a18d2c6d75fca157aecd71031c940debe4530eb50"
+        },
+        {
+          "path": "canvas-fonts/SmoochSans-Medium.ttf",
+          "digest": "sha256:4c63bce97bc2c3e501261ff0d091a79cd34207720c0ca40582c01d7c20f9c294"
+        },
+        {
+          "path": "canvas-fonts/SmoochSans-OFL.txt",
+          "digest": "sha256:56181dd6911d0f482b1c3ad45265aeaad9d0894e061855805e07c56d96727b42"
+        },
+        {
+          "path": "canvas-fonts/Tektur-Medium.ttf",
+          "digest": "sha256:80bd241d80aafbf4d50635cb431238ffa64b3607fae7a5db4ecb9b9e336afb0a"
+        },
+        {
+          "path": "canvas-fonts/Tektur-OFL.txt",
+          "digest": "sha256:c0b9933172dbfe8ecde9e6e6eb592bdcecc7490fd50d7b6ef61bae62f068ab42"
+        },
+        {
+          "path": "canvas-fonts/Tektur-Regular.ttf",
+          "digest": "sha256:b4a415afccc6c6304e2702eabc70d10bfd8d9885997193e40c80322e0f610bd9"
+        },
+        {
+          "path": "canvas-fonts/WorkSans-Bold.ttf",
+          "digest": "sha256:5b42c533ef54096fa907233a26dc7bc5024fec013f017b6ff9fd274daccfef6b"
+        },
+        {
+          "path": "canvas-fonts/WorkSans-BoldItalic.ttf",
+          "digest": "sha256:65b60921d5067fccc395ed878d4dbc466676cb0b902921e82656144636b7c955"
+        },
+        {
+          "path": "canvas-fonts/WorkSans-Italic.ttf",
+          "digest": "sha256:4e6095b7f259d74bf6bf7e4fa7768c1f0b64019dfc77a81a6493ca9eb1a607ae"
+        },
+        {
+          "path": "canvas-fonts/WorkSans-OFL.txt",
+          "digest": "sha256:214fd3baebe3be2e74718b18846206951de23ae38cdb9c1aa720d4ff7d87a84c"
+        },
+        {
+          "path": "canvas-fonts/WorkSans-Regular.ttf",
+          "digest": "sha256:869a0d702121bb85e1c7ebef9a87f292ae61aede4cf3bf876d4a50a30594142f"
+        },
+        {
+          "path": "canvas-fonts/YoungSerif-OFL.txt",
+          "digest": "sha256:e31819f6cbceb39511563eb5a9a520d761630f64cf54b17e46ccdc138e793410"
+        },
+        {
+          "path": "canvas-fonts/YoungSerif-Regular.ttf",
+          "digest": "sha256:562fed7a85dfe527cfa98481d685f6c438eece0f6d540ff49d6f54f92aba481a"
+        }
+      ]
+    },
+    {
+      "id": "design-audit",
+      "target": "claude-code",
+      "path": ".claude/skills/design-audit",
+      "files": 1,
+      "digest": "sha256:06cb2076b42cbd9128d722bffe11e46981b235e7343e5f0fbdbacd0b0151ca35",
+      "inventory": [
+        {
+          "path": "SKILL.md",
+          "digest": "sha256:4361cec892502c08c3e09792538aa1a5e83e8dd94b180bcbfa0c13433108d7b5"
+        }
+      ]
+    },
+    {
+      "id": "frontend-design",
+      "target": "claude-code",
+      "path": ".claude/skills/frontend-design",
+      "files": 2,
+      "digest": "sha256:8f01645fb35da6e57492e02c4de094952c712390499e865039257c0624defdc9",
+      "inventory": [
+        {
+          "path": "LICENSE.txt",
+          "digest": "sha256:f8892104790348a83e7df436f048f8df524c4c0e8b10fec725ebd27533d25c23"
+        },
+        {
+          "path": "SKILL.md",
+          "digest": "sha256:f3429a0bb10120cd2bdf5215d94926d40a0dbf9b83932a24fd7d6a297e60e562"
+        }
+      ]
+    },
+    {
+      "id": "frontend-design",
+      "target": "codex",
+      "path": ".agents/skills/frontend-design",
+      "files": 2,
+      "digest": "sha256:8f01645fb35da6e57492e02c4de094952c712390499e865039257c0624defdc9",
+      "inventory": [
+        {
+          "path": "LICENSE.txt",
+          "digest": "sha256:f8892104790348a83e7df436f048f8df524c4c0e8b10fec725ebd27533d25c23"
+        },
+        {
+          "path": "SKILL.md",
+          "digest": "sha256:f3429a0bb10120cd2bdf5215d94926d40a0dbf9b83932a24fd7d6a297e60e562"
+        }
+      ]
+    },
+    {
+      "id": "theme-factory",
+      "target": "claude-code",
+      "path": ".claude/skills/theme-factory",
+      "files": 13,
+      "digest": "sha256:1564d21f90d1e3e00fce588bbea55c52dfff028ce04f1f9c2ccdd5cbe04d5c5e",
+      "inventory": [
+        {
+          "path": "LICENSE.txt",
+          "digest": "sha256:ddd208f368e34d53de6509bf70e1129a13aaa4066a5692d5419cc529df45d6cd"
+        },
+        {
+          "path": "SKILL.md",
+          "digest": "sha256:79b3f9de20bd634f7c9ec1ec0e814ad0024e544cb28c44c2a55fb0d7242bcd95"
+        },
+        {
+          "path": "theme-showcase.pdf",
+          "digest": "sha256:63530bd9067b9572cb3ad793290d56c31ae23933a929b135c2af3cea17581a2a"
+        },
+        {
+          "path": "themes/arctic-frost.md",
+          "digest": "sha256:9fb4ede2b4defa87de3158fa1427054dfd5bd6fa43e945c9485e1b2f30553b7a"
+        },
+        {
+          "path": "themes/botanical-garden.md",
+          "digest": "sha256:2724814ca475d6141f6141429556ee898ae292513815a0303cc88e1ad60356e2"
+        },
+        {
+          "path": "themes/desert-rose.md",
+          "digest": "sha256:bdf02b5ab4605f834d7ad0c988d6a50fa895ae09b1d07c8b6989cce2436b057c"
+        },
+        {
+          "path": "themes/forest-canopy.md",
+          "digest": "sha256:a53662955eaa220b9566dd8d1c01732f0d49e6d378c3e0800777d3efb35a7e44"
+        },
+        {
+          "path": "themes/golden-hour.md",
+          "digest": "sha256:8b13690a90e11dbfebd07a326a846fc8f9e7ce30f4f6c509d672652be58ba3f5"
+        },
+        {
+          "path": "themes/midnight-galaxy.md",
+          "digest": "sha256:2cdb921d3232b65d47cf21ad3738fa84d3388ef697aedde6cbaf202be00fdcd2"
+        },
+        {
+          "path": "themes/modern-minimalist.md",
+          "digest": "sha256:5e7a983f3a069eb1031208319d135b03b2b67e7ff2ea7e402d196ec948bab6fe"
+        },
+        {
+          "path": "themes/ocean-depths.md",
+          "digest": "sha256:b89f7a3d88f64bbe5dcda6bf1dd0d1a032c105b14782d0567400b838ac5942ab"
+        },
+        {
+          "path": "themes/sunset-boulevard.md",
+          "digest": "sha256:056637b27a042140e6db1f938ce19f3c20b4ad53b3fd976de2209b0327a4eefe"
+        },
+        {
+          "path": "themes/tech-innovation.md",
+          "digest": "sha256:ac9d8c0ae06b6b0de6352adf0dde008d015f102e223e872364773c1b51549ee3"
+        }
+      ]
+    },
+    {
+      "id": "ui-ux-pro-max",
+      "target": "claude-code",
+      "path": ".claude/skills/ui-ux-pro-max",
+      "files": 70,
+      "digest": "sha256:a796afa0611a6ac8de9524b85d00b13ea29509035e422a8ab01f468314afea06",
+      "inventory": [
+        {
+          "path": "SKILL.md",
+          "digest": "sha256:0c31328c43d63df774534b2a3bdf0608a4cec3a0b2638989bafff5c29e0f9330"
+        },
+        {
+          "path": "data/app-interface.csv",
+          "digest": "sha256:28ce54c01bd8cfa5ac0d339f5be3a900b7fbb04eed02f6fa584dc9d723310a31"
+        },
+        {
+          "path": "data/catalog-summary.json",
+          "digest": "sha256:e5741254ad5f7f4e7ce3a32c47acb3d261ce3db2aee3a4d68311f9b501017912"
+        },
+        {
+          "path": "data/charts.csv",
+          "digest": "sha256:87cc44c1816a9f7ae9ef1b7a9bd3cc8c32aa225be03d957368f584d469a916a6"
+        },
+        {
+          "path": "data/colors.csv",
+          "digest": "sha256:c0b59fd5219390312fb5898337fc907c50c2561d92da2db8853a6042d616fe04"
+        },
+        {
+          "path": "data/data-provenance.json",
+          "digest": "sha256:b43b16b3e3adc48bac7ad6e2a0aa612831b22192a2aa3643d8f8e38386980f65"
+        },
+        {
+          "path": "data/google-font-licenses.json",
+          "digest": "sha256:2f90664356268236565b1062cc86ee13f34ad745e466a2e1a557ec83068f6545"
+        },
+        {
+          "path": "data/google-fonts.csv",
+          "digest": "sha256:c6a4e2fa94f73adb3506110bddb6cbc2449126122356d841b61a7a5d72e518a8"
+        },
+        {
+          "path": "data/icons.csv",
+          "digest": "sha256:98c90707bfdb1e0b62ed4f958ce3768208aed12108075aa9a21952c35492c1c6"
+        },
+        {
+          "path": "data/landing.csv",
+          "digest": "sha256:e1f3e14749d7439208065ada019216f2f1d1ff5b3059a8d9a1189a2731f46b34"
+        },
+        {
+          "path": "data/motion.csv",
+          "digest": "sha256:ce4d8a4c57103d5c0ff5eadf1c31b963bbe4e4a0665cf8d0e33b51c3167399d9"
+        },
+        {
+          "path": "data/phosphor-icons-upstream.json",
+          "digest": "sha256:e4f5ee43d84f7d1d9472459af7694f29d12b70fe8c2c63ff293b00d068ded947"
+        },
+        {
+          "path": "data/products.csv",
+          "digest": "sha256:22d4286185843747182fe66b804b391aa36f3aa99b29a997e610fd48443febd7"
+        },
+        {
+          "path": "data/react-performance.csv",
+          "digest": "sha256:c9c42b82a3d2c818f4aab22da365097bef6b8681a54cd94200e2af98c7207e27"
+        },
+        {
+          "path": "data/stacks/angular.csv",
+          "digest": "sha256:32a231223703e4d3e60afbe0d069f97b0cd6c072a32022b596c9c47b38b423cd"
+        },
+        {
+          "path": "data/stacks/astro.csv",
+          "digest": "sha256:5d5b70f400c8ef4f5937e3ccc79d0afccc7c9527e733821670df8b73a1499cac"
+        },
+        {
+          "path": "data/stacks/avalonia.csv",
+          "digest": "sha256:e00789fdf73ef11cb1feaf26a1f777c9d224a1da058968dca7ebcb13a8793c79"
+        },
+        {
+          "path": "data/stacks/flutter.csv",
+          "digest": "sha256:4831336dee75fc5b5402fc236638f3096e5dbc73743d09df4baa4f6a960c9151"
+        },
+        {
+          "path": "data/stacks/html-tailwind.csv",
+          "digest": "sha256:e7e58fd50b572d8fd851e3baa45d2ad5a7abbad2489d45a1c3b91d1db784beb2"
+        },
+        {
+          "path": "data/stacks/javafx.csv",
+          "digest": "sha256:4d9200d14b98ee567d84025dc38bc9e34c684637c3ed1c5db305d2497af5e976"
+        },
+        {
+          "path": "data/stacks/jetpack-compose.csv",
+          "digest": "sha256:f4609ffe3b59a6a5f3e55b78717231c97f76691515c77b7592ee9802b324e7c4"
+        },
+        {
+          "path": "data/stacks/laravel.csv",
+          "digest": "sha256:de7954b54e7fe2b4d26fefa24cf751409b55abb8cbb03957a366c1340bb44f70"
+        },
+        {
+          "path": "data/stacks/nextjs.csv",
+          "digest": "sha256:ca773701928fb9bcce58cc799cc1b179c0e28f16d0d6d9d870857ec551d3b677"
+        },
+        {
+          "path": "data/stacks/nuxt-ui.csv",
+          "digest": "sha256:caba2cad31ade83e188e14c11f83a2dc2f4814e36521c03ce24b0934db591481"
+        },
+        {
+          "path": "data/stacks/nuxtjs.csv",
+          "digest": "sha256:2ad27ffc87cdbb4762364964db9768a13ad7db75e93fc668373fa33685002abd"
+        },
+        {
+          "path": "data/stacks/react-native.csv",
+          "digest": "sha256:375287b1aa07a683f130eea3ede459ca115ef463a258471fe1e0a16a73359ce0"
+        },
+        {
+          "path": "data/stacks/react.csv",
+          "digest": "sha256:6c083c0cead56e01f01561caa0916e6ee3a07cf483c19b2925bedeecfcff5fa0"
+        },
+        {
+          "path": "data/stacks/shadcn.csv",
+          "digest": "sha256:a46f7237a2fce6863ea4d99632ebe6782e9b89f1e320e5d36510e92d114a7ede"
+        },
+        {
+          "path": "data/stacks/svelte.csv",
+          "digest": "sha256:3d3638721074088b7c293716f1c82bfd7774b2911ec899dee63ab1df3f561d90"
+        },
+        {
+          "path": "data/stacks/swiftui.csv",
+          "digest": "sha256:eebe8a94cba027d61951413a3571eb2617cdad5f2cbfec04cb70a569154471ae"
+        },
+        {
+          "path": "data/stacks/threejs.csv",
+          "digest": "sha256:6a0d5c03a77444210938dbff3ffd9860df4d946478581ae677fbf7133923d05f"
+        },
+        {
+          "path": "data/stacks/uno.csv",
+          "digest": "sha256:6cc625c1cc7f8b8de50ca49a6affad42a16bee9de22c54519f9ad71365cf4727"
+        },
+        {
+          "path": "data/stacks/uwp.csv",
+          "digest": "sha256:15edff4988314e2b3e97374377687225d33e0c6a1037393b7c013b483c2a9eee"
+        },
+        {
+          "path": "data/stacks/vue.csv",
+          "digest": "sha256:d754f7c100922f3e349f7a71cc80edb4705aa5a6f859eb1e563ee3a0b9b14586"
+        },
+        {
+          "path": "data/stacks/winui.csv",
+          "digest": "sha256:5803765d368b7cd6645e7d19a19664657293cb26c5fa4a20c35f8d4637d85c06"
+        },
+        {
+          "path": "data/stacks/wpf.csv",
+          "digest": "sha256:3a91a5decadbba33c0f4afa639ca959bdefa82944bfb4cd6f4d8a12eae69effd"
+        },
+        {
+          "path": "data/styles.csv",
+          "digest": "sha256:e33dff3c6d48ff895bbe944ccc713dbd939a343901daf9d3294569a840916a1f"
+        },
+        {
+          "path": "data/typography.csv",
+          "digest": "sha256:f739e2ee0af2494186f40258faf46da3c5810e7f4e1feed40ca8ddc051c5d2cd"
+        },
+        {
+          "path": "data/ui-reasoning.csv",
+          "digest": "sha256:2366f3f8491549f14721fe1d16de212173ac0df6cd7a13497ef1cc8a4725bd30"
+        },
+        {
+          "path": "data/ux-guidelines.csv",
+          "digest": "sha256:e1b0f282c0377bba275c89267569cab11264baba99bd80f2fbaec9e51b208d99"
+        },
+        {
+          "path": "references/pro-rules.md",
+          "digest": "sha256:6b9a040b82a4ab2684069057f12b9a4aef171813a6353c600b5d00c4f61b62ee"
+        },
+        {
+          "path": "references/quick-reference.md",
+          "digest": "sha256:40202e85685342adc1d82de0ee87db32827a58016983ab0e8fd0a27efdfedc96"
+        },
+        {
+          "path": "scripts/core.py",
+          "digest": "sha256:0f835bab634a547583a59256420241f780849d19801bd867b4cd30dd26201036"
+        },
+        {
+          "path": "scripts/design_system.py",
+          "digest": "sha256:6d75284234027a682ab1b98aa08819fb45fe2ad405011775573efa43e8e33411"
+        },
+        {
+          "path": "scripts/reasoning_contract.py",
+          "digest": "sha256:ec386351cef253c3b4d22d7206a474c3642e11620d507812304f83943de531ce"
+        },
+        {
+          "path": "scripts/search.py",
+          "digest": "sha256:b400ddc019c0be383006818ba3a29aa5dd6ab11de66bf1946572c47ed3e78507"
+        },
+        {
+          "path": "scripts/tests/fixtures/catalogs/google-api.json",
+          "digest": "sha256:68eee8f0fb562dfafd7c46afeccc117373cfc09203e154c7e9baad6888d932ae"
+        },
+        {
+          "path": "scripts/tests/fixtures/catalogs/google-catalog.json",
+          "digest": "sha256:3e245f0c3716222b4a005efb44acde52620d992a52b4a8a39dfee96d736ff7d0"
+        },
+        {
+          "path": "scripts/tests/fixtures/catalogs/google-existing.csv",
+          "digest": "sha256:bbc8da92713f7040089a68f453858f86a938428164377b40e50770f8893ba794"
+        },
+        {
+          "path": "scripts/tests/fixtures/catalogs/google-metadata.json",
+          "digest": "sha256:6f95ded62c262a1d427b4f7bc22567f393a5ce7118150ee2d409eb5383844cbe"
+        },
+        {
+          "path": "scripts/tests/fixtures/catalogs/google-overrides.json",
+          "digest": "sha256:19e41d78b10308457d37e7fd1d04666f5c361373b6f9eb636497491e39b4e914"
+        },
+        {
+          "path": "scripts/tests/fixtures/catalogs/icons-curated.csv",
+          "digest": "sha256:4d485e9c0d0ffa223d22b85e0bf4fce31b538a3580a240a684a97f18a25dcab7"
+        },
+        {
+          "path": "scripts/tests/fixtures/catalogs/phosphor-core.json",
+          "digest": "sha256:83b22bb64ec5a19274ebd10c95e1c8780541dd6c32f4ab3d247756f9c927d986"
+        },
+        {
+          "path": "scripts/tests/fixtures/catalogs/phosphor-package.json",
+          "digest": "sha256:c4844bc9f2d108076898b450b9a8844ce982da44a1adca4d4444b29b19ce36b8"
+        },
+        {
+          "path": "scripts/tests/fixtures/catalogs/phosphor-react-exports.json",
+          "digest": "sha256:d0f626384abfe2ad5753b953376e0305b819401b83222d9abbbd3eb08f0efadf"
+        },
+        {
+          "path": "scripts/tests/fixtures/catalogs/phosphor-react-package.json",
+          "digest": "sha256:3b798f9636f29150688d1aa1f59df525fba537fc12dcfd6c14f6fdd28b0d78fd"
+        },
+        {
+          "path": "scripts/tests/fixtures/relevance-baseline.json",
+          "digest": "sha256:df46f92792cf5d2aa7fb57b4494b74e8ee9af9a4b35165520f68a2308949ab91"
+        },
+        {
+          "path": "scripts/tests/fixtures/relevance-cases.json",
+          "digest": "sha256:9887ab35588886fd38ea06a840d75b989708c32e52ab3aa78dfcb7e8d9e7c13e"
+        },
+        {
+          "path": "scripts/tests/fixtures/relevance-thresholds.json",
+          "digest": "sha256:d9914e0b325c0d40db79654d0c9b3ce6bb00ee4db3bf379676709235890cacc6"
+        },
+        {
+          "path": "scripts/tests/test_catalog_refresh.py",
+          "digest": "sha256:7ca7d43bb2c9c4559464662414e5b66f95e8e5559063a1e1e2684ea9e34e2c92"
+        },
+        {
+          "path": "scripts/tests/test_core.py",
+          "digest": "sha256:3de16a02298a99a655f46923c37c9fe781b1fbd1c20e795696284b041a544693"
+        },
+        {
+          "path": "scripts/tests/test_core_data_quality.py",
+          "digest": "sha256:fe5737d37b46fc90be97c3e20b0fe63ce287cdc510277ee5e8063af2915daeac"
+        },
+        {
+          "path": "scripts/tests/test_data_contracts.py",
+          "digest": "sha256:a52a08fd98cd2f031c75bb2ff4dd19faa7a474af41d1ecf73a39adb332792b01"
+        },
+        {
+          "path": "scripts/tests/test_design_system_mode.py",
+          "digest": "sha256:a9e073bbc4c11208a91d6bfe25b7d70abffeeb9221915386034b1b1b2c9ff17c"
+        },
+        {
+          "path": "scripts/tests/test_native_desktop_stack_freshness.py",
+          "digest": "sha256:112a97a064d3fe3c9e0c132bdca05d6e965fefdb07258d74cfae12e3cc815915"
+        },
+        {
+          "path": "scripts/tests/test_relevance_evaluator.py",
+          "digest": "sha256:f97c7b824494598a28d8abee9513f111456b48076b14efff0290c50855a79fa7"
+        },
+        {
+          "path": "scripts/tests/test_style_taxonomy.py",
+          "digest": "sha256:9feb3b922eeb22d41816d37a3b00b6f82140ea03ee58eac1958cb16f1912d1a6"
+        },
+        {
+          "path": "scripts/tests/test_text_layout_resilience.py",
+          "digest": "sha256:a99f9abfc21442908f4b41c611cb685753b8ad631b074a90fb4afde7622e846c"
+        },
+        {
+          "path": "scripts/tests/test_web_stack_freshness.py",
+          "digest": "sha256:083934cc00d80c4a0bd231f269330183d945b65adbce7dbbbb9fc44bdfda659c"
+        },
+        {
+          "path": "scripts/validate_data.py",
+          "digest": "sha256:631fbe684c5762d839e999cd3527a6b588a3f275a905cb1461da5b68e3d01663"
+        }
+      ]
+    },
+    {
+      "id": "web-artifacts-builder",
+      "target": "claude-code",
+      "path": ".claude/skills/web-artifacts-builder",
+      "files": 5,
+      "digest": "sha256:57fad0bf2186e0e0293085c947982e0d8849b4c2f36b62d154fe0888d845aab0",
+      "inventory": [
+        {
+          "path": "LICENSE.txt",
+          "digest": "sha256:ddd208f368e34d53de6509bf70e1129a13aaa4066a5692d5419cc529df45d6cd"
+        },
+        {
+          "path": "SKILL.md",
+          "digest": "sha256:29818ef962fd31b818bcd7ba279c8b9778964f5c4b3873b83f5d80db01920e47"
+        },
+        {
+          "path": "scripts/bundle-artifact.sh",
+          "digest": "sha256:02410955f0b33c41f2a820580ea8074e4c61ca18428f5907f89969ce7c1977fa"
+        },
+        {
+          "path": "scripts/init-artifact.sh",
+          "digest": "sha256:8c113a044bfa673e7d30362cfac38124060867fe15e6dce386d3e24c2132a09d"
+        },
+        {
+          "path": "scripts/shadcn-components.tar.gz",
+          "digest": "sha256:75658cbe8f2ac4e3d5b395f04549d808664dff7c2d64087e372f3c60a6d9ed6e"
+        }
+      ]
+    },
+    {
+      "id": "webapp-testing",
+      "target": "claude-code",
+      "path": ".claude/skills/webapp-testing",
+      "files": 6,
+      "digest": "sha256:65b260ac57ace45a3c6c6c885478b24029d9698b6b3edcf94db1d994feca3f6c",
+      "inventory": [
+        {
+          "path": "LICENSE.txt",
+          "digest": "sha256:ddd208f368e34d53de6509bf70e1129a13aaa4066a5692d5419cc529df45d6cd"
+        },
+        {
+          "path": "SKILL.md",
+          "digest": "sha256:c41202485c095bf18c78918e0866c49a655a472f943e969415656a2aa8ec3175"
+        },
+        {
+          "path": "examples/console_logging.py",
+          "digest": "sha256:96ff99e18bffd3c8ce7215bbc2cfd644ded09f8b739dc4d3ba2433782aaad1ea"
+        },
+        {
+          "path": "examples/element_discovery.py",
+          "digest": "sha256:2855732ce6f9db763c011c5f96efbe45b23548d670536e86e905ccea1eeccc38"
+        },
+        {
+          "path": "examples/static_html_automation.py",
+          "digest": "sha256:2a975a27c95f5f232bcea37ca32040e7d874d16da8751db34cd16f067878fdba"
+        },
+        {
+          "path": "scripts/with_server.py",
+          "digest": "sha256:54306c889841e130e40c5797ec4995f14f4e3c70e5abefcccae1e58a2c1ff444"
+        }
+      ]
+    },
+    {
+      "id": "webapp-testing",
+      "target": "codex",
+      "path": ".agents/skills/webapp-testing",
+      "files": 6,
+      "digest": "sha256:65b260ac57ace45a3c6c6c885478b24029d9698b6b3edcf94db1d994feca3f6c",
+      "inventory": [
+        {
+          "path": "LICENSE.txt",
+          "digest": "sha256:ddd208f368e34d53de6509bf70e1129a13aaa4066a5692d5419cc529df45d6cd"
+        },
+        {
+          "path": "SKILL.md",
+          "digest": "sha256:c41202485c095bf18c78918e0866c49a655a472f943e969415656a2aa8ec3175"
+        },
+        {
+          "path": "examples/console_logging.py",
+          "digest": "sha256:96ff99e18bffd3c8ce7215bbc2cfd644ded09f8b739dc4d3ba2433782aaad1ea"
+        },
+        {
+          "path": "examples/element_discovery.py",
+          "digest": "sha256:2855732ce6f9db763c011c5f96efbe45b23548d670536e86e905ccea1eeccc38"
+        },
+        {
+          "path": "examples/static_html_automation.py",
+          "digest": "sha256:2a975a27c95f5f232bcea37ca32040e7d874d16da8751db34cd16f067878fdba"
+        },
+        {
+          "path": "scripts/with_server.py",
+          "digest": "sha256:54306c889841e130e40c5797ec4995f14f4e3c70e5abefcccae1e58a2c1ff444"
+        }
+      ]
+    }
+  ]
+}

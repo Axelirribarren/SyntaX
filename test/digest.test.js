@@ -23,11 +23,11 @@ const BOM = Buffer.concat([Buffer.from([0xef, 0xbb, 0xbf]), LF])
 // Vectores publicados en docs/digest.md. Si estos valores cambian, la spec
 // quedó mintiendo: hay que actualizarla y bumpear el nombre del algoritmo.
 const VECTORES = {
-  vacio: 'sha256:0b020c8f84485bc00b52623e77464bf45efcac012026a941532e608bdf01cdbf',
-  skillMd: 'sha256:ee0eb0e368c81a5d7e02d1eb6294c31c275560cbc76ab6d74d2a0c2915cb8918',
-  dosArchivos: 'sha256:c6c89c5924c6557dbdc4addfc6d70540976f9c386aff6bd42771073dce3e9312',
-  binarioCrlf: 'sha256:2b166d4e9fdb498c813e8b3ca73e0d119155ab0d278e3c0a39c4491c5458867f',
-  binarioLf: 'sha256:45c5f9ff84dd8cb59d1396c883f2e64d7c96a6b6186e6a1dea058b7465b71085'
+  vacio: 'sha256:67c3e61ebf8d6002aeb6c3ec473adf5ea53f7925b5e72db084bbebb8d629d770',
+  skillMd: 'sha256:450ee1f56f881093169ea6423b89e24927030abe11908d9402afad8d7421d27a',
+  dosArchivos: 'sha256:09720484ed7f9c462274f384e547edc095823bbb3f77268fc360d8d407b2da0c',
+  binarioCrlf: 'sha256:9ce8692d820b024f3d7bced8fd738c4b8b0386d332508c6e19a0c5777d8d2536',
+  binarioLf: 'sha256:f40d1847c50417a67b01da7bae747e63730948666e9902cbcba0ec65399a4e82'
 }
 
 test('los vectores publicados en docs/digest.md dan lo que dice la spec', () => {
@@ -129,6 +129,6 @@ test('en Windows, un junction tampoco se sigue', (t) => {
 test('el nombre del algoritmo viaja dentro del hash', () => {
   // Si el prefijo de dominio no estuviera, un digest de este algoritmo podría
   // confundirse con el de otro tipo de objeto.
-  assert.equal(ALGORITHM, 'syntax-skill-tree-v1')
+  assert.equal(ALGORITHM, 'pactlock-skill-tree-v1')
   assert.match(computeSkillDigest(skillDir({})).digest, /^sha256:[0-9a-f]{64}$/)
 })

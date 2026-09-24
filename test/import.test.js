@@ -63,7 +63,7 @@ test('el lock guarda una entrada por skill y por target', () => {
 
   const lock = JSON.parse(readFileSync(join(root, 'pactlock.lock'), 'utf8'))
   assert.equal(lock.skills.length, 3)
-  assert.equal(lock.digestAlgorithm, 'syntax-skill-tree-v1')
+  assert.equal(lock.digestAlgorithm, 'pactlock-skill-tree-v1')
   assert.equal(lock.lockVersion, 2)
   assert.ok(lock.manifestDigest, 'el lock tiene que poder decir a qué manifest corresponde')
   // El inventario por archivo es lo que le permite a `accept` decir qué cambió.

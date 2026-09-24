@@ -1,4 +1,4 @@
-# Spec del digest de skills — `syntax-skill-tree-v1`
+# Spec del digest de skills — `pactlock-skill-tree-v1`
 
 Especificación normativa. La implementación vive en `src/manifest/digest.js` y los vectores del
 final están verificados por `test/digest.test.js`.
@@ -26,7 +26,7 @@ falta hoy.
 
 ## Algoritmo
 
-1. **Prefijo de dominio.** El hash arranca con `syntax-skill-tree-v1` seguido de un byte `0x00`.
+1. **Prefijo de dominio.** El hash arranca con `pactlock-skill-tree-v1` seguido de un byte `0x00`.
    Así un digest de este algoritmo no puede confundirse con el de otro, ni con el de otro tipo de
    objeto.
 
@@ -101,13 +101,13 @@ Verificados por `test/digest.test.js`. Una reimplementación tiene que dar exact
 
 | Caso | Contenido | Digest |
 |---|---|---|
-| Directorio vacío | — | `sha256:0b020c8f84485bc00b52623e77464bf45efcac012026a941532e608bdf01cdbf` |
-| `SKILL.md` con LF | `---\nname: x\n---\n` | `sha256:ee0eb0e368c81a5d7e02d1eb6294c31c275560cbc76ab6d74d2a0c2915cb8918` |
+| Directorio vacío | — | `sha256:67c3e61ebf8d6002aeb6c3ec473adf5ea53f7925b5e72db084bbebb8d629d770` |
+| `SKILL.md` con LF | `---\nname: x\n---\n` | `sha256:450ee1f56f881093169ea6423b89e24927030abe11908d9402afad8d7421d27a` |
 | `SKILL.md` con CRLF | `---\r\nname: x\r\n---\r\n` | **idéntico al anterior** |
 | `SKILL.md` con BOM + LF | `EF BB BF` + LF | **idéntico al anterior** |
-| Dos archivos | `SKILL.md` = `a\n`, `ref/b.md` = `b\n` | `sha256:c6c89c5924c6557dbdc4addfc6d70540976f9c386aff6bd42771073dce3e9312` |
-| Binario con CRLF | `a.bin` = `01 0D 0A 02` | `sha256:2b166d4e9fdb498c813e8b3ca73e0d119155ab0d278e3c0a39c4491c5458867f` |
-| Binario con LF | `a.bin` = `01 0A 02` | `sha256:45c5f9ff84dd8cb59d1396c883f2e64d7c96a6b6186e6a1dea058b7465b71085` |
+| Dos archivos | `SKILL.md` = `a\n`, `ref/b.md` = `b\n` | `sha256:09720484ed7f9c462274f384e547edc095823bbb3f77268fc360d8d407b2da0c` |
+| Binario con CRLF | `a.bin` = `01 0D 0A 02` | `sha256:9ce8692d820b024f3d7bced8fd738c4b8b0386d332508c6e19a0c5777d8d2536` |
+| Binario con LF | `a.bin` = `01 0A 02` | `sha256:f40d1847c50417a67b01da7bae747e63730948666e9902cbcba0ec65399a4e82` |
 
 Los últimos dos son el par que justifica la allowlist: **como binarios, sus digests difieren**. Si
 `.bin` se tratara como texto, los dos colapsarían al mismo valor y una diferencia real quedaría
@@ -115,7 +115,7 @@ invisible.
 
 ## Cambiar el algoritmo
 
-El nombre `syntax-skill-tree-v1` está dentro del hash y también en `syntax.lock` como
+El nombre `pactlock-skill-tree-v1` está dentro del hash y también en `pactlock.lock` como
 `digestAlgorithm`. Cualquier cambio de comportamiento —una extensión nueva en la allowlist incluida,
 porque cambia cómo se canonicaliza ese formato— exige **bump del nombre**, actualizar los vectores
 de esta página, y que `verify` avise cuando el lock trae un algoritmo que no es el vigente en vez

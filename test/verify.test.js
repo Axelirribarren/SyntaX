@@ -89,7 +89,7 @@ test('un lock de otro algoritmo es error, no un mundo de diferencias', () => {
   const root = importado({ '.claude/skills/una': skill('una') })
   const lockPath = join(root, 'pactlock.lock')
   const lock = JSON.parse(readFileSync(lockPath, 'utf8'))
-  lock.digestAlgorithm = 'syntax-skill-tree-v0'
+  lock.digestAlgorithm = 'syntax-skill-tree-v1'
   writeFileSync(lockPath, JSON.stringify(lock))
 
   const resultado = runVerify(root)

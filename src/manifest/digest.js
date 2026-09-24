@@ -18,7 +18,7 @@ import { createHash } from 'node:crypto'
 import { lstatSync, readFileSync, readdirSync } from 'node:fs'
 import { join, relative } from 'node:path'
 
-export const ALGORITHM = 'syntax-skill-tree-v1'
+export const ALGORITHM = 'pactlock-skill-tree-v1'
 
 const NUL = Buffer.from([0])
 
@@ -122,7 +122,7 @@ export function computeSkillDigest(dir) {
   }
 }
 
-const FILE_ALGORITHM = 'syntax-skill-file-v1'
+const FILE_ALGORITHM = 'pactlock-skill-file-v1'
 
 // Digest de un archivo suelto, con su propio prefijo de dominio: no puede
 // confundirse con el del árbol que lo contiene.
