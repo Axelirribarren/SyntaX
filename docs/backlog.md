@@ -12,10 +12,10 @@ empeora si se ignora.
 
 | | Qué | Por qué importa |
 |---|---|---|
-| bloquea `npx` | **Verificar si `syntax` está libre en npm.** Sospecha fuerte de que no. Alternativas: scope (`@usuario/syntax`) o nombre propio. | Sin nombre publicable no hay `npx syntax doctor`, y ese comando de una línea es todo el mecanismo de adopción del producto. |
-| bloquea `npx` | **`"private": true` en `package.json`.** Viene del producto anterior. | npm rechaza la publicación mientras esté. Se saca junto con la decisión de nombre. |
-| vigilar | **Path anidado `SyntaX/SyntaX`.** | Cosmético, pero confunde a quien clona. Lo mueve el usuario: toca la carpeta de git. |
-| vigilar | **`SyntaX` suelto en la raíz**: un PNG de 1672×941 sin extensión, ya commiteado. | O se le da nombre y lugar (`docs/assets/`), o se borra. Hoy es ruido en la raíz. |
+| bloquea `npx` | **Nombre decidido: `pactlock`** (ADR 0001, 2026-09-23; `syntax` estaba tomado en npm). Falta ejecutar la migración (fase 0-M del plan) y publicar. | Sin nombre publicable no hay `npx pactlock doctor`, y ese comando de una línea es todo el mecanismo de adopción del producto. |
+| bloquea `npx` | **`"private": true` en `package.json`.** Viene del producto anterior. | npm rechaza la publicación mientras esté. Se saca en la migración a pactlock (0-M). |
+| vigilar | **Path anidado `SyntaX/SyntaX`.** | Se resuelve en la migración (paso 6 de 0-M): el usuario mueve la carpeta a `C:\Proyectos GRANDES\pactlock` y renombra el repo en GitHub. |
+| vigilar | **`SyntaX` suelto en la raíz**: un PNG de 1672×941 sin extensión, ya commiteado. | Se borra en la migración; el logo se rehace con el nombre nuevo (ADR 0001). |
 
 ## `doctor` — lo que le falta para ser el gancho
 
@@ -50,6 +50,9 @@ Dos salidas, y hay que elegir antes de que el archivo crezca:
 
 Mientras tanto: **no engordar el archivo a mano más allá de lo que se verifica.** Si crece a
 cincuenta entradas curadas, volvimos al catálogo.
+
+**Decidido (2026-09-23):** la salida 1 se hace sin telemetría, con el corpus de repos públicos de
+la fase 2 del plan; la salida 2 la complementa donde el corpus no alcanza.
 
 ## Correcciones a entradas anteriores de este backlog
 
@@ -113,9 +116,10 @@ costo es por target. El número real de Claude Code es ≈14.887 y el de Codex �
 
 ## Legacy
 
-**`src/legacy/` no tiene fecha de vencimiento, y eso es un problema conocido.** La condición de
-borrado es concreta: cuando `build` porte el `applyPlan` de `apply-plan.mjs` (merge aditivo de
-`.mcp.json`, clonado por repo, copia con backup), la carpeta entera se va.
+**`src/legacy/` no tenía fecha de vencimiento.** Su condición de borrado era que `build` portara
+el `applyPlan` de `apply-plan.mjs`, pero `build` ahora es condicional, así que esa condición podía
+no cumplirse nunca. **Decidido (2026-09-23):** se borra en la fase 0; queda en el historial de git
+y, si la rama de compilación se activa, se porta desde ahí.
 
 Además **legacy quedó sin tests**: se recortaron al migrar. Es deliberado —no se extiende— pero
 significa que si alguien lo toca, nada lo detecta.
@@ -129,6 +133,10 @@ significa que si alguien lo toca, nada lo detecta.
 | vigilar | **El `.mcp.json` de este repo mantiene la colisión de navegador a propósito**, igual que el drift entre `.claude/skills` y `.agents/skills`. | Es el fixture del dogfood. Está anotado en `AGENTS.md` para que nadie lo "arregle" en silencio y nos deje sin caso de demo. |
 
 ## Idioma
+
+**Decidido (2026-09-23): la CLI pasa a inglés por default**, con español disponible, y los tests
+hacen match por clave de mensaje (ADR de idioma, fase 0; migración en la fase 1). La
+documentación interna puede seguir en castellano. Lo que sigue es el contexto anterior.
 
 El README está en inglés y el resto —CLI, `agent-brief`, `direction`, `digest`, este archivo— en
 castellano. Es una incoherencia deliberada: sostenible mientras el equipo sea hispanohablante y el
@@ -149,8 +157,10 @@ No son tareas, son cosas que hay que mirar de vez en cuando. El argumento comple
   workflows no van a converger, porque ahí está la diferenciación de cada vendor. Si empiezan a
   converger, hay que replantear.
 - **El comprador.** El individuo no paga por esto; paga un equipo que necesita entornos auditables
-  entre editores distintos. Conviene validar ese comprador **antes** de construir `verify`, que es
-  la pieza cara y la que solo tiene sentido para él.
+  entre editores distintos. `verify` ya existe; ahora la pieza cara que hay que validar antes de
+  construir es `build` (punto de decisión A del plan).
 - **Nada recolecta el activo todavía.** La matriz de compatibilidad y el corpus de fallas son lo
-  que compone, y hoy cada `doctor` que corre se pierde. Sin resolver esto, cada ejecución vale
-  una sola vez.
+  que compone, y hoy cada `doctor` que corre se pierde. **Asignado:** fase 2 del plan, con un corpus
+  de repos públicos y sin telemetría.
+- **El mercado se movió.** Hay sincronizadores, medidores de costo y Snyk Agent Scan (ver
+  `landscape.md`). Revisar ese archivo en cada punto de decisión.

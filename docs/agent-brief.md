@@ -1,18 +1,73 @@
-# SyntaX — brief para agentes
+# pactlock (ex SyntaX) — brief para agentes
 
 Este bloque se genera desde `docs/agent-brief.md`, que es la **única fuente** de lo que leen
 todos los runtimes. No lo edites en `CLAUDE.md` ni en `AGENTS.md`: se pisa y el test de drift
 falla. Editá el brief y corré `npm run docs`.
 
-## Qué es SyntaX
+## Qué es pactlock
 
-**El compilador de entornos de agente: un manifest, todos los runtimes, con costo y pérdida
-medidos antes de aplicar.**
+**Lockfile y política para entornos de agente: qué capacidades tiene tu agente, cuánto cuestan,
+y si son las que el equipo aceptó.**
 
-Un entorno de agente (skills, MCP servers, reglas, agentes, hooks, permisos) se declara una vez
-en `syntax.yaml` y se compila a cada runtime — Claude Code, Codex, y los que sumen. Antes de
-escribir nada, SyntaX dice cuánto cuesta ese entorno en tokens, qué se pierde en cada runtime y
-si lo que hay en disco coincide con lo acordado.
+Un entorno de agente (skills, MCP servers, reglas, agentes, hooks, permisos) queda declarado en
+un manifest como **contrato de equipo** (hoy `syntax.yaml`; `pactlock.yaml` después de la
+migración), con su línea base de integridad en el lock (hoy `syntax.lock`). pactlock responde
+tres preguntas, en este orden de prioridad:
+
+1. **¿Es el entorno que acordamos?** `verify --strict` falla en CI cuando alguien derivó.
+   Aceptar una capacidad nueva es una decisión explícita de una persona (`accept`), no una
+   actualización de hash. **Este es el corazón del producto.**
+2. **¿Qué puede hacer el agente?** Permisos amplios combinados con MCP que escriben, hooks que
+   ejecutan código: mínimo privilegio para agentes.
+3. **¿Cuánto cuesta?** `doctor` mide el costo de arranque en tokens por runtime. Es el gancho:
+   gratis, solo lectura, una línea. No es el producto.
+
+Compilar el entorno a cada runtime (`build`) es una **opción condicionada**, no el destino: se
+construye solo si el punto de decisión A de `docs/implementation-plan.md` encuentra evidencia de
+que alguien lo necesita. Hay al menos cinco herramientas que ya sincronizan configuración entre
+runtimes (ver `docs/landscape.md`).
+
+## Foco vigente: lo que no se hace
+
+Antes de proponer o empezar trabajo, verificá que no cae en ninguna de estas. Si cae, no se hace
+sin que el usuario lo decida explícitamente:
+
+- **No es un sincronizador de configuración.** `agentsync`, `vsync`, `agents`, `agent-sync` y
+  Plexus ya lo hacen. `build`/`emit` no se empiezan antes del punto de decisión A.
+- **No es un escáner de contenido malicioso.** Detectar tool poisoning o prompt injection en
+  descripciones es terreno de Snyk Agent Scan (ex mcp-scan). pactlock es complementario: Snyk
+  dice si una herramienta es maliciosa; pactlock dice si el equipo corre lo que acordó y con qué
+  permisos.
+- **No compite solo en costo de tokens.** Hay varias herramientas de "context budget" para MCP.
+  `doctor` es la puerta de entrada, no la tesis.
+- **No es un catálogo ni un recomendador** (ver abajo, "Qué dejó de ser").
+- **No es run-time.** Escribe archivos y se va; no observa ni corta ejecuciones del agente.
+- **No es una UI.** Ningún visor web hasta que la CLI produzca datos que valga la pena explorar.
+- **No suma runtimes con escritura.** Adapters nuevos entran **en modo lectura** (sirven a `doctor`
+  y `verify`), no con `emit`.
+
+Si una idea nueva no fortalece la pregunta 1 o la 2, o no hace que más gente pruebe `doctor`,
+probablemente es derrape. Anotala en `docs/backlog.md` con su motivo en vez de construirla.
+
+## Nombre: pactlock (ex SyntaX), migración pendiente
+
+**El producto se llama `pactlock`** (`docs/adr/0001-nombre-pactlock.md`). SyntaX es el nombre
+histórico: se conserva solo en las secciones de historia.
+
+**Estado de transición:** la migración de nombre es el primer paso de la fase 0 y todavía no se
+hizo. Hasta que se haga, el código, el binario, los mensajes y los archivos del contrato siguen
+diciendo `syntax` (`syntax.yaml`, `syntax.lock`, `syntax-skill-tree-v1`). Este brief ya usa el
+nombre nuevo; cuando nombra un archivo o un comando que existe hoy, usa el nombre actual.
+
+Reglas de la migración:
+
+- **Se hace de una sola vez**, siguiendo el inventario y el orden del ADR 0001. Nunca un rename
+  parcial (por ejemplo, el binario sí y los archivos del contrato no).
+- **Sin compatibilidad con los nombres viejos:** no hay usuarios externos. La única excepción es
+  que `doctor` sigue reconociendo los `*.syntax-backup-*` huérfanos del producto anterior.
+- **El algoritmo del digest se renombra en la misma migración**, con vectores nuevos. Después de
+  la primera publicación, los identificadores de algoritmo quedan congelados.
+- Mover la carpeta y renombrar el repo en GitHub lo hace el usuario.
 
 ## Qué dejó de ser
 
@@ -37,17 +92,24 @@ entre runtimes es el mecanismo del diseño, no un bug a tapar.
 
 Implementado: `doctor` con cinco checks y `--deep` (levanta cada MCP server por stdio y mide los
 tokens de sus schemas), el contrato de adapters, los adapters de Claude Code y Codex en modo
-lectura, y la franja `import` + `verify` para **skills**.
+lectura, y la franja `import` + `verify` (con `--strict`) + `accept` para **skills**.
 
-No implementado todavía: `build`, `rollback`, `accept` (actualizar la línea base a propósito),
-resolución de origen en el lock, MCP y demás objetos en el manifest, y el visor web de reportes.
+No implementado todavía: la migración de nombre a pactlock, check de permisos, salida de la CLI
+en inglés, publicación en npm,
+GitHub Action, MCP y demás objetos en el manifest, `build`, `rollback`, resolución de origen en
+el lock, y el visor web de reportes.
 
 Al describir el proyecto, no presentes como funcionando lo que está en la lista de no
 implementado.
 
-Lo que quedó abierto —incluidas las decisiones que todavía no se tomaron y las que van a doler
-más adelante— está en `docs/backlog.md`. **Leelo antes de proponer trabajo nuevo**: es probable
-que ya esté anotado ahí, con el motivo por el que se dejó pendiente.
+Antes de proponer trabajo nuevo, leé en este orden:
+
+1. `docs/implementation-plan.md`: el orden vigente, las puertas de salida y los puntos de decisión.
+   Si el trabajo no está en la fase actual, no se empieza sin que el usuario lo decida.
+2. `docs/backlog.md`: deuda y riesgos, con el motivo por el que se dejaron pendientes. Es probable
+   que la idea ya esté anotada ahí.
+3. `docs/landscape.md`: qué ya existe afuera. Si otra herramienta lo resuelve bien, no se
+   reconstruye.
 
 ## Las tres capas
 
@@ -110,9 +172,12 @@ src/verify.js           contrato vs. disco, con exit codes para CI
 src/registry/           mapa capability -> providers
 src/fs/                 utilidades de disco seguras
 src/legacy/             recomendador viejo, degradado a opcional
+docs/implementation-plan.md  orden vigente, puertas de salida y puntos de decisión
+docs/landscape.md       qué herramientas existen afuera y en qué se diferencia pactlock
+docs/adr/               decisiones cerradas (0001: el nombre pactlock)
 docs/backlog.md         pendientes, deuda y riesgos conocidos
 docs/digest.md          spec del digest, con vectores de prueba
-docs/direction.md       por qué se hizo este cambio de rumbo
+docs/direction.md       por qué se hizo cada cambio de rumbo, y el foco vigente
 docs/licensing.md       análisis de licencias de skills
 syntax.yaml             el contrato de este propio repo (generado por import)
 syntax.lock             su línea base de integridad
@@ -120,7 +185,8 @@ syntax.lock             su línea base de integridad
 
 ## Cómo sumar un runtime
 
-Es la extensión más frecuente y tiene que ser barata. Crear `src/targets/<id>.js` que exporte el
+Es la extensión más frecuente y tiene que ser barata. Mientras `build` no exista, un runtime nuevo
+entra **solo en modo lectura**: `detect`, `supports` y `read`, sin `emit`. Crear `src/targets/<id>.js` que exporte el
 contrato de `src/targets/contract.js`: `id`, `label`, `detect(root)`, `supports` (declarado como
 datos: qué objetos sabe expresar y en qué archivo o directorio), y `read(root)`. Registrarlo en
 `src/targets/index.js`. El reporte de pérdida sale solo de `supports` — no se escribe código
